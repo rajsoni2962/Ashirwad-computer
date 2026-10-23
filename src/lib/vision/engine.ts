@@ -69,7 +69,7 @@ Return strict, valid JSON ONLY without any markdown decoration outside the JSON:
   },
   "customer": {
     "customer_name": { "value": "Ashirwad Tech", "confidence": 0.95 },
-    "gstin": { "value": "24AANPA0000A1Z5", "confidence": 0.9 },
+    "gstin": { "value": null, "confidence": 0.0 },
     "address": { "value": "Ahmedabad", "confidence": 0.85 },
     "state": { "value": "Gujarat", "confidence": 0.9 },
     "state_code": { "value": "24", "confidence": 0.9 },

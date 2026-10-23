@@ -116,7 +116,7 @@ export async function POST(request: Request) {
           address: address?.trim() || '',
           phone: phone.trim(),
           email: email?.trim() || null,
-          gstin: gstin?.trim() || '',
+          gstin: (gstin?.trim() === 'null' || !gstin) ? '' : gstin.trim(),
           state: state?.trim() || 'Gujarat',
           stateCode: stateCode?.trim() || '24',
           bankName: bankName?.trim() || null,

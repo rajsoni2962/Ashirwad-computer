@@ -97,9 +97,38 @@ export function getInvoiceTypeTitle(type?: string): string {
       return 'QUOTATION / ESTIMATE';
     case 'CASH_MEMO':
       return 'CASH MEMO';
+    case 'DELIVERY_CHALLAN':
+      return 'DELIVERY CHALLAN';
+    case 'CREDIT_NOTE':
+      return 'CREDIT NOTE';
+    case 'DEBIT_NOTE':
+      return 'DEBIT NOTE';
     case 'TAX_INVOICE':
     default:
       return 'TAX INVOICE';
+  }
+}
+
+export function getInvoiceNumberLabel(type?: string): string {
+  switch (type) {
+    case 'QUOTATION':
+      return 'Quotation No.:';
+    case 'PROFORMA':
+      return 'Proforma No.:';
+    case 'BILL_OF_SUPPLY':
+      return 'Bill No.:';
+    case 'CASH_MEMO':
+      return 'Cash Memo No.:';
+    case 'DELIVERY_CHALLAN':
+      return 'Challan No.:';
+    case 'CREDIT_NOTE':
+      return 'Credit Note No.:';
+    case 'DEBIT_NOTE':
+      return 'Debit Note No.:';
+    case 'NON_GST':
+    case 'TAX_INVOICE':
+    default:
+      return 'Invoice No.:';
   }
 }
 

@@ -16,15 +16,25 @@ import {
   GitCompare,
   RotateCcw,
   AlertTriangle,
-  Trash2
+  Trash2,
+  FileImage,
+  Copy,
+  ChevronDown,
+  Check,
 } from 'lucide-react';
-import { formatCurrency, formatDate, numberToWords, getInvoiceTypeTitle, getTaxConfigLabel } from '@/lib/utils';
+import { formatCurrency, formatDate, numberToWords, getInvoiceTypeTitle, getInvoiceNumberLabel, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceAuditHistoryModal from '@/components/invoice/InvoiceAuditHistoryModal';
 import InvoiceVersionCompareModal from '@/components/invoice/InvoiceVersionCompareModal';
+import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
+import {
+  downloadInvoiceImage,
+  copyInvoiceImageToClipboard,
+} from '@/lib/invoiceImageExporter';
 
 import {
+  generateInvoicePdf,
   downloadInvoicePdf,
   viewInvoicePdf,
   generateInvoicePdfFromElement,
@@ -57,6 +67,10 @@ export default function InvoicePrintView({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletionReason, setDeletionReason] = useState('Customer requested return / correction');
   const [deleting, setDeleting] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isImageMenuOpen, setIsImageMenuOpen] = useState(false);
+  const [imageDownloading, setImageDownloading] = useState(false);
+  const [imageCopied, setImageCopied] = useState(false);
 
   // 1. Reconstruct business from saved historical snapshot (prioritized over mutable live settings)
   let bizSnapshot: any = {};
@@ -70,17 +84,19 @@ export default function InvoicePrintView({
 
   const business = {
     companyName: bizSnapshot.companyName || settings?.companyName || 'ASHIRWAD TECHNOLOGIES',
-    tagline: bizSnapshot.tagline || settings?.tagline || 'REPAIR | UPGRADE | BUILD | SERVICE',
-    address: bizSnapshot.address || settings?.address || 'Ashraya 10, GST compound, new ranip, Ahmedabad 382470.',
+    tagline: bizSnapshot.tagline || settings?.tagline || 'BEYOND TECH LIMITS',
+    address: bizSnapshot.address || settings?.address || 'A/1, 902, Ashraya 10, GST compound, New Ranip, Ahmedabad 382470.',
     phone: bizSnapshot.phone || settings?.phone || '9662278994',
     email: bizSnapshot.email || settings?.email || 'rajsoni2962@gmail.com',
-    gstin: bizSnapshot.gstin || settings?.gstin || '24AANPA0000A1Z5',
+    gstin: (bizSnapshot.gstin && bizSnapshot.gstin !== 'null')
+      ? bizSnapshot.gstin
+      : (settings?.gstin && settings?.gstin !== 'null' ? settings.gstin : ''),
     state: bizSnapshot.state || settings?.state || 'Gujarat',
     stateCode: bizSnapshot.stateCode || settings?.stateCode || '24',
-    bankName: bizSnapshot.bankName || settings?.bankName || 'State Bank of India',
-    accountNumber: bizSnapshot.accountNumber || settings?.accountNumber || '39485720194',
-    ifscCode: bizSnapshot.ifscCode || settings?.ifscCode || 'SBIN0001234',
-    upiId: bizSnapshot.upiId || settings?.upiId || '9662278994@upi',
+    bankName: bizSnapshot.bankName || settings?.bankName || 'Kotak Mahindra Bank',
+    accountNumber: bizSnapshot.accountNumber || settings?.accountNumber || '5947557983',
+    ifscCode: bizSnapshot.ifscCode || settings?.ifscCode || 'KKBK0000879',
+    upiId: bizSnapshot.upiId || settings?.upiId || 'rajsoni2962-2@okaxis',
     logoUrl: '/brand/logo.png',
     signatureUrl: '/brand/signature.jpeg',
     terms: currentInvoice?.terms || bizSnapshot.terms || settings?.terms || `* Tested and working perfectly at the time of sale.
@@ -88,9 +104,9 @@ export default function InvoicePrintView({
 * 6 Months of warranty covers technical issues only and excludes physical or liquid damage.
 * Battery backup may vary depending on usage.
 * No return or refund after sale unless covered under warranty.
-* Thank you for choosing us—we’re always here to help if you need support.`,
+* Thank you for choosing us—we're always here to help if you need support.`,
     footer: bizSnapshot.footer || settings?.footer || "Thank you for choosing us—we're always here to help if you need support.",
-    authorizedSignatory: bizSnapshot.authorizedSignatory || settings?.authorizedSignatory || 'Ashirwad Technologies\nRaj Soni\nProprietor',
+    authorizedSignatory: bizSnapshot.authorizedSignatory || settings?.authorizedSignatory || 'For: ASHIRWAD TECHNOLOGIES\nAuthorized Signatory',
   };
 
   // 2. Reconstruct customer from saved historical snapshot
@@ -104,24 +120,42 @@ export default function InvoicePrintView({
   }
   const customer = custSnapshot || currentInvoice?.customer || {};
 
-  const handlePrint = () => {
-    window.print();
+  // 3. Resolve 100% customizable invoice design
+  const design: InvoiceDesignConfig = customDesign || getInvoiceDesign(
+    bizSnapshot?.invoiceDesign || currentInvoice?.businessProfile?.invoiceDesign || settings?.invoiceDesign
+  );
+
+  const handlePrint = async () => {
+    try {
+      const { blob } = await generateInvoicePdf(currentInvoice, business, { design });
+      const blobUrl = URL.createObjectURL(blob);
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = '0';
+      iframe.src = blobUrl;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          URL.revokeObjectURL(blobUrl);
+        }, 60000);
+      };
+    } catch {
+      window.print();
+    }
   };
 
   const handleViewPdf = async () => {
     setViewing(true);
     try {
-      if (printRef.current) {
-        const { blob, filename } = await generateInvoicePdfFromElement(
-          printRef.current,
-          currentInvoice.invoiceNumber,
-          currentInvoice,
-          business
-        );
-        viewPdfBlob(blob, filename);
-        return;
-      }
-      await viewInvoicePdf(currentInvoice, business);
+      const { blob, filename } = await generateInvoicePdf(currentInvoice, business, { design });
+      viewPdfBlob(blob, filename);
     } catch (err: any) {
       console.error('Client PDF view error, using server fallback:', err);
       window.open(`/api/invoices/${currentInvoice.id}/pdf?inline=true`, '_blank');
@@ -133,22 +167,39 @@ export default function InvoicePrintView({
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      if (printRef.current) {
-        const { blob, filename } = await generateInvoicePdfFromElement(
-          printRef.current,
-          currentInvoice.invoiceNumber,
-          currentInvoice,
-          business
-        );
-        downloadPdfBlob(blob, filename);
-        return;
-      }
-      await downloadInvoicePdf(currentInvoice, business);
+      const { blob, filename } = await generateInvoicePdf(currentInvoice, business, { design });
+      downloadPdfBlob(blob, filename);
     } catch (err: any) {
       console.error('Client PDF generation error, using server fallback:', err);
       window.location.href = `/api/invoices/${currentInvoice.id}/pdf`;
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleDownloadImage = async (format: 'png' | 'jpeg') => {
+    if (!printRef.current) return;
+    setImageDownloading(true);
+    setIsImageMenuOpen(false);
+    try {
+      await downloadInvoiceImage(printRef.current, currentInvoice.invoiceNumber, format);
+    } catch (err) {
+      console.error('Download image error:', err);
+      alert('Failed to generate image. Please try again or use PDF download.');
+    } finally {
+      setImageDownloading(false);
+    }
+  };
+
+  const handleCopyImage = async () => {
+    if (!printRef.current) return;
+    setIsImageMenuOpen(false);
+    const success = await copyInvoiceImageToClipboard(printRef.current);
+    if (success) {
+      setImageCopied(true);
+      setTimeout(() => setImageCopied(false), 2500);
+    } else {
+      alert('Could not copy image to clipboard. Please use Download PNG / JPEG.');
     }
   };
 
@@ -166,10 +217,6 @@ export default function InvoicePrintView({
     }
   };
 
-  // 3. Resolve 100% customizable invoice design
-  const design: InvoiceDesignConfig = customDesign || getInvoiceDesign(
-    bizSnapshot?.invoiceDesign || currentInvoice?.businessProfile?.invoiceDesign || settings?.invoiceDesign
-  );
 
   const grandTotal = invoice.grandTotal || 0;
   const paidAmount = invoice.paidAmount || 0;
@@ -398,6 +445,83 @@ export default function InvoicePrintView({
               <Download className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>{downloading ? 'Downloading...' : 'PDF'}</span>
             </button>
+
+            {/* Image (PNG / JPEG) Dropdown & Modal Button */}
+            <div className="relative">
+              <div className="inline-flex rounded-xl shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => handleDownloadImage('png')}
+                  disabled={imageDownloading}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-l-xl transition disabled:opacity-50"
+                  title="Download Invoice as PNG image"
+                >
+                  <FileImage className="w-3.5 h-3.5 text-purple-600" />
+                  <span>{imageDownloading ? 'Saving...' : 'PNG'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsImageMenuOpen(!isImageMenuOpen)}
+                  disabled={imageDownloading}
+                  className="px-2 py-2 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border-t border-b border-r border-purple-200 rounded-r-xl transition disabled:opacity-50"
+                  title="More image export options (JPEG, Copy Image, Preview)"
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </div>
+
+              {isImageMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                    Invoice Image Options
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadImage('png')}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FileImage className="w-4 h-4 text-purple-600" />
+                      <span>Download PNG</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded">Lossless</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadImage('jpeg')}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FileImage className="w-4 h-4 text-indigo-600" />
+                      <span>Download JPEG / JPG</span>
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Photo</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyImage}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center justify-between border-t border-slate-100"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Copy className="w-4 h-4 text-slate-500" />
+                      <span>Copy Image</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400">Ctrl+V</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsImageMenuOpen(false);
+                      setIsImageModalOpen(true);
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 border-t border-slate-100"
+                  >
+                    Preview & Advanced Options...
+                  </button>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => setIsWhatsAppOpen(true)}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition"
@@ -425,18 +549,7 @@ export default function InvoicePrintView({
           className={`print-container bg-white w-full max-w-[210mm] min-h-[297mm] shadow-lg border border-slate-200 print:border-none print:shadow-none print:rounded-none print:p-0 print:m-0 print:w-full text-slate-900 ${radiusClass} ${paddingClass} ${fontScaleClass}`}
         >
           {/* Top Title Banner */}
-          <div
-            className="text-center font-bold text-base tracking-wider uppercase pb-2 border-b"
-            style={
-              design.headerBgStyle === 'solid-accent'
-                ? { backgroundColor: design.primaryColor, color: '#ffffff', borderColor: design.primaryColor }
-                : design.headerBgStyle === 'dark-slate'
-                ? { backgroundColor: '#0f172a', color: '#ffffff', borderColor: '#0f172a' }
-                : design.headerBgStyle === 'soft-tint'
-                ? { backgroundColor: `${design.primaryColor}14`, color: design.primaryColor, borderColor: `${design.primaryColor}30` }
-                : { backgroundColor: '#ffffff', color: '#1e293b', borderColor: '#e2e8f0' }
-            }
-          >
+          <div className="w-full py-2 bg-[#EEF0FD] text-[#4257B8] font-bold text-xs tracking-wider uppercase text-center rounded-sm">
             {getInvoiceTypeTitle(currentInvoice.invoiceType)}
           </div>
 
@@ -460,11 +573,10 @@ export default function InvoicePrintView({
                 }
               >
                 <div
-                  className="relative rounded-2xl overflow-hidden border shadow-xs shrink-0 bg-white p-1"
+                  className="relative rounded-2xl overflow-hidden border border-[#CAD5E2] shadow-xs shrink-0 bg-white p-1"
                   style={{
                     width: `${design.logoSize}px`,
                     height: `${design.logoSize}px`,
-                    borderColor: `${design.primaryColor}40`,
                   }}
                 >
                   <img
@@ -493,10 +605,7 @@ export default function InvoicePrintView({
                 <span>{business.companyName}</span>
               </h1>
               {design.showTagline && business.tagline && (
-                <p
-                  className="text-xs font-bold uppercase tracking-wider mt-0.5"
-                  style={{ color: design.primaryColor }}
-                >
+                <p className="text-xs font-bold uppercase tracking-wider text-[#4257B8] mt-0.5">
                   {business.tagline}
                 </p>
               )}
@@ -510,29 +619,27 @@ export default function InvoicePrintView({
                   <span>Email: <strong className="text-slate-800">{business.email}</strong></span>
                 </div>
               )}
-              {design.showGstinBadge && business.gstin && (
-                <p className="text-xs text-slate-700 font-semibold mt-0.5">
-                  GSTIN: {business.gstin}
+              {business.gstin && business.gstin.trim() && business.gstin !== 'null' && business.gstin !== '24AANPA0000A1Z5' && (
+                <p className="text-xs text-slate-600 mt-0.5">
+                  GSTIN: <strong className="text-slate-800">{business.gstin}</strong>
                 </p>
               )}
+
             </div>
           </div>
 
           {/* Party and Invoice Details Row */}
-          <div className="grid grid-cols-2 gap-4 py-3 border-b border-slate-200 bg-slate-50/50 -mx-8 px-8 print:mx-0 print:px-0">
+          <div className="grid grid-cols-2 gap-4 py-3 border-b border-[#CAD5E2]">
             {design.swapCustomerMetaPosition ? (
               <>
                 {/* Swapped: Invoice Details on Left */}
-                <div className="border-r border-slate-200 pr-4 space-y-1 text-left">
-                  <div
-                    className="text-xs font-bold uppercase tracking-wider mb-1"
-                    style={{ color: design.primaryColor }}
-                  >
-                    {design.invoiceMetaTitle || 'Invoice Details:'}
+                <div className="border-r border-[#CAD5E2] pr-4 space-y-1 text-left">
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
+                    {design.invoiceMetaTitle || 'INVOICE DETAILS'}
                   </div>
                   <div className="text-xs">
                     <span className="text-slate-500">
-                      {currentInvoice.invoiceType === 'QUOTATION' ? 'Quotation No.:' : currentInvoice.invoiceType === 'PROFORMA' ? 'Proforma No.:' : 'Invoice No.:'}
+                      {getInvoiceNumberLabel(currentInvoice.invoiceType)}
                     </span>{' '}
                     <strong className="text-sm text-slate-900 font-bold">{invoice.invoiceNumber}</strong>
                   </div>
@@ -540,31 +647,28 @@ export default function InvoicePrintView({
                     <span className="text-slate-500">Date:</span>{' '}
                     <strong className="text-slate-800">{formatDate(invoice.date)}</strong>
                   </div>
+                  <div className="text-xs">
+                    <span className="text-slate-500">Payment Mode:</span>{' '}
+                    <strong className="text-slate-800">{invoice.paymentMode || 'Cash'}</strong>
+                  </div>
                   {invoice.dueDate && (
                     <div className="text-xs">
                       <span className="text-slate-500">Due Date:</span>{' '}
                       <span className="text-slate-700">{formatDate(invoice.dueDate)}</span>
                     </div>
                   )}
-                  <div className="text-xs">
-                    <span className="text-slate-500">Payment Mode:</span>{' '}
-                    <span className="font-semibold text-slate-800">{invoice.paymentMode || 'Cash'}</span>
-                  </div>
                 </div>
 
                 {/* Bill To on Right */}
                 <div className="pl-4 text-right">
-                  <div
-                    className="text-xs font-bold uppercase tracking-wider mb-1"
-                    style={{ color: design.primaryColor }}
-                  >
-                    {design.customerCardTitle || 'Bill To:'}
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
+                    {design.customerCardTitle || 'BILLED TO'}
                   </div>
                   <div className="text-sm font-bold text-slate-900">
-                    {customer.name || invoice.customer?.name}
+                    {customer.name || invoice.customer?.name || 'Walk-in Customer'}
                   </div>
                   <div className="text-xs text-slate-600 mt-0.5">
-                    Contact No.: <strong className="text-slate-800">{customer.phone || invoice.customer?.phone}</strong>
+                    Contact No.: <strong className="text-slate-800">{customer.phone || invoice.customer?.phone || '-'}</strong>
                   </div>
                   {(customer.email || invoice.customer?.email) && (
                     <div className="text-xs text-slate-600">
@@ -576,31 +680,29 @@ export default function InvoicePrintView({
                       Address: {customer.address || invoice.customer.address}
                     </div>
                   )}
-                  {(customer.gstin || invoice.customer?.gstin) && (
-                    <div className="text-xs text-slate-700 font-medium mt-0.5">
-                      GSTIN: {customer.gstin || invoice.customer.gstin}
-                    </div>
-                  )}
                   <div className="text-xs text-slate-500 mt-0.5">
                     State: {customer.state || invoice.customer?.state || 'Gujarat'} (Code: {customer.stateCode || invoice.customer?.stateCode || '24'})
                   </div>
+                  {(customer.gstin || invoice.customer?.gstin) && (customer.gstin || invoice.customer?.gstin).trim() && (customer.gstin || invoice.customer?.gstin) !== 'null' && (
+                    <div className="text-xs text-slate-600 mt-0.5">
+                      GSTIN: <strong className="text-slate-800">{customer.gstin || invoice.customer?.gstin}</strong>
+                    </div>
+                  )}
+
                 </div>
               </>
             ) : (
               <>
                 {/* Normal: Bill To on Left */}
-                <div className="border-r border-slate-200 pr-4">
-                  <div
-                    className="text-xs font-bold uppercase tracking-wider mb-1"
-                    style={{ color: design.primaryColor }}
-                  >
-                    {design.customerCardTitle || 'Bill To:'}
+                <div className="border-r border-[#CAD5E2] pr-4">
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
+                    {design.customerCardTitle || 'BILLED TO'}
                   </div>
                   <div className="text-sm font-bold text-slate-900">
-                    {customer.name || invoice.customer?.name}
+                    {customer.name || invoice.customer?.name || 'Walk-in Customer'}
                   </div>
                   <div className="text-xs text-slate-600 mt-0.5">
-                    Contact No.: <strong className="text-slate-800">{customer.phone || invoice.customer?.phone}</strong>
+                    Contact No.: <strong className="text-slate-800">{customer.phone || invoice.customer?.phone || '-'}</strong>
                   </div>
                   {(customer.email || invoice.customer?.email) && (
                     <div className="text-xs text-slate-600">
@@ -612,27 +714,25 @@ export default function InvoicePrintView({
                       Address: {customer.address || invoice.customer.address}
                     </div>
                   )}
-                  {(customer.gstin || invoice.customer?.gstin) && (
-                    <div className="text-xs text-slate-700 font-medium mt-0.5">
-                      GSTIN: {customer.gstin || invoice.customer.gstin}
-                    </div>
-                  )}
                   <div className="text-xs text-slate-500 mt-0.5">
                     State: {customer.state || invoice.customer?.state || 'Gujarat'} (Code: {customer.stateCode || invoice.customer?.stateCode || '24'})
                   </div>
+                  {(customer.gstin || invoice.customer?.gstin) && (customer.gstin || invoice.customer?.gstin).trim() && (customer.gstin || invoice.customer?.gstin) !== 'null' && (
+                    <div className="text-xs text-slate-600 mt-0.5">
+                      GSTIN: <strong className="text-slate-800">{customer.gstin || invoice.customer?.gstin}</strong>
+                    </div>
+                  )}
+
                 </div>
 
                 {/* Invoice Details on Right */}
                 <div className="pl-4 space-y-1 text-right">
-                  <div
-                    className="text-xs font-bold uppercase tracking-wider mb-1"
-                    style={{ color: design.primaryColor }}
-                  >
-                    {design.invoiceMetaTitle || 'Invoice Details:'}
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
+                    {design.invoiceMetaTitle || 'INVOICE DETAILS'}
                   </div>
                   <div className="text-xs">
                     <span className="text-slate-500">
-                      {currentInvoice.invoiceType === 'QUOTATION' ? 'Quotation No.:' : currentInvoice.invoiceType === 'PROFORMA' ? 'Proforma No.:' : 'Invoice No.:'}
+                      {getInvoiceNumberLabel(currentInvoice.invoiceType)}
                     </span>{' '}
                     <strong className="text-sm text-slate-900 font-bold">{invoice.invoiceNumber}</strong>
                   </div>
@@ -640,16 +740,16 @@ export default function InvoicePrintView({
                     <span className="text-slate-500">Date:</span>{' '}
                     <strong className="text-slate-800">{formatDate(invoice.date)}</strong>
                   </div>
+                  <div className="text-xs">
+                    <span className="text-slate-500">Payment Mode:</span>{' '}
+                    <strong className="text-slate-800">{invoice.paymentMode || 'Cash'}</strong>
+                  </div>
                   {invoice.dueDate && (
                     <div className="text-xs">
                       <span className="text-slate-500">Due Date:</span>{' '}
                       <span className="text-slate-700">{formatDate(invoice.dueDate)}</span>
                     </div>
                   )}
-                  <div className="text-xs">
-                    <span className="text-slate-500">Payment Mode:</span>{' '}
-                    <span className="font-semibold text-slate-800">{invoice.paymentMode || 'Cash'}</span>
-                  </div>
                 </div>
               </>
             )}
@@ -657,67 +757,69 @@ export default function InvoicePrintView({
 
           {/* Line Items Table */}
           <div className="py-3">
-            <table className="w-full text-left border-collapse border border-slate-300">
+            <table className="w-full text-left border-collapse border border-[#CAD5E2]">
               <thead>
-                <tr style={tableHeaderStyle} className="text-xs uppercase font-semibold">
+                <tr className="text-xs uppercase font-bold bg-[#EEF0FD] text-[#1A202C]">
                   {design.showSerialColumn && (
-                    <th className="py-2 px-2.5 w-8 text-center border-r border-slate-400">#</th>
+                    <th className="py-2.5 px-2.5 w-8 text-center border-r border-[#CAD5E2]">#</th>
                   )}
-                  <th className="py-2 px-3 border-r border-slate-400">Item Name & Specifications</th>
+                  <th className="py-2.5 px-3 border-r border-[#CAD5E2]">ITEM NAME & SPECIFICATIONS</th>
                   {design.showHsnColumn && (
-                    <th className="py-2 px-2 text-center w-16 border-r border-slate-400">HSN</th>
+                    <th className="py-2.5 px-2 text-center w-16 border-r border-[#CAD5E2]">HSN</th>
                   )}
-                  <th className="py-2 px-2 text-center w-14 border-r border-slate-400">Qty</th>
+                  <th className="py-2.5 px-2 text-center w-14 border-r border-[#CAD5E2]">QTY</th>
                   {design.showUnitColumn && (
-                    <th className="py-2 px-2 text-center w-12 border-r border-slate-400">Unit</th>
+                    <th className="py-2.5 px-2 text-center w-12 border-r border-[#CAD5E2]">UNIT</th>
                   )}
                   {design.showDiscountColumn && (
-                    <th className="py-2 px-2 text-center w-14 border-r border-slate-400">Disc</th>
+                    <th className="py-2.5 px-2 text-center w-14 border-r border-[#CAD5E2]">DISC</th>
                   )}
-                  <th className="py-2 px-3 text-right w-24 border-r border-slate-400">Price / Unit</th>
-                  <th className="py-2 px-3 text-right w-28">Amount</th>
+                  <th className="py-2.5 px-3 text-center w-24 border-r border-[#CAD5E2]">PRICE / UNIT</th>
+                  <th className="py-2.5 px-3 text-center w-28">AMOUNT</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 text-xs">
+              <tbody className="divide-y divide-[#CAD5E2] text-xs">
                 {invoice.items?.map((item: any, idx: number) => (
                   <tr
                     key={item.id || idx}
-                    className={design.zebraStripes ? (idx % 2 === 1 ? 'bg-slate-50/70 hover:bg-slate-100/50' : 'bg-white hover:bg-slate-50/50') : 'hover:bg-slate-50/50'}
+                    className="bg-white hover:bg-slate-50/50"
                   >
                     {design.showSerialColumn && (
-                      <td className="py-2.5 px-2.5 text-center font-medium text-slate-500 border-r border-slate-300">
+                      <td className="py-2.5 px-2.5 text-center font-medium text-slate-500 border-r border-[#CAD5E2]">
                         {idx + 1}
                       </td>
                     )}
-                    <td className="py-2.5 px-3 border-r border-slate-300">
+                    <td className="py-2.5 px-3 border-r border-[#CAD5E2]">
                       <div className="font-bold text-slate-900 leading-snug">
                         {item.description || item.product?.name}
                       </div>
-                      {design.showWarrantyColumn && item.serialNumber && (
+                      {design.showWarrantyColumn && (item.serialNumber || item.warranty) && (
                         <div className="text-[11px] font-mono text-purple-700 font-semibold mt-0.5 flex items-center gap-1">
-                          <span>S/N:</span> {item.serialNumber}
+                          {item.serialNumber && <span>S/N: {item.serialNumber}</span>}
+                          {item.serialNumber && item.warranty && <span>•</span>}
+                          {item.warranty && <span>Warranty: {item.warranty}</span>}
                         </div>
                       )}
                     </td>
                     {design.showHsnColumn && (
-                      <td className="py-2.5 px-2 text-center text-slate-600 border-r border-slate-300">
+                      <td className="py-2.5 px-2 text-center text-slate-600 border-r border-[#CAD5E2]">
                         {item.hsn || '8471'}
                       </td>
                     )}
-                    <td className="py-2.5 px-2 text-center font-semibold text-slate-800 border-r border-slate-300">
+                    <td className="py-2.5 px-2 text-center font-semibold text-slate-800 border-r border-[#CAD5E2]">
                       {item.quantity}
                     </td>
                     {design.showUnitColumn && (
-                      <td className="py-2.5 px-2 text-center text-slate-600 border-r border-slate-300">
+                      <td className="py-2.5 px-2 text-center text-slate-600 border-r border-[#CAD5E2]">
                         {item.unit || 'Pcs'}
                       </td>
                     )}
                     {design.showDiscountColumn && (
-                      <td className="py-2.5 px-2 text-center text-emerald-700 font-medium border-r border-slate-300">
+                      <td className="py-2.5 px-2 text-center text-emerald-700 font-medium border-r border-[#CAD5E2]">
                         {item.discountAmount ? formatCurrency(item.discountAmount) : '-'}
                       </td>
                     )}
-                    <td className="py-2.5 px-3 text-right text-slate-800 border-r border-slate-300">
+                    <td className="py-2.5 px-3 text-right text-slate-800 border-r border-[#CAD5E2]">
                       {formatCurrency(item.rate)}
                     </td>
                     <td className="py-2.5 px-3 text-right font-bold text-slate-900">
@@ -727,25 +829,25 @@ export default function InvoicePrintView({
                 ))}
               </tbody>
               <tfoot>
-                <tr className="bg-slate-100 font-bold text-xs border-t-2 border-slate-300">
+                <tr className="bg-[#F1F5F9] font-bold text-xs border-t-2 border-[#CAD5E2]">
                   <td
                     colSpan={(design.showSerialColumn ? 1 : 0) + 1 + (design.showHsnColumn ? 1 : 0)}
-                    className="py-2 px-3 text-right border-r border-slate-300"
+                    className="py-2 px-3 text-center border-r border-[#CAD5E2]"
                   >
                     Total
                   </td>
-                  <td className="py-2 px-2 text-center border-r border-slate-300">
+                  <td className="py-2 px-2 text-center border-r border-[#CAD5E2]">
                     {totalQuantity}
                   </td>
                   {design.showUnitColumn && (
-                    <td className="py-2 px-2 text-center border-r border-slate-300">
+                    <td className="py-2 px-2 text-center border-r border-[#CAD5E2]">
                       Pcs
                     </td>
                   )}
                   {design.showDiscountColumn && (
-                    <td className="border-r border-slate-300"></td>
+                    <td className="border-r border-[#CAD5E2]"></td>
                   )}
-                  <td className="border-r border-slate-300"></td>
+                  <td className="border-r border-[#CAD5E2]"></td>
                   <td className="py-2 px-3 text-right text-slate-900">
                     {formatCurrency(invoice.subtotal)}
                   </td>
@@ -755,36 +857,35 @@ export default function InvoicePrintView({
           </div>
 
           {/* Amount in words and Financial summary */}
-          <div className="grid grid-cols-12 gap-4 py-2 border-t border-b border-slate-200">
+          <div className="grid grid-cols-12 gap-4 py-2 border-t border-b border-[#CAD5E2]">
             {/* Amount In Words & Optional Bank Info */}
             <div className="col-span-7 pr-4">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                Invoice Amount In Words:
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                INVOICE AMOUNT IN WORDS:
               </div>
-              <div className="font-bold text-slate-800 text-sm italic bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+              <div className="font-bold text-slate-800 text-sm italic bg-[#F8FAFC] p-2.5 rounded-lg border border-[#CAD5E2]">
                 {numberToWords(grandTotal)}
               </div>
 
               {/* Quality Guarantee Box */}
-              <div className="mt-3 p-2.5 bg-blue-50/60 rounded-lg border border-blue-200 text-xs text-slate-700">
-                <span className="font-bold text-indigo-900 block mb-0.5">Description & Condition:</span>
+              <div className="mt-3 p-2.5 bg-[#F5FAFF] rounded-lg border border-[#BFDBFE] text-xs text-slate-700">
+                <span className="font-bold text-[#2563EB] block mb-0.5">Description & Condition:</span>
                 {invoice.notes || "Professionally refurbished, fully tested, and ready to use. Clean, reliable, and backed by quality service."}
               </div>
 
               {/* Bank & UPI Details (Side Position) */}
               {design.bankDetailsPosition === 'left' && (
-                <div className="mt-3 flex items-start gap-4 p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+                <div className="mt-3 flex items-start gap-4 p-2.5 bg-[#F8FAFC] rounded-lg border border-[#CAD5E2] text-xs">
                   <div className="flex-1 space-y-0.5">
                     <span
-                      className="font-bold block mb-1"
-                      style={{ color: design.primaryColor }}
+                      className="font-bold block mb-1 text-[#4257B8]"
                     >
                       Bank & Payment Details:
                     </span>
                     <div>Bank Name: <span className="font-medium text-slate-800">{business.bankName}</span></div>
                     <div>Account No.: <span className="font-mono font-medium text-slate-800">{business.accountNumber}</span></div>
                     <div>IFSC Code: <span className="font-mono font-medium text-slate-800">{business.ifscCode}</span></div>
-                    <div>UPI ID: <span className="font-mono font-bold text-indigo-700">{business.upiId}</span></div>
+                    <div>UPI ID: <span className="font-mono font-bold text-[#4257B8]">{business.upiId}</span></div>
                   </div>
                   {design.showUpiQrCode && (
                     <div className="text-center shrink-0">
@@ -793,7 +894,7 @@ export default function InvoicePrintView({
                         crossOrigin="anonymous"
                         alt="UPI QR Code"
                         style={{ width: `${design.qrCodeSize}px`, height: `${design.qrCodeSize}px` }}
-                        className="rounded border border-slate-300 p-0.5 bg-white object-contain"
+                        className="rounded border border-[#CAD5E2] p-0.5 bg-white object-contain"
                       />
                       <span className="text-[10px] text-slate-500 block mt-0.5">Scan & Pay</span>
                     </div>
@@ -817,7 +918,11 @@ export default function InvoicePrintView({
               {(() => {
                 const isNoTax = currentInvoice.invoiceType === 'BILL_OF_SUPPLY' || 
                                 currentInvoice.invoiceType === 'NON_GST' || 
-                                currentInvoice.taxConfiguration === 'NONE';
+                                currentInvoice.invoiceType === 'PROFORMA' ||
+                                currentInvoice.invoiceType === 'QUOTATION' ||
+                                currentInvoice.invoiceType === 'CASH_MEMO' ||
+                                currentInvoice.taxConfiguration === 'NONE' ||
+                                (!invoice.cgst && !invoice.sgst && !invoice.igst);
                 const isExempt = currentInvoice.taxConfiguration === 'EXEMPT';
                 const isIgst = currentInvoice.taxConfiguration === 'IGST';
 
@@ -876,13 +981,13 @@ export default function InvoicePrintView({
               })()}
               <div className="flex justify-between py-1.5 border-b-2 border-slate-900 text-sm font-bold text-slate-900">
                 <span>Grand Total:</span>
-                <span className="text-base font-black" style={{ color: design.primaryColor }}>
+                <span className="text-base font-black text-[#4257B8]">
                   {formatCurrency(grandTotal)}
                 </span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100">
                 <span className="text-slate-600">Received / Paid:</span>
-                <span className="font-bold text-emerald-700">{formatCurrency(paidAmount)}</span>
+                <span className="font-bold text-[#059669]">{formatCurrency(paidAmount)}</span>
               </div>
               <div className="flex justify-between py-1 text-sm font-bold">
                 <span className={balanceDue > 0 ? 'text-rose-600' : 'text-slate-600'}>
@@ -897,16 +1002,16 @@ export default function InvoicePrintView({
 
           {/* Full Width Bank Details Option */}
           {design.bankDetailsPosition === 'full' && (
-            <div className="my-3 flex items-start gap-4 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+            <div className="my-3 flex items-start gap-4 p-3 bg-[#F8FAFC] rounded-xl border border-[#CAD5E2] text-xs">
               <div className="flex-1 space-y-0.5">
-                <span className="font-bold block mb-1" style={{ color: design.primaryColor }}>
+                <span className="font-bold block mb-1 text-[#4257B8]">
                   Bank & Payment Details:
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   <div>Bank Name: <span className="font-medium text-slate-800">{business.bankName}</span></div>
                   <div>Account No.: <span className="font-mono font-medium text-slate-800">{business.accountNumber}</span></div>
                   <div>IFSC Code: <span className="font-mono font-medium text-slate-800">{business.ifscCode}</span></div>
-                  <div>UPI ID: <span className="font-mono font-bold text-indigo-700">{business.upiId}</span></div>
+                  <div>UPI ID: <span className="font-mono font-bold text-[#4257B8]">{business.upiId}</span></div>
                 </div>
               </div>
               {design.showUpiQrCode && (
@@ -916,7 +1021,7 @@ export default function InvoicePrintView({
                     crossOrigin="anonymous"
                     alt="UPI QR Code"
                     style={{ width: `${design.qrCodeSize}px`, height: `${design.qrCodeSize}px` }}
-                    className="rounded border border-slate-300 p-0.5 bg-white object-contain"
+                    className="rounded border border-[#CAD5E2] p-0.5 bg-white object-contain"
                   />
                   <span className="text-[10px] text-slate-500 block mt-0.5">Scan & Pay</span>
                 </div>
@@ -925,15 +1030,12 @@ export default function InvoicePrintView({
           )}
 
           {/* Terms and Signature Footer */}
-          <div className="grid grid-cols-12 gap-4 pt-4 items-end">
+          <div className="grid grid-cols-12 gap-4 pt-4 items-end border-t border-[#CAD5E2] mt-4">
             {/* Terms and Conditions */}
             {design.termsPosition !== 'hidden' ? (
               <div className="col-span-8 text-[11px] text-slate-600 leading-tight pr-4">
-                <div
-                  className="font-bold uppercase tracking-wider mb-1"
-                  style={{ color: design.primaryColor }}
-                >
-                  Terms and Conditions:
+                <div className="font-bold uppercase tracking-wider mb-1 text-[#4257B8]">
+                  TERMS AND CONDITIONS:
                 </div>
                 <div className="whitespace-pre-line text-slate-600 space-y-0.5">
                   {business.terms}
@@ -953,8 +1055,11 @@ export default function InvoicePrintView({
                   : 'text-right'
               }`}
             >
-              <div className="text-xs font-bold text-slate-800 mb-1">
+              <div className="text-xs font-bold text-slate-800 mb-0.5">
                 For: {business.companyName}
+              </div>
+              <div className="text-[10px] text-slate-500 mb-1">
+                Ashirwad Technologies
               </div>
               {design.showSignatureImage && (
                 <div
@@ -976,14 +1081,13 @@ export default function InvoicePrintView({
                 </div>
               )}
               <div
-                className={`text-xs font-bold text-slate-800 border-t pt-1 mt-1 ${
+                className={`text-xs font-bold text-slate-800 border-t border-[#CAD5E2] pt-1 mt-1 ${
                   design.signatoryPosition === 'left'
                     ? 'text-left'
                     : design.signatoryPosition === 'center'
                     ? 'text-center'
                     : 'text-right'
                 }`}
-                style={{ borderColor: `${design.primaryColor}50` }}
               >
                 {design.signatoryTitle || 'Authorized Signatory'}
               </div>
@@ -991,7 +1095,7 @@ export default function InvoicePrintView({
           </div>
 
           {/* Footer Note */}
-          <div className="mt-6 pt-2 border-t border-slate-200 text-center text-[10px] text-slate-400">
+          <div className="mt-6 pt-2 border-t border-[#CAD5E2] text-center text-[10px] text-slate-400">
             {design.footerText || business.footer}
           </div>
         </div>
@@ -1083,6 +1187,27 @@ export default function InvoicePrintView({
           </div>
         </div>
       )}
+
+      {/* Invoice Image Export Modal */}
+      <InvoiceImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        invoice={currentInvoice}
+        settings={business}
+        onShareWhatsApp={() => {
+          setIsImageModalOpen(false);
+          setIsWhatsAppOpen(true);
+        }}
+      />
+
+      {/* Image Copied Toast Notification */}
+      {imageCopied && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/60 flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150">
+          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>Invoice image copied to clipboard! Ready to paste into WhatsApp Web or Email.</span>
+        </div>
+      )}
     </div>
   );
 }
+

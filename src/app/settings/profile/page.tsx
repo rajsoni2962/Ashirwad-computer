@@ -22,7 +22,7 @@ export default function BusinessProfilePage() {
     address: 'Ashraya 10, GST compound, new ranip, Ahmedabad 382470.',
     phone: '9662278994',
     email: 'rajsoni2962@gmail.com',
-    gstin: '24AANPA0000A1Z5',
+    gstin: '',
     state: 'Gujarat',
     stateCode: '24',
     bankName: 'State Bank of India',
@@ -31,6 +31,7 @@ export default function BusinessProfilePage() {
     upiId: '9662278994@upi',
   });
 
+  const [isGstRegistered, setIsGstRegistered] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -41,7 +42,10 @@ export default function BusinessProfilePage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
-          setFormData((prev) => ({ ...prev, ...data.data }));
+          const rawGstin = data.data.gstin || '';
+          const hasGstin = Boolean(rawGstin && rawGstin.trim() !== '' && rawGstin !== 'null');
+          setFormData((prev) => ({ ...prev, ...data.data, gstin: hasGstin ? rawGstin : '' }));
+          setIsGstRegistered(hasGstin);
         }
       })
       .catch(console.error)
@@ -55,10 +59,14 @@ export default function BusinessProfilePage() {
     setErrorMsg('');
 
     try {
+      const payload = {
+        ...formData,
+        gstin: isGstRegistered ? (formData.gstin?.trim() || '') : '',
+      };
       const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.success) {
@@ -80,10 +88,10 @@ export default function BusinessProfilePage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
             <Building2 className="w-6 h-6 text-amber-500" />
-            Business Profile & GST Settings
+            Business Profile & Details
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Configure your enterprise name, registered address, GSTIN, and banking details.
+            Configure your enterprise name, address, and banking details. GSTIN is optional.
           </p>
         </div>
 
@@ -181,16 +189,7 @@ export default function BusinessProfilePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">GSTIN Number</label>
-                  <input
-                    type="text"
-                    value={formData.gstin}
-                    onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
-                    className="w-full px-3.5 py-2.5 text-sm uppercase font-mono bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white"
-                  />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">State</label>
                   <input
@@ -209,6 +208,49 @@ export default function BusinessProfilePage() {
                     className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white"
                   />
                 </div>
+              </div>
+
+              {/* Optional GSTIN Configuration - Hidden When Not Configured */}
+              <div className="pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div>
+                    <span className="text-xs font-bold text-slate-800">GST Registration (Optional)</span>
+                    <p className="text-[11px] text-slate-500">
+                      {isGstRegistered
+                        ? 'GSTIN enabled and configured for this business profile.'
+                        : 'Business is not GST-registered. GSTIN is hidden from invoices and documents.'}
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isGstRegistered}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setIsGstRegistered(checked);
+                        if (!checked) {
+                          setFormData({ ...formData, gstin: '' });
+                        }
+                      }}
+                      className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                    />
+                  </label>
+                </div>
+
+                {isGstRegistered && (
+                  <div className="mt-3">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      GSTIN Number (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.gstin}
+                      onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
+                      placeholder="Enter 15-digit GSTIN if registered"
+                      className="w-full px-3.5 py-2.5 text-sm uppercase font-mono bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

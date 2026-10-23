@@ -848,16 +848,18 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Banking & GST Information */}
+          {/* Banking Details */}
           <div className="flex items-start gap-3">
             <div className="p-2.5 rounded-2xl bg-purple-50 text-purple-600 shrink-0">
               <CreditCard className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h4 className="font-bold text-sm text-slate-900">Official Banking & GST</h4>
-              <p className="text-xs text-slate-600">
-                GSTIN: <strong className="text-slate-900 font-mono">{settings?.gstin || '24AANPA0000A1Z5'}</strong>
-              </p>
+              <h4 className="font-bold text-sm text-slate-900">Official Banking & Details</h4>
+              {settings?.gstin && settings.gstin.trim() !== '' && settings.gstin !== 'null' ? (
+                <p className="text-xs text-slate-600">
+                  GSTIN: <strong className="text-slate-900 font-mono">{settings.gstin}</strong>
+                </p>
+              ) : null}
               <p className="text-xs text-slate-600">
                 Bank: {settings?.bankName || 'State Bank of India'} (A/C: {settings?.accountNumber || '39485720194'})
               </p>

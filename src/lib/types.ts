@@ -5,7 +5,7 @@ export interface CompanySettings {
   address: string;
   phone: string;
   email: string;
-  gstin: string;
+  gstin?: string | null;
   state: string;
   stateCode: string;
   bankName: string;

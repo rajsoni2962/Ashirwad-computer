@@ -27,7 +27,7 @@ async function main() {
       address: 'Ashraya 10, GST compound, new ranip, Ahmedabad 382470.',
       phone: '9662278994',
       email: 'rajsoni2962@gmail.com',
-      gstin: '24AANPA0000A1Z5',
+      gstin: '',
       state: 'Gujarat',
       stateCode: '24',
       bankName: 'State Bank of India',

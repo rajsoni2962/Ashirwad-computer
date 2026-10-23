@@ -114,9 +114,85 @@ export async function DELETE(
     if (auth.errorResponse) return auth.errorResponse;
 
     const { id } = await params;
-    await db.customer.delete({ where: { id } });
-    return NextResponse.json({ success: true, message: 'Customer deleted successfully' });
+
+    const customer = await db.customer.findUnique({ where: { id } });
+    if (!customer) {
+      return NextResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const isCascade = searchParams.get('cascade') === 'true';
+
+    // Check existing customer references
+    const [invoiceCount, paymentCount, serialCount] = await Promise.all([
+      db.invoice.count({ where: { customerId: id } }),
+      db.payment.count({ where: { customerId: id } }),
+      db.serialNumber.count({ where: { customerId: id } }),
+    ]);
+
+    if (isCascade) {
+      // 1. Unlink or delete dependent records
+      await db.serialNumber.updateMany({
+        where: { customerId: id },
+        data: { customerId: null },
+      });
+
+      // 2. Find and delete invoices & their items/logs
+      const customerInvoices = await db.invoice.findMany({
+        where: { customerId: id },
+        select: { id: true },
+      });
+      const invIds = customerInvoices.map((inv) => inv.id);
+
+      if (invIds.length > 0) {
+        await db.invoiceShareLog.deleteMany({ where: { invoiceId: { in: invIds } } });
+        await db.invoiceRevisionAudit.deleteMany({ where: { invoiceId: { in: invIds } } });
+        await db.payment.deleteMany({ where: { invoiceId: { in: invIds } } });
+        await db.serialNumber.updateMany({
+          where: { salesInvoiceId: { in: invIds } },
+          data: { salesInvoiceId: null },
+        });
+        await db.invoiceItem.deleteMany({ where: { invoiceId: { in: invIds } } });
+        await db.invoice.deleteMany({ where: { id: { in: invIds } } });
+      }
+
+      // 3. Delete any standalone customer payments
+      await db.payment.deleteMany({ where: { customerId: id } });
+
+      // 4. Finally hard delete customer
+      await db.customer.delete({ where: { id } });
+      return NextResponse.json({
+        success: true,
+        message: 'Customer and all associated records permanently purged.',
+      });
+    }
+
+    // Standard Delete: If unreferenced, hard delete cleanly
+    if (invoiceCount === 0 && paymentCount === 0 && serialCount === 0) {
+      await db.customer.delete({ where: { id } });
+      return NextResponse.json({
+        success: true,
+        message: 'Customer deleted successfully.',
+      });
+    }
+
+    // If referenced by invoices or payments, soft-delete (archive) to maintain legal audit trail
+    await db.customer.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        deletedBy: auth.user.username || 'admin',
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      archived: true,
+      message: `Customer archived and removed from active list (${invoiceCount} historical invoice(s) safely preserved).`,
+    });
   } catch (error: any) {
+    console.error('Customer DELETE error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

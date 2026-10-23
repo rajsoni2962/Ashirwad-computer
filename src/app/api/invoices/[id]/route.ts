@@ -263,8 +263,8 @@ export async function PUT(
         }
       }
 
-      const targetInvoiceType = invoiceType || existingInvoice.invoiceType || 'TAX_INVOICE';
-      const targetTaxConfig = taxConfiguration || existingInvoice.taxConfiguration || 'CGST_SGST';
+      const targetInvoiceType = invoiceType || existingInvoice.invoiceType || 'NON_GST';
+      const targetTaxConfig = taxConfiguration || existingInvoice.taxConfiguration || 'NONE';
 
       // 2. Reconcile physical inventory and serial numbers
       if (Array.isArray(items) && items.length > 0) {
@@ -358,7 +358,7 @@ export async function PUT(
             const warranty = prod?.warranty || it.warranty || '6 Months';
             const rate = parseFloat(it.rate) || 0;
             const disc = parseFloat(it.discount) || 0;
-            const gstPct = parseFloat(it.gstPercent) || 18;
+            const gstPct = it.gstPercent !== undefined ? parseFloat(it.gstPercent) : 0;
             const taxable = parseFloat(it.taxableAmount) || 0;
             const gst = parseFloat(it.gstAmount) || 0;
             const itemTotal = parseFloat(it.total) || 0;

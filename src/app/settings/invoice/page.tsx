@@ -204,7 +204,7 @@ export default function InvoiceDesignerPage() {
       phone: '9825100000',
       email: 'aditi.patel@gmail.com',
       address: 'B-402, Shivalik High Street, Near Judges Bungalow, Bodakdev, Ahmedabad',
-      gstin: '24AAACP1234Q1Z1',
+      gstin: '',
       state: 'Gujarat',
       stateCode: '24',
     },

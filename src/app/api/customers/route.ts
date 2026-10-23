@@ -6,19 +6,31 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
+    const status = searchParams.get('status') || 'active'; // 'active' (default), 'archived', 'all'
+
+    const whereClause: any = {};
+    if (status === 'archived') {
+      whereClause.isDeleted = true;
+    } else if (status === 'active') {
+      whereClause.isDeleted = false;
+    }
+
+    if (search) {
+      whereClause.AND = [
+        {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { phone: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+            { gstin: { contains: search, mode: 'insensitive' } },
+            { address: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+      ];
+    }
 
     const customers = await db.customer.findMany({
-      where: search
-        ? {
-            OR: [
-              { name: { contains: search, mode: 'insensitive' } },
-              { phone: { contains: search, mode: 'insensitive' } },
-              { email: { contains: search, mode: 'insensitive' } },
-              { gstin: { contains: search, mode: 'insensitive' } },
-              { address: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : undefined,
+      where: whereClause,
       orderBy: { name: 'asc' },
       include: {
         _count: {

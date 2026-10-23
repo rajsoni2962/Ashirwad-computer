@@ -47,18 +47,17 @@ export default function EditSalesInvoicePage() {
   const [notes, setNotes] = useState('');
   const [terms, setTerms] = useState('');
 
-  const isNoTax = invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST' || taxConfiguration === 'NONE';
+  const isNoTax = invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST' || invoiceType === 'PROFORMA' || invoiceType === 'QUOTATION' || invoiceType === 'CASH_MEMO' || taxConfiguration === 'NONE';
   const isExempt = taxConfiguration === 'EXEMPT';
   const isIgst = taxConfiguration === 'IGST';
 
   const handleInvoiceTypeChange = (newType: string) => {
     setInvoiceType(newType);
-    if (newType === 'BILL_OF_SUPPLY' || newType === 'NON_GST') {
+    if (newType === 'BILL_OF_SUPPLY' || newType === 'NON_GST' || newType === 'PROFORMA' || newType === 'QUOTATION' || newType === 'CASH_MEMO') {
       setTaxConfiguration('NONE');
-    } else if (newType === 'CASH_MEMO') {
+    }
+    if (newType === 'CASH_MEMO') {
       setPaymentMode('Cash');
-    } else if (taxConfiguration === 'NONE') {
-      setTaxConfiguration('CGST_SGST');
     }
   };
 
@@ -134,7 +133,7 @@ export default function EditSalesInvoicePage() {
               unit: it.unit || 'Pcs',
               rate: it.rate || 0,
               discount: it.discount || 0,
-              gstPercent: it.gstPercent !== undefined ? it.gstPercent : 18,
+              gstPercent: it.gstPercent !== undefined ? it.gstPercent : 0,
               taxableAmount: it.taxableAmount || 0,
               gstAmount: it.gstAmount || 0,
               total: it.total || 0,
@@ -157,7 +156,7 @@ export default function EditSalesInvoicePage() {
                     unit: 'Pcs',
                     rate: 0,
                     discount: 0,
-                    gstPercent: 18,
+                    gstPercent: 0,
                     taxableAmount: 0,
                     gstAmount: 0,
                     total: 0,
@@ -199,14 +198,19 @@ export default function EditSalesInvoicePage() {
     item.description = prod.name;
     item.hsn = prod.hsn || (isService ? '9987' : '8471');
     item.rate = prod.sellingPrice || 0;
-    item.gstPercent = prod.gstPercent !== undefined ? prod.gstPercent : 18;
+    item.gstPercent = prod.gstPercent !== undefined ? prod.gstPercent : 0;
     item.serialNumber = '';
     item.availableSerials = isService ? [] : (prod.serialNumbers || []);
 
     const qty = item.quantity || 1;
+    const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (item.gstPercent || 0);
     const baseAmount = Math.max(0, qty * item.rate - (item.discount || 0));
-    const taxable = round2(baseAmount / (1 + item.gstPercent / 100));
-    const gstAmt = round2(baseAmount - taxable);
+    let taxable = baseAmount;
+    let gstAmt = 0;
+    if (!isNoTax && !isExempt && taxConfiguration !== 'NONE' && effectiveGst > 0) {
+      taxable = round2(baseAmount / (1 + effectiveGst / 100));
+      gstAmt = round2(baseAmount - taxable);
+    }
 
     item.taxableAmount = taxable;
     item.gstAmount = gstAmt;
@@ -223,12 +227,12 @@ export default function EditSalesInvoicePage() {
     const qty = parseFloat(it.quantity) || 1;
     const rate = parseFloat(it.rate) || 0;
     const disc = parseFloat(it.discount) || 0;
-    const effectiveGst = (isNoTax || isExempt) ? 0 : (parseFloat(it.gstPercent) || 18);
+    const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (parseFloat(it.gstPercent) || 0);
 
     const baseAmount = Math.max(0, qty * rate - disc);
     let taxable = baseAmount;
     let gstAmt = 0;
-    if (!isNoTax && !isExempt && effectiveGst > 0) {
+    if (!isNoTax && !isExempt && taxConfiguration !== 'NONE' && effectiveGst > 0) {
       taxable = round2(baseAmount / (1 + effectiveGst / 100));
       gstAmt = round2(baseAmount - taxable);
     }
@@ -253,7 +257,7 @@ export default function EditSalesInvoicePage() {
         unit: 'Pcs',
         rate: 0,
         discount: 0,
-        gstPercent: 18,
+        gstPercent: 0,
         taxableAmount: 0,
         gstAmount: 0,
         total: 0,
@@ -354,9 +358,9 @@ export default function EditSalesInvoicePage() {
           unit: it.unit,
           rate: it.rate,
           discount: it.discount,
-          gstPercent: (isNoTax || isExempt) ? 0 : it.gstPercent,
-          taxableAmount: it.taxableAmount,
-          gstAmount: it.gstAmount,
+          gstPercent: (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (parseFloat(it.gstPercent) || 0),
+          taxableAmount: (isNoTax || isExempt || taxConfiguration === 'NONE') ? it.total : it.taxableAmount,
+          gstAmount: (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : it.gstAmount,
           total: it.total,
         })),
       };

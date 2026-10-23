@@ -126,7 +126,7 @@ export async function POST(request: Request) {
       address: settings?.address || 'Ashraya 10, GST compound, new ranip, Ahmedabad 382470.',
       phone: settings?.phone || '9662278994',
       email: settings?.email || 'rajsoni2962@gmail.com',
-      gstin: settings?.gstin || '24AANPA0000A1Z5',
+      gstin: (settings?.gstin && settings?.gstin !== 'null') ? settings.gstin : '',
       state: settings?.state || 'Gujarat',
       stateCode: settings?.stateCode || '24',
       bankName: settings?.bankName || 'State Bank of India',
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
       const warranty = prod?.warranty || it.warranty || '6 Months';
       const rate = parseFloat(it.rate) || 0;
       const disc = parseFloat(it.discount) || 0;
-      const gstPct = parseFloat(it.gstPercent) || 18;
+      const gstPct = it.gstPercent !== undefined ? parseFloat(it.gstPercent) : 0;
       const taxable = parseFloat(it.taxableAmount) || 0;
       const gst = parseFloat(it.gstAmount) || 0;
       const itemTotal = parseFloat(it.total) || 0;
@@ -229,8 +229,8 @@ export async function POST(request: Request) {
             notes: notes || null,
             terms: terms || settings?.terms || null,
             status: 'Confirmed',
-            invoiceType: invoiceType || 'TAX_INVOICE',
-            taxConfiguration: taxConfiguration || 'CGST_SGST',
+            invoiceType: invoiceType || 'NON_GST',
+            taxConfiguration: taxConfiguration || 'NONE',
             templateVersion: 'v1.0',
             isFinalized: true,
             finalizedAt: invDate,

@@ -16,10 +16,12 @@ import {
   MessageCircle,
   Edit,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  FileImage,
 } from 'lucide-react';
 import { formatCurrency, formatDate, getInvoiceTypeTitle } from '@/lib/utils';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
+import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
 
 export default function AllInvoicesPage() {
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -28,6 +30,7 @@ export default function AllInvoicesPage() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
   const [shareModalInvoice, setShareModalInvoice] = useState<any | null>(null);
+  const [imageModalInvoice, setImageModalInvoice] = useState<any | null>(null);
 
   // Soft Delete State
   const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
@@ -291,6 +294,16 @@ export default function AllInvoicesPage() {
                       </a>
 
                       <button
+                        type="button"
+                        onClick={() => setImageModalInvoice(inv)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition"
+                        title="Download or View invoice as PNG / JPEG image"
+                      >
+                        <FileImage className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Image</span>
+                      </button>
+
+                      <button
                         onClick={() => setShareModalInvoice(inv)}
                         className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition"
                         title="Share on WhatsApp"
@@ -405,6 +418,20 @@ export default function AllInvoicesPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Invoice Image Export Modal */}
+      {imageModalInvoice && (
+        <InvoiceImageModal
+          isOpen={!!imageModalInvoice}
+          onClose={() => setImageModalInvoice(null)}
+          invoice={imageModalInvoice}
+          onShareWhatsApp={() => {
+            const target = imageModalInvoice;
+            setImageModalInvoice(null);
+            setShareModalInvoice(target);
+          }}
+        />
       )}
     </div>
   );

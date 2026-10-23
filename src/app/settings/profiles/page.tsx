@@ -53,6 +53,7 @@ export default function BusinessProfilesPage() {
     authorizedSignatory: '',
     isDefault: false,
   });
+  const [modalHasGstin, setModalHasGstin] = useState(false);
 
   const fetchProfiles = async () => {
     setLoading(true);
@@ -82,7 +83,7 @@ export default function BusinessProfilesPage() {
       address: 'A/1, 902, Ashraya 10, GST compound, New Ranip, Ahmedabad 382470.',
       phone: '9662278994',
       email: 'rajsoni2962@gmail.com',
-      gstin: '24AANPA0000A1Z5',
+      gstin: '',
       state: 'Gujarat',
       stateCode: '24',
       bankName: 'Kotak Mahindra Bank',
@@ -100,6 +101,7 @@ export default function BusinessProfilesPage() {
       authorizedSignatory: 'Ashirwad Technologies\nProprietor',
       isDefault: profiles.length === 0,
     });
+    setModalHasGstin(false);
     setErrorMsg('');
     setShowModal(true);
   };
@@ -131,6 +133,8 @@ export default function BusinessProfilesPage() {
       authorizedSignatory: p.authorizedSignatory || '',
       isDefault: Boolean(p.isDefault),
     });
+    const hasValidGstin = Boolean(p.gstin && p.gstin.trim() !== '' && p.gstin !== 'null');
+    setModalHasGstin(hasValidGstin);
     setErrorMsg('');
     setShowModal(true);
   };
@@ -145,10 +149,15 @@ export default function BusinessProfilesPage() {
       const url = editingProfile ? `/api/business-profiles/${editingProfile.id}` : '/api/business-profiles';
       const method = editingProfile ? 'PUT' : 'POST';
 
+      const payload = {
+        ...formData,
+        gstin: modalHasGstin ? (formData.gstin?.trim() || '') : '',
+      };
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -308,7 +317,7 @@ export default function BusinessProfilesPage() {
                   </div>
                   <div className="flex items-center gap-4 pt-1">
                     <span className="px-2 py-0.5 bg-slate-100 rounded text-[11px] font-mono font-bold text-slate-700">
-                      GST: {p.gstin || 'Unregistered'}
+                      GST: {p.gstin && p.gstin.trim() !== '' && p.gstin !== 'null' ? p.gstin : 'Unregistered / Non-GST'}
                     </span>
                     <span className="px-2 py-0.5 bg-amber-50 rounded text-[11px] font-mono font-bold text-amber-800">
                       Prefix: {p.invoicePrefix} (Next #{p.nextInvoiceNumber})
@@ -413,16 +422,6 @@ export default function BusinessProfilesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">GSTIN</label>
-                    <input
-                      type="text"
-                      value={formData.gstin}
-                      onChange={(e) => setFormData({ ...formData, gstin: e.target.value })}
-                      placeholder="24AANPA0000A1Z5"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs uppercase"
-                    />
-                  </div>
-                  <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">State / Code</label>
                     <input
                       type="text"
@@ -432,6 +431,43 @@ export default function BusinessProfilesPage() {
                       className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs"
                     />
                   </div>
+                </div>
+
+                {/* Optional GSTIN Section - Hidden When Not Configured */}
+                <div className="pt-2 border-t border-slate-100">
+                  <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <div>
+                      <span className="text-xs font-bold text-slate-800">GST Registration (Optional)</span>
+                      <p className="text-[11px] text-slate-500">
+                        {modalHasGstin
+                          ? 'Entity has a valid GSTIN.'
+                          : 'Entity is unregistered / non-GST. GSTIN is hidden from invoices.'}
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={modalHasGstin}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setModalHasGstin(checked);
+                        if (!checked) setFormData({ ...formData, gstin: '' });
+                      }}
+                      className="w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                    />
+                  </div>
+
+                  {modalHasGstin && (
+                    <div className="mt-2.5">
+                      <label className="block text-xs font-bold text-slate-700 mb-1">GSTIN Number (Optional)</label>
+                      <input
+                        type="text"
+                        value={formData.gstin}
+                        onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
+                        placeholder="Enter 15-digit GSTIN if registered"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs uppercase font-mono"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

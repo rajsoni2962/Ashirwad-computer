@@ -18,12 +18,26 @@ import {
   Eye,
   Download,
   Wrench,
+  FileClock,
+  BookmarkCheck,
+  Sparkles,
+  FileImage,
 } from 'lucide-react';
 import { formatCurrency, numberToWords, getInvoiceTypeTitle, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
+import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
 import CustomerSearchSelect from '@/components/common/CustomerSearchSelect';
 import ProductSearchSelect from '@/components/common/ProductSearchSelect';
+import {
+  InvoiceDraft,
+  getLocalDrafts,
+  saveLocalDraft,
+  getActiveDraft,
+  deleteLocalDraft,
+  clearActiveDraftId,
+} from '@/lib/invoiceDraftManager';
+import InvoiceDraftsModal from '@/components/invoice/InvoiceDraftsModal';
 
 export default function NewSalesInvoicePage() {
   const router = useRouter();
@@ -34,8 +48,8 @@ export default function NewSalesInvoicePage() {
   const [settings, setSettings] = useState<any>(null);
 
   // Document Type & Tax Configuration
-  const [invoiceType, setInvoiceType] = useState('TAX_INVOICE');
-  const [taxConfiguration, setTaxConfiguration] = useState('CGST_SGST');
+  const [invoiceType, setInvoiceType] = useState('NON_GST');
+  const [taxConfiguration, setTaxConfiguration] = useState('NONE');
 
   // Form State
   const [customerId, setCustomerId] = useState('');
@@ -47,18 +61,17 @@ export default function NewSalesInvoicePage() {
   const [notes, setNotes] = useState('Professionally refurbished, fully tested, and ready to use. Clean, reliable, and backed by quality service.');
   const [terms, setTerms] = useState('');
 
-  const isNoTax = invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST' || taxConfiguration === 'NONE';
+  const isNoTax = invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST' || invoiceType === 'PROFORMA' || invoiceType === 'QUOTATION' || invoiceType === 'CASH_MEMO' || taxConfiguration === 'NONE';
   const isExempt = taxConfiguration === 'EXEMPT';
   const isIgst = taxConfiguration === 'IGST';
 
   const handleInvoiceTypeChange = (newType: string) => {
     setInvoiceType(newType);
-    if (newType === 'BILL_OF_SUPPLY' || newType === 'NON_GST') {
+    if (newType === 'BILL_OF_SUPPLY' || newType === 'NON_GST' || newType === 'PROFORMA' || newType === 'QUOTATION' || newType === 'CASH_MEMO') {
       setTaxConfiguration('NONE');
-    } else if (newType === 'CASH_MEMO') {
+    }
+    if (newType === 'CASH_MEMO') {
       setPaymentMode('Cash');
-    } else if (taxConfiguration === 'NONE') {
-      setTaxConfiguration('CGST_SGST');
     }
   };
 
@@ -93,7 +106,7 @@ export default function NewSalesInvoicePage() {
       unit: 'Pcs',
       rate: 0,
       discount: 0,
-      gstPercent: 18,
+      gstPercent: 0,
       taxableAmount: 0,
       gstAmount: 0,
       total: 0,
@@ -114,8 +127,141 @@ export default function NewSalesInvoicePage() {
   // Post-Save Invoice State
   const [createdInvoice, setCreatedInvoice] = useState<any | null>(null);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  // Draft Management State
+  const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
+  const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>([]);
+  const [showDraftsModal, setShowDraftsModal] = useState(false);
+  const [pendingDraftNotice, setPendingDraftNotice] = useState<InvoiceDraft | null>(null);
+  const [draftToast, setDraftToast] = useState<string | null>(null);
+  const [lastAutoSaveTime, setLastAutoSaveTime] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setDraftToast(msg);
+    setTimeout(() => setDraftToast(null), 3500);
+  };
+
+  const handleResumeDraft = (draft: InvoiceDraft) => {
+    setCurrentDraftId(draft.id);
+    setInvoiceType(draft.invoiceType || 'TAX_INVOICE');
+    setTaxConfiguration(draft.taxConfiguration || 'CGST_SGST');
+    setCustomerId(draft.customerId || '');
+    setDate(draft.date || new Date().toISOString().split('T')[0]);
+    setDueDate(draft.dueDate || '');
+    setPaymentMode(draft.paymentMode || 'Cash');
+    setPaidAmount(draft.paidAmount !== undefined ? String(draft.paidAmount) : '');
+    setPaymentReference(draft.paymentReference || '');
+    if (draft.notes !== undefined) setNotes(draft.notes);
+    if (draft.terms !== undefined) setTerms(draft.terms);
+    if (draft.overallDiscountPercent !== undefined) setOverallDiscountPercent(String(draft.overallDiscountPercent));
+
+    if (Array.isArray(draft.items) && draft.items.length > 0) {
+      setItems(draft.items);
+    }
+
+    setPendingDraftNotice(null);
+    setShowDraftsModal(false);
+    showToast(`Resumed draft for ${draft.customerName || 'Customer'}!`);
+  };
+
+  const handleManualSaveDraft = () => {
+    const selectedCust = customers.find((c) => c.id === customerId);
+    const saved = saveLocalDraft({
+      id: currentDraftId || undefined,
+      invoiceType,
+      taxConfiguration,
+      customerId,
+      customerName: selectedCust?.name || '',
+      customerPhone: selectedCust?.phone || '',
+      date,
+      dueDate,
+      paymentMode,
+      paidAmount,
+      paymentReference,
+      notes,
+      terms,
+      overallDiscountPercent,
+      items,
+      grandTotal,
+    });
+    setCurrentDraftId(saved.id);
+    setSavedDrafts(getLocalDrafts());
+    setPendingDraftNotice(null);
+    showToast('Half-filled bill saved to drafts! You can resume anytime.');
+  };
+
+  const handleStartFresh = () => {
+    if (currentDraftId) {
+      deleteLocalDraft(currentDraftId);
+      clearActiveDraftId();
+      setCurrentDraftId(null);
+    }
+    setPendingDraftNotice(null);
+    setCustomerId('');
+    setInvoiceType('TAX_INVOICE');
+    setTaxConfiguration('CGST_SGST');
+    setDate(new Date().toISOString().split('T')[0]);
+    setDueDate('');
+    setPaymentMode('Cash');
+    setPaidAmount('');
+    setPaymentReference('');
+    setOverallDiscountPercent('0');
+    setItems([
+      {
+        productId: '',
+        product: null,
+        isService: false,
+        serialNumber: '',
+        description: '',
+        hsn: '8471',
+        quantity: 1,
+        unit: 'Pcs',
+        rate: 0,
+        discount: 0,
+        gstPercent: 0,
+        taxableAmount: 0,
+        gstAmount: 0,
+        total: 0,
+        availableSerials: [],
+      },
+    ]);
+    setSavedDrafts(getLocalDrafts());
+    setShowDraftsModal(false);
+    showToast('Started fresh bill.');
+  };
 
   useEffect(() => {
+    // Load local drafts on mount
+    const drafts = getLocalDrafts();
+    setSavedDrafts(drafts);
+
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCustId = urlParams.get('customerId');
+      const urlDraftId = urlParams.get('draftId');
+
+      if (urlDraftId) {
+        const found = drafts.find((d) => d.id === urlDraftId);
+        if (found) {
+          handleResumeDraft(found);
+        }
+      } else if (urlCustId) {
+        setCustomerId(urlCustId);
+      } else {
+        const active = getActiveDraft();
+        if (active) {
+          const hasData = Boolean(
+            active.customerId ||
+            (active.items && active.items.some((it) => it.productId || (it.description && it.description.trim() !== '') || it.rate > 0))
+          );
+          if (hasData) {
+            setPendingDraftNotice(active);
+          }
+        }
+      }
+    }
+
     fetch('/api/customers')
       .then((r) => r.json())
       .then((res) => {
@@ -166,18 +312,18 @@ export default function NewSalesInvoicePage() {
     item.description = prod.name;
     item.hsn = prod.hsn || (isService ? '9987' : '8471');
     item.rate = prod.sellingPrice || 0;
-    item.gstPercent = prod.gstPercent !== undefined ? prod.gstPercent : 18;
+    item.gstPercent = prod.gstPercent !== undefined ? prod.gstPercent : 0;
     item.serialNumber = '';
 
     // Filter available serial numbers for physical products
     item.availableSerials = isService ? [] : (prod.serialNumbers || []);
 
     const qty = item.quantity || 1;
-    const effectiveGst = (isNoTax || isExempt) ? 0 : (item.gstPercent || 18);
+    const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (item.gstPercent || 0);
     const baseAmount = Math.max(0, qty * item.rate - (item.discount || 0));
     let taxable = baseAmount;
     let gstAmt = 0;
-    if (!isNoTax && !isExempt && effectiveGst > 0) {
+    if (!isNoTax && !isExempt && taxConfiguration !== 'NONE' && effectiveGst > 0) {
       taxable = round2(baseAmount / (1 + effectiveGst / 100));
       gstAmt = round2(baseAmount - taxable);
     }
@@ -197,12 +343,12 @@ export default function NewSalesInvoicePage() {
     const qty = parseFloat(it.quantity) || 1;
     const rate = parseFloat(it.rate) || 0;
     const disc = parseFloat(it.discount) || 0;
-    const effectiveGst = (isNoTax || isExempt) ? 0 : (parseFloat(it.gstPercent) || 18);
+    const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (parseFloat(it.gstPercent) || 0);
 
     const baseAmount = Math.max(0, qty * rate - disc);
     let taxable = baseAmount;
     let gstAmt = 0;
-    if (!isNoTax && !isExempt && effectiveGst > 0) {
+    if (!isNoTax && !isExempt && taxConfiguration !== 'NONE' && effectiveGst > 0) {
       taxable = round2(baseAmount / (1 + effectiveGst / 100));
       gstAmt = round2(baseAmount - taxable);
     }
@@ -227,7 +373,7 @@ export default function NewSalesInvoicePage() {
         unit: 'Pcs',
         rate: 0,
         discount: 0,
-        gstPercent: 18,
+        gstPercent: 0,
         taxableAmount: 0,
         gstAmount: 0,
         total: 0,
@@ -307,6 +453,66 @@ export default function NewSalesInvoicePage() {
   const numericPaid = paidAmount === '' ? grandTotal : parseFloat(paidAmount) || 0;
   const balanceDue = Math.max(0, round2(grandTotal - numericPaid));
 
+  // Auto-save effect: debounced automatically when half-filled data changes
+  useEffect(() => {
+    if (createdInvoice) return;
+
+    const hasData = Boolean(
+      customerId ||
+      items.some((it) => it.productId || (it.description && it.description.trim() !== '') || it.rate > 0)
+    );
+
+    if (!hasData) return;
+
+    const timer = setTimeout(() => {
+      const selectedCust = customers.find((c) => c.id === customerId);
+      const saved = saveLocalDraft({
+        id: currentDraftId || undefined,
+        invoiceType,
+        taxConfiguration,
+        customerId,
+        customerName: selectedCust?.name || '',
+        customerPhone: selectedCust?.phone || '',
+        date,
+        dueDate,
+        paymentMode,
+        paidAmount,
+        paymentReference,
+        notes,
+        terms,
+        overallDiscountPercent,
+        items,
+        grandTotal,
+      });
+
+      if (!currentDraftId) {
+        setCurrentDraftId(saved.id);
+      }
+      setSavedDrafts(getLocalDrafts());
+      const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      setLastAutoSaveTime(nowStr);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, [
+    customerId,
+    invoiceType,
+    taxConfiguration,
+    date,
+    dueDate,
+    paymentMode,
+    paidAmount,
+    paymentReference,
+    notes,
+    terms,
+    overallDiscountPercent,
+    items,
+    grandTotal,
+    currentDraftId,
+    customers,
+    createdInvoice,
+  ]);
+
   const handleCreateInvoice = async () => {
     if (!customerId) {
       alert('Please select or add a Customer');
@@ -348,9 +554,9 @@ export default function NewSalesInvoicePage() {
           unit: it.unit,
           rate: it.rate,
           discount: it.discount,
-          gstPercent: (isNoTax || isExempt) ? 0 : it.gstPercent,
-          taxableAmount: it.taxableAmount,
-          gstAmount: it.gstAmount,
+          gstPercent: (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (parseFloat(it.gstPercent) || 0),
+          taxableAmount: (isNoTax || isExempt || taxConfiguration === 'NONE') ? it.total : it.taxableAmount,
+          gstAmount: (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : it.gstAmount,
           total: it.total,
         })),
       };
@@ -363,6 +569,13 @@ export default function NewSalesInvoicePage() {
 
       const json = await res.json();
       if (json.success && json.data) {
+        if (currentDraftId) {
+          deleteLocalDraft(currentDraftId);
+          clearActiveDraftId();
+          setCurrentDraftId(null);
+        }
+        setSavedDrafts(getLocalDrafts());
+        setPendingDraftNotice(null);
         setCreatedInvoice(json.data);
       } else {
         alert(json.error || 'Failed to create invoice');
@@ -378,7 +591,7 @@ export default function NewSalesInvoicePage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/sales/invoices"
@@ -403,7 +616,39 @@ export default function NewSalesInvoicePage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {lastAutoSaveTime && (
+            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl hidden sm:inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Auto-saved {lastAutoSaveTime}
+            </span>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowDraftsModal(true)}
+            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
+            title="View Saved Drafts"
+          >
+            <FileClock className="w-4 h-4 text-amber-600" />
+            <span>Drafts</span>
+            {savedDrafts.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[10px] font-black">
+                {savedDrafts.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleManualSaveDraft}
+            className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
+            title="Save Current Half-Filled Bill as Draft"
+          >
+            <BookmarkCheck className="w-4 h-4 text-amber-700" />
+            <span>Save Draft</span>
+          </button>
+
           <button
             onClick={handleCreateInvoice}
             className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-xs transition inline-flex items-center gap-2"
@@ -413,6 +658,65 @@ export default function NewSalesInvoicePage() {
           </button>
         </div>
       </div>
+
+      {/* Resume Pending Draft Banner */}
+      {pendingDraftNotice && !createdInvoice && (
+        <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <FileClock className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">
+                  Half-Filled Bill Found
+                </span>
+                <span className="text-xs text-amber-800 font-semibold">
+                  Last saved{' '}
+                  {new Date(pendingDraftNotice.updatedAt).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                  })}{' '}
+                  at{' '}
+                  {new Date(pendingDraftNotice.updatedAt).toLocaleTimeString('en-IN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+              <p className="text-sm font-black text-slate-900 mt-1">
+                {pendingDraftNotice.customerName || 'Walk-in Customer'} •{' '}
+                {pendingDraftNotice.items?.length || 0} item(s) •{' '}
+                {formatCurrency(pendingDraftNotice.grandTotal || 0)}
+              </p>
+              <p className="text-xs text-slate-600 mt-0.5">
+                You were working on a bill previously. Would you like to continue from where you left off?
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
+            <button
+              type="button"
+              onClick={() => handleResumeDraft(pendingDraftNotice)}
+              className="flex-1 md:flex-initial px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center justify-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Continue Where I Left</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                deleteLocalDraft(pendingDraftNotice.id);
+                setPendingDraftNotice(null);
+                setSavedDrafts(getLocalDrafts());
+              }}
+              className="flex-1 md:flex-initial px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-300 rounded-xl transition"
+            >
+              Discard Draft
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Main Invoice Form Column */}
@@ -439,12 +743,12 @@ export default function NewSalesInvoicePage() {
                   onChange={(e) => handleInvoiceTypeChange(e.target.value)}
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-indigo-600 focus:bg-white"
                 >
-                  <option value="TAX_INVOICE">Tax Invoice (Standard GST Invoice)</option>
-                  <option value="BILL_OF_SUPPLY">Bill of Supply (Composition / Nil-rated / No Tax)</option>
                   <option value="NON_GST">Non-GST Invoice (Unregistered / Non-taxable Goods)</option>
+                  <option value="BILL_OF_SUPPLY">Bill of Supply (Composition / Nil-rated / No Tax)</option>
                   <option value="PROFORMA">Proforma Invoice (Advance Estimate / Preliminary)</option>
                   <option value="QUOTATION">Quotation / Estimate (Formal Quote - No Stock Decrement)</option>
                   <option value="CASH_MEMO">Cash Memo (Direct Counter Cash Sale Receipt)</option>
+                  <option value="TAX_INVOICE">Tax Invoice (Standard GST Invoice)</option>
                 </select>
                 <p className="text-[11px] text-slate-400 mt-1">
                   {invoiceType === 'QUOTATION'
@@ -968,13 +1272,13 @@ export default function NewSalesInvoicePage() {
                 Share on WhatsApp
               </button>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <Link
                   href={`/sales/invoices/${createdInvoice.id}`}
                   className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
                 >
                   <Eye className="w-4 h-4 text-indigo-600" />
-                  View PDF
+                  View
                 </Link>
                 <a
                   href={`/api/invoices/${createdInvoice.id}/pdf`}
@@ -982,8 +1286,16 @@ export default function NewSalesInvoicePage() {
                   className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
                 >
                   <Download className="w-4 h-4 text-slate-600" />
-                  Download PDF
+                  PDF
                 </a>
+                <button
+                  type="button"
+                  onClick={() => setIsImageModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition shadow-xs"
+                >
+                  <FileImage className="w-4 h-4 text-indigo-600" />
+                  Image
+                </button>
               </div>
 
               <button
@@ -1012,6 +1324,48 @@ export default function NewSalesInvoicePage() {
           }}
         />
       )}
+
+      {/* Invoice Image Export Modal */}
+      {isImageModalOpen && createdInvoice && (
+        <InvoiceImageModal
+          isOpen={isImageModalOpen}
+          onClose={() => setIsImageModalOpen(false)}
+          invoice={{
+            ...createdInvoice,
+            customer: selectedCustomer,
+          }}
+          settings={settings}
+        />
+      )}
+
+      {/* Invoice Drafts Modal */}
+      <InvoiceDraftsModal
+        isOpen={showDraftsModal}
+        onClose={() => setShowDraftsModal(false)}
+        drafts={savedDrafts}
+        activeDraftId={currentDraftId}
+        onResume={handleResumeDraft}
+        onDelete={(id) => {
+          deleteLocalDraft(id);
+          if (currentDraftId === id) {
+            setCurrentDraftId(null);
+          }
+          if (pendingDraftNotice?.id === id) {
+            setPendingDraftNotice(null);
+          }
+          setSavedDrafts(getLocalDrafts());
+        }}
+        onNewBill={handleStartFresh}
+      />
+
+      {/* Draft Notification Toast */}
+      {draftToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/60 flex items-center gap-2.5 animate-in slide-in-from-bottom-3 duration-200">
+          <BookmarkCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{draftToast}</span>
+        </div>
+      )}
     </div>
   );
 }
+

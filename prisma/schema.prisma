@@ -15,7 +15,7 @@ model BusinessSettings {
   address             String   @default("Ashraya 10, GST compound, new ranip, Ahmedabad 382470.")
   phone               String   @default("9662278994")
   email               String   @default("rajsoni2962@gmail.com")
-  gstin               String   @default("24AANPA0000A1Z5")
+  gstin               String   @default("")
   state               String   @default("Gujarat")
   stateCode           String   @default("24")
   bankName            String   @default("State Bank of India")
@@ -49,7 +49,7 @@ model BusinessProfile {
   address             String   @default("Ashraya 10, GST compound, new ranip, Ahmedabad 382470.")
   phone               String   @default("9662278994")
   email               String?  @default("rajsoni2962@gmail.com")
-  gstin               String?  @default("24AANPA0000A1Z5")
+  gstin               String?  @default("")
   state               String   @default("Gujarat")
   stateCode           String   @default("24")
   bankName            String?  @default("Kotak Mahindra Bank")
@@ -91,12 +91,18 @@ model Customer {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
+  // Soft Delete fields
+  isDeleted      Boolean   @default(false)
+  deletedAt      DateTime?
+  deletedBy      String?
+
   invoices       Invoice[]
   payments       Payment[]
   serialNumbers  SerialNumber[]
 
   @@index([phone])
   @@index([name])
+  @@index([isDeleted])
 }
 
 model Supplier {
