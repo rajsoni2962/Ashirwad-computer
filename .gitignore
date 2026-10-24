@@ -47,4 +47,8 @@ next-env.d.ts
 *.db-shm
 prisma/backups/
 prisma/logs/
+backups/
+prisma/generated-test-client/
+prisma/schema.test.prisma
 *.log
+!.env.example
