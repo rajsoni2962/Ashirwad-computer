@@ -37,6 +37,7 @@ const PRODUCTION_HOST_PATTERNS = [
   'railway.app',
   'neon.tech',
   'cockroachlabs.cloud',
+  'mongodb.net',
 ];
 
 /**

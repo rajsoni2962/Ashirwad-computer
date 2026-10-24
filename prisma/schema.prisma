@@ -4,13 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model BusinessSettings {
-  id                  String   @id @default("default")
+  id                  String   @id @default("default") @map("_id")
   companyName         String   @default("ASHIRWAD TECHNOLOGIES")
   tagline             String   @default("Beyond Tech Limits...")
   address             String   @default("Ashraya 10, GST compound, new ranip, Ahmedabad 382470.")
@@ -36,13 +35,13 @@ model BusinessSettings {
   openaiApiKey        String?
   visionProvider      String   @default("gemini")
   visionModel         String   @default("gemini-2.5-flash")
-  invoiceDesign       String?  // JSON configuration for 100% graphic invoice visual designer
+  invoiceDesign       String?
   updatedAt           DateTime @updatedAt
 }
 
 model BusinessProfile {
-  id                  String   @id @default(cuid())
-  name                String   // e.g. "Head Office - Ahmedabad", "Branch 2"
+  id                  String   @id @default(cuid()) @map("_id")
+  name                String
   isDefault           Boolean  @default(false)
   isActive            Boolean  @default(true)
   companyName         String   @default("ASHIRWAD TECHNOLOGIES")
@@ -66,7 +65,7 @@ model BusinessProfile {
   terms               String?
   footer              String?
   authorizedSignatory String?  @default("Ashirwad Technologies\nRaj Soni\nProprietor")
-  invoiceDesign       String?  // JSON for 100% graphic invoice designer
+  invoiceDesign       String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
@@ -78,7 +77,7 @@ model BusinessProfile {
 }
 
 model Customer {
-  id             String    @id @default(cuid())
+  id             String    @id @default(cuid()) @map("_id")
   name           String
   phone          String
   email          String?
@@ -92,7 +91,6 @@ model Customer {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  // Soft Delete fields
   isDeleted      Boolean   @default(false)
   deletedAt      DateTime?
   deletedBy      String?
@@ -107,7 +105,7 @@ model Customer {
 }
 
 model Supplier {
-  id              String     @id @default(cuid())
+  id              String     @id @default(cuid()) @map("_id")
   name            String
   phone           String?
   email           String?
@@ -118,7 +116,7 @@ model Supplier {
   openingBalance  Float      @default(0.0)
   currentBalance  Float      @default(0.0)
   notes           String?
-  invoicePatterns String?    // JSON string of learned supplier invoice patterns & term mappings
+  invoicePatterns String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
@@ -131,9 +129,9 @@ model Supplier {
 }
 
 model Product {
-  id           String   @id @default(cuid())
+  id           String   @id @default(cuid()) @map("_id")
   name         String
-  productType  String   @default("PHYSICAL") // PHYSICAL or SERVICE
+  productType  String   @default("PHYSICAL")
   brand        String?
   model        String?
   category     String   @default("Laptop")
@@ -158,7 +156,6 @@ model Product {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Soft Delete fields
   isDeleted    Boolean   @default(false)
   deletedAt    DateTime?
   deletedBy    String?
@@ -176,7 +173,7 @@ model Product {
 }
 
 model SerialNumber {
-  id                String    @id @default(cuid())
+  id                String    @id @default(cuid()) @map("_id")
   serialNumber      String    @unique
   productId         String
   product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -193,19 +190,18 @@ model SerialNumber {
   saleDate          DateTime?
   warrantyStart     DateTime?
   warrantyEnd       DateTime?
-  status            String    @default("In Stock") // In Stock, Sold, Reserved, Under Repair, Returned, Warranty Claim
+  status            String    @default("In Stock")
   notes             String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  @@index([serialNumber])
   @@index([productId])
   @@index([customerId])
   @@index([salesInvoiceId])
 }
 
 model Invoice {
-  id              String        @id @default(cuid())
+  id              String        @id @default(cuid()) @map("_id")
   invoiceNumber   String        @unique
   date            DateTime      @default(now())
   dueDate         DateTime?
@@ -221,22 +217,20 @@ model Invoice {
   grandTotal      Float         @default(0.0)
   paidAmount      Float         @default(0.0)
   balanceDue      Float         @default(0.0)
-  paymentMode     String        @default("Cash") // Cash, UPI, Bank Transfer, Card, Credit, Other
-  paymentStatus   String        @default("Paid") // Paid, Partial, Unpaid, Overdue
+  paymentMode     String        @default("Cash")
+  paymentStatus   String        @default("Paid")
   notes           String?
   terms           String?
-  status          String        @default("Confirmed") // Confirmed, Cancelled
+  status          String        @default("Confirmed")
   whatsappSharedAt DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  // Invoice Classification & Tax Configuration
-  invoiceType       String        @default("TAX_INVOICE") // TAX_INVOICE, BILL_OF_SUPPLY, NON_GST, PROFORMA, QUOTATION, CASH_MEMO
-  taxConfiguration  String        @default("CGST_SGST")   // CGST_SGST, IGST, EXEMPT, NONE
+  invoiceType       String        @default("TAX_INVOICE")
+  taxConfiguration  String        @default("CGST_SGST")
 
-  // Snapshot & Historical Preservation Fields
-  customerSnapshot  String?       // JSON: { id, name, phone, email, address, gstin, state, stateCode }
-  businessSnapshot  String?       // JSON: { companyName, tagline, address, phone, email, gstin, state, stateCode, bankName, accountNumber, ifscCode, upiId, terms, authorizedSignatory, logoUrl, signatureUrl, footer }
+  customerSnapshot  String?
+  businessSnapshot  String?
   roundOff          Float         @default(0.0)
   finalTotal        Float         @default(0.0)
   templateVersion   String        @default("v1.0")
@@ -245,10 +239,9 @@ model Invoice {
   revisionNumber    Int           @default(1)
   revisionReason    String?
   parentInvoiceId   String?
-  pdfGeneratedAt    DateTime?     // When temporary PDF was last generated
-  pdfStorageUrl     String?       // Stored ONLY when explicit retention feature is requested
+  pdfGeneratedAt    DateTime?
+  pdfStorageUrl     String?
 
-  // Soft Delete & 7-Day Recovery Fields
   isDeleted         Boolean       @default(false)
   deletedAt         DateTime?
   deletedBy         String?
@@ -265,7 +258,6 @@ model Invoice {
   shareLogs       InvoiceShareLog[]
   revisions       InvoiceRevisionAudit[]
 
-  @@index([invoiceNumber])
   @@index([date])
   @@index([customerId])
   @@index([status])
@@ -278,16 +270,16 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   invoiceId     String
   invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   productId     String
   product       Product  @relation(fields: [productId], references: [id])
   serialNumber  String?
   description   String?
-  productName   String?  // Snapshot of product name at invoice time
-  warranty      String?  @default("6 Months") // Snapshot of warranty at invoice time
-  itemSnapshot  String?  // Full item snapshot JSON
+  productName   String?
+  warranty      String?  @default("6 Months")
+  itemSnapshot  String?
   hsn           String?
   quantity      Int      @default(1)
   unit          String   @default("Pcs")
@@ -303,23 +295,23 @@ model InvoiceItem {
 }
 
 model InvoiceRevisionAudit {
-  id               String   @id @default(cuid())
+  id               String   @id @default(cuid()) @map("_id")
   invoiceId        String
   invoice          Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   revisionNumber   Int
-  action           String   // CREATED_FINALIZED, REVISED, EDITED, CANCELLED, SOFT_DELETED, RESTORED
+  action           String
   changedBy        String   @default("admin")
   changeReason     String
-  diffSummary      String?  // Detailed JSON array: [{ field, oldVal, newVal }]
-  previousSnapshot String?  // Full JSON of previous invoice state
-  newSnapshot      String   // Full JSON of new invoice state
+  diffSummary      String?
+  previousSnapshot String?
+  newSnapshot      String
   createdAt        DateTime @default(now())
 
   @@index([invoiceId])
 }
 
 model Purchase {
-  id                    String         @id @default(cuid())
+  id                    String         @id @default(cuid()) @map("_id")
   purchaseNumber        String         @unique
   supplierInvoiceNumber String
   date                  DateTime       @default(now())
@@ -336,29 +328,28 @@ model Purchase {
   grandTotal            Float          @default(0.0)
   paidAmount            Float          @default(0.0)
   balanceDue            Float          @default(0.0)
-  paymentStatus         String         @default("Unpaid") // Paid, Partial, Unpaid
+  paymentStatus         String         @default("Unpaid")
   billFileUrl           String?
   originalFileName      String?
-  documentType          String?        // GST Invoice, Retail Bill, etc.
-  aiExtractedData       String?        // JSON structured vision data
-  verificationStatus    String         @default("VERIFIED") // VERIFIED, NEEDS_REVIEW, MISMATCH
+  documentType          String?
+  aiExtractedData       String?
+  verificationStatus    String         @default("VERIFIED")
   ocrRawData            String?
   notes                 String?
-  status                String         @default("Confirmed") // Confirmed, Cancelled
+  status                String         @default("Confirmed")
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 
   items                 PurchaseItem[]
   payments              Payment[]
 
-  @@index([purchaseNumber])
   @@index([supplierInvoiceNumber])
   @@index([date])
   @@index([supplierId])
 }
 
 model PurchaseItem {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   purchaseId    String
   purchase      Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
   productId     String
@@ -380,10 +371,10 @@ model PurchaseItem {
 }
 
 model Payment {
-  id              String    @id @default(cuid())
+  id              String    @id @default(cuid()) @map("_id")
   paymentNumber   String    @unique
   date            DateTime  @default(now())
-  type            String    // CUSTOMER_PAYMENT or SUPPLIER_PAYMENT
+  type            String
   customerId      String?
   customer        Customer? @relation(fields: [customerId], references: [id])
   supplierId      String?
@@ -393,7 +384,7 @@ model Payment {
   purchaseId      String?
   purchase        Purchase? @relation(fields: [purchaseId], references: [id])
   amount          Float
-  paymentMode     String    @default("Cash") // Cash, UPI, Bank Transfer, Card, Cheque, Other
+  paymentMode     String    @default("Cash")
   referenceNumber String?
   notes           String?
   createdAt       DateTime  @default(now())
@@ -405,12 +396,12 @@ model Payment {
 }
 
 model StockMovement {
-  id              String   @id @default(cuid())
+  id              String   @id @default(cuid()) @map("_id")
   productId       String
   product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   date            DateTime @default(now())
-  type            String   // PURCHASE, SALE, ADJUSTMENT, RETURN_CUSTOMER, RETURN_SUPPLIER
-  referenceType   String?  // INVOICE, PURCHASE, ADJUSTMENT
+  type            String
+  referenceType   String?
   referenceId     String?
   referenceNumber String?
   quantityChange  Int
@@ -424,8 +415,8 @@ model StockMovement {
 }
 
 model Expense {
-  id            String   @id @default(cuid())
-  category      String   // Electricity, Rent, Transport, Repair, Software, Internet, Salary, Packaging, Miscellaneous
+  id            String   @id @default(cuid()) @map("_id")
+  category      String
   description   String
   amount        Float
   date          DateTime @default(now())
@@ -436,7 +427,7 @@ model Expense {
 }
 
 model User {
-  id                String           @id @default(cuid())
+  id                String           @id @default(cuid()) @map("_id")
   username          String           @unique
   name              String
   email             String?
@@ -444,7 +435,7 @@ model User {
   avatarUrl         String?
   bio               String?
   password          String           @default("admin123")
-  role              String           @default("admin") // admin, staff, manager
+  role              String           @default("admin")
   businessProfileId String?
   businessProfile   BusinessProfile? @relation(fields: [businessProfileId], references: [id])
   createdAt         DateTime         @default(now())
@@ -452,14 +443,13 @@ model User {
 }
 
 model InvoiceShareLog {
-  id            String   @id @default(cuid())
+  id            String   @id @default(cuid()) @map("_id")
   invoiceId     String
   invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   channel       String   @default("WhatsApp")
-  recipient     String   // e.g. Phone number
+  recipient     String
   customerName  String?
   invoiceNumber String?
   sharedAt      DateTime @default(now())
-  status        String   @default("Shared") // Shared
+  status        String   @default("Shared")
 }
-

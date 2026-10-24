@@ -13,6 +13,11 @@ function getOptimizedDatabaseUrl(): string | undefined {
   let url = process.env.DATABASE_URL;
   if (!url) return undefined;
 
+  // MongoDB Atlas URLs are already connection pooled by the MongoDB driver
+  if (url.startsWith('mongodb')) {
+    return url;
+  }
+
   // Auto-rewrite Supabase Session mode pooler (:5432) to Transaction mode pooler (:6543)
   if (url.includes('pooler.supabase.com:5432')) {
     url = url.replace(':5432', ':6543');
