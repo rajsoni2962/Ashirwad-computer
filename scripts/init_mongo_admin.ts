@@ -11,7 +11,7 @@ async function initAdmin() {
     create: {
       id: 'default',
       companyName: 'ASHIRWAD TECHNOLOGIES',
-      tagline: 'Beyond Tech Limits...',
+      tagline: 'Beyond Tech Limits',
       address: 'Ashraya 10, GST compound, new ranip, Ahmedabad 382470.',
       phone: '9662278994',
       email: 'rajsoni2962@gmail.com',

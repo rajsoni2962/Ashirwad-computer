@@ -84,7 +84,7 @@ export default function InvoicePrintView({
 
   const business = {
     companyName: bizSnapshot.companyName || settings?.companyName || 'ASHIRWAD TECHNOLOGIES',
-    tagline: bizSnapshot.tagline || settings?.tagline || 'BEYOND TECH LIMITS',
+    tagline: (bizSnapshot.tagline || settings?.tagline || 'BEYOND TECH LIMITS').replace(/\.{2,}$/, '').replace(/\s*\.\.\.\s*$/, '').trim(),
     address: bizSnapshot.address || settings?.address || 'A/1, 902, Ashraya 10, GST compound, New Ranip, Ahmedabad 382470.',
     phone: bizSnapshot.phone || settings?.phone || '9662278994',
     email: bizSnapshot.email || settings?.email || 'rajsoni2962@gmail.com',

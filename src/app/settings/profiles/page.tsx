@@ -31,7 +31,7 @@ export default function BusinessProfilesPage() {
   const [formData, setFormData] = useState<any>({
     name: '',
     companyName: '',
-    tagline: 'Beyond Tech Limits...',
+    tagline: 'Beyond Tech Limits',
     address: '',
     phone: '',
     email: '',
@@ -79,7 +79,7 @@ export default function BusinessProfilesPage() {
     setFormData({
       name: '',
       companyName: 'ASHIRWAD TECHNOLOGIES',
-      tagline: 'Beyond Tech Limits...',
+      tagline: 'Beyond Tech Limits',
       address: 'A/1, 902, Ashraya 10, GST compound, New Ranip, Ahmedabad 382470.',
       phone: '9662278994',
       email: 'rajsoni2962@gmail.com',

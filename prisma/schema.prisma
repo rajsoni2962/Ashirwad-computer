@@ -11,7 +11,7 @@ datasource db {
 model BusinessSettings {
   id                  String   @id @default("default") @map("_id")
   companyName         String   @default("ASHIRWAD TECHNOLOGIES")
-  tagline             String   @default("Beyond Tech Limits...")
+  tagline             String   @default("Beyond Tech Limits")
   address             String   @default("Ashraya 10, GST compound, new ranip, Ahmedabad 382470.")
   phone               String   @default("9662278994")
   email               String   @default("rajsoni2962@gmail.com")
@@ -45,7 +45,7 @@ model BusinessProfile {
   isDefault           Boolean  @default(false)
   isActive            Boolean  @default(true)
   companyName         String   @default("ASHIRWAD TECHNOLOGIES")
-  tagline             String?  @default("Beyond Tech Limits...")
+  tagline             String?  @default("Beyond Tech Limits")
   address             String   @default("Ashraya 10, GST compound, new ranip, Ahmedabad 382470.")
   phone               String   @default("9662278994")
   email               String?  @default("rajsoni2962@gmail.com")
