@@ -19,10 +19,11 @@ import {
   ShieldOff,
   Wrench,
 } from 'lucide-react';
-import { formatCurrency, numberToWords, getInvoiceTypeTitle, getTaxConfigLabel } from '@/lib/utils';
+import { formatCurrency, numberToWords, getInvoiceTypeTitle, getInvoiceTypeLabel, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
 import CustomerSearchSelect from '@/components/common/CustomerSearchSelect';
 import ProductSearchSelect from '@/components/common/ProductSearchSelect';
+import InvoiceTypeSelect from '@/components/common/InvoiceTypeSelect';
 import QuickCreateProductModal from '@/components/inventory/QuickCreateProductModal';
 
 export default function EditSalesInvoicePage() {
@@ -618,7 +619,7 @@ export default function EditSalesInvoicePage() {
                 <span>Invoice Type & Tax Configuration</span>
               </h3>
               <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                {getInvoiceTypeTitle(invoiceType)}
+                {getInvoiceTypeLabel(invoiceType)}
               </span>
             </div>
 
@@ -627,18 +628,11 @@ export default function EditSalesInvoicePage() {
                 <label className="block text-slate-700 font-semibold mb-1">
                   Invoice Document Type <span className="text-rose-500">*</span>
                 </label>
-                <select
+                <InvoiceTypeSelect
                   value={invoiceType}
-                  onChange={(e) => handleInvoiceTypeChange(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-indigo-600 focus:bg-white"
-                >
-                  <option value="TAX_INVOICE">Tax Invoice (Standard GST Invoice)</option>
-                  <option value="BILL_OF_SUPPLY">Bill of Supply (Composition / Nil-rated / No Tax)</option>
-                  <option value="NON_GST">Non-GST Invoice (Unregistered / Non-taxable Goods)</option>
-                  <option value="PROFORMA">Proforma Invoice (Advance Estimate / Preliminary)</option>
-                  <option value="QUOTATION">Quotation / Estimate (Formal Quote - No Stock Decrement)</option>
-                  <option value="CASH_MEMO">Cash Memo (Direct Counter Cash Sale Receipt)</option>
-                </select>
+                  onChange={handleInvoiceTypeChange}
+                  showHelperDescription={true}
+                />
               </div>
 
               <div>
@@ -649,7 +643,7 @@ export default function EditSalesInvoicePage() {
                   value={taxConfiguration}
                   onChange={(e) => setTaxConfiguration(e.target.value)}
                   disabled={invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST'}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-indigo-600 focus:bg-white disabled:bg-slate-100 disabled:text-slate-400"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 transition shadow-2xs"
                 >
                   <option value="CGST_SGST">CGST + SGST (Intra-State: 50% CGST / 50% SGST)</option>
                   <option value="IGST">IGST (Inter-State: Integrated GST)</option>

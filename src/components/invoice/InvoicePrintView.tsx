@@ -22,7 +22,7 @@ import {
   ChevronDown,
   Check,
 } from 'lucide-react';
-import { formatCurrency, formatDate, numberToWords, getInvoiceTypeTitle, getInvoiceNumberLabel, getTaxConfigLabel } from '@/lib/utils';
+import { formatCurrency, formatDate, numberToWords, getInvoiceTypeTitle, getInvoiceTypeLabel, getInvoiceNumberLabel, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceAuditHistoryModal from '@/components/invoice/InvoiceAuditHistoryModal';
@@ -372,7 +372,7 @@ export default function InvoicePrintView({
                 </span>
                 {currentInvoice.invoiceType && currentInvoice.invoiceType !== 'TAX_INVOICE' && (
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
-                    {getInvoiceTypeTitle(currentInvoice.invoiceType)}
+                    {getInvoiceTypeLabel(currentInvoice.invoiceType)}
                   </span>
                 )}
               </div>

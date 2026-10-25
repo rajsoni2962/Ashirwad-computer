@@ -109,6 +109,30 @@ export function getInvoiceTypeTitle(type?: string): string {
   }
 }
 
+export function getInvoiceTypeLabel(type?: string): string {
+  switch (type) {
+    case 'BILL_OF_SUPPLY':
+      return 'Bill of Supply';
+    case 'NON_GST':
+      return 'Invoice';
+    case 'PROFORMA':
+      return 'Proforma Invoice';
+    case 'QUOTATION':
+      return 'Quotation / Estimate';
+    case 'CASH_MEMO':
+      return 'Cash Memo';
+    case 'DELIVERY_CHALLAN':
+      return 'Delivery Challan';
+    case 'CREDIT_NOTE':
+      return 'Credit Note';
+    case 'DEBIT_NOTE':
+      return 'Debit Note';
+    case 'TAX_INVOICE':
+    default:
+      return 'Tax Invoice';
+  }
+}
+
 export function getInvoiceNumberLabel(type?: string): string {
   switch (type) {
     case 'QUOTATION':

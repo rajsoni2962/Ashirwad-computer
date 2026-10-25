@@ -13,7 +13,7 @@ import {
   PlusCircle,
 } from 'lucide-react';
 import { InvoiceDraft } from '@/lib/invoiceDraftManager';
-import { formatCurrency, getInvoiceTypeTitle } from '@/lib/utils';
+import { formatCurrency, getInvoiceTypeTitle, getInvoiceTypeLabel } from '@/lib/utils';
 
 interface InvoiceDraftsModalProps {
   isOpen: boolean;
@@ -105,7 +105,7 @@ export default function InvoiceDraftsModal({
                           {d.customerName || 'Walk-in Customer'}
                         </span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
-                          {getInvoiceTypeTitle(d.invoiceType)}
+                          {getInvoiceTypeLabel(d.invoiceType)}
                         </span>
                         {isCurrent && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">

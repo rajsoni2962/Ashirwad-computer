@@ -26,12 +26,13 @@ import {
   ShieldOff,
   ChevronDown,
 } from 'lucide-react';
-import { formatCurrency, numberToWords, getInvoiceTypeTitle, getTaxConfigLabel } from '@/lib/utils';
+import { formatCurrency, numberToWords, getInvoiceTypeTitle, getInvoiceTypeLabel, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
 import CustomerSearchSelect from '@/components/common/CustomerSearchSelect';
 import ProductSearchSelect from '@/components/common/ProductSearchSelect';
+import InvoiceTypeSelect from '@/components/common/InvoiceTypeSelect';
 import QuickCreateProductModal from '@/components/inventory/QuickCreateProductModal';
 import {
   InvoiceDraft,
@@ -758,7 +759,7 @@ export default function NewSalesInvoicePage() {
           <div>
             <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               <ShoppingCart className="w-6 h-6 text-indigo-600" />
-              <span>{getInvoiceTypeTitle(invoiceType)}</span>
+              <span>{getInvoiceTypeLabel(invoiceType)}</span>
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
               {invoiceType === 'QUOTATION'
@@ -766,7 +767,7 @@ export default function NewSalesInvoicePage() {
                 : invoiceType === 'BILL_OF_SUPPLY'
                 ? 'Bill of Supply • Composition / Nil-rated supply • No GST charged'
                 : invoiceType === 'NON_GST'
-                ? 'Non-GST Invoice • Unregistered goods & services • No tax breakdown'
+                ? 'Invoice • Unregistered goods & services • No tax breakdown'
                 : 'Official customer invoice • Select serialized laptop • Automatic stock & tax tracking'}
             </p>
           </div>
@@ -885,7 +886,7 @@ export default function NewSalesInvoicePage() {
                 <span>Invoice Type & Tax Configuration</span>
               </div>
               <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                {getInvoiceTypeTitle(invoiceType)}
+                {getInvoiceTypeLabel(invoiceType)}
               </span>
             </div>
 
@@ -894,27 +895,11 @@ export default function NewSalesInvoicePage() {
                 <label className="block text-slate-700 font-semibold mb-1">
                   Invoice Document Type <span className="text-rose-500">*</span>
                 </label>
-                <select
+                <InvoiceTypeSelect
                   value={invoiceType}
-                  onChange={(e) => handleInvoiceTypeChange(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-indigo-600 focus:bg-white"
-                >
-                  <option value="NON_GST">Non-GST Invoice (Unregistered / Non-taxable Goods)</option>
-                  <option value="BILL_OF_SUPPLY">Bill of Supply (Composition / Nil-rated / No Tax)</option>
-                  <option value="PROFORMA">Proforma Invoice (Advance Estimate / Preliminary)</option>
-                  <option value="QUOTATION">Quotation / Estimate (Formal Quote - No Stock Decrement)</option>
-                  <option value="CASH_MEMO">Cash Memo (Direct Counter Cash Sale Receipt)</option>
-                  <option value="TAX_INVOICE">Tax Invoice (Standard GST Invoice)</option>
-                </select>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  {invoiceType === 'QUOTATION'
-                    ? 'Quotations provide price estimates and do NOT decrement stock or affect customer balance.'
-                    : invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST'
-                    ? 'Taxes cannot be charged on Bill of Supply or Non-GST invoices under GST law.'
-                    : invoiceType === 'CASH_MEMO'
-                    ? 'Counter cash memo for retail counter sales.'
-                    : 'Standard GST tax invoice for B2B or B2C transactions.'}
-                </p>
+                  onChange={handleInvoiceTypeChange}
+                  showHelperDescription={true}
+                />
               </div>
 
               <div>
@@ -925,7 +910,7 @@ export default function NewSalesInvoicePage() {
                   value={taxConfiguration}
                   onChange={(e) => setTaxConfiguration(e.target.value)}
                   disabled={invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST'}
-                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-indigo-600 focus:bg-white disabled:bg-slate-100 disabled:text-slate-400"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 transition shadow-2xs"
                 >
                   <option value="CGST_SGST">CGST + SGST (Intra-State: 50% CGST / 50% SGST)</option>
                   <option value="IGST">IGST (Inter-State: Integrated GST)</option>

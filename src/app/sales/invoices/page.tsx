@@ -19,9 +19,10 @@ import {
   AlertTriangle,
   FileImage,
 } from 'lucide-react';
-import { formatCurrency, formatDate, getInvoiceTypeTitle } from '@/lib/utils';
+import { formatCurrency, formatDate, getInvoiceTypeTitle, getInvoiceTypeLabel } from '@/lib/utils';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
+import InvoiceTypeSelect from '@/components/common/InvoiceTypeSelect';
 
 export default function AllInvoicesPage() {
   const [invoices, setInvoices] = useState<any[]>([]);
@@ -147,19 +148,13 @@ export default function AllInvoicesPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <select
+          <InvoiceTypeSelect
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-indigo-600"
-          >
-            <option value="All">All Types</option>
-            <option value="TAX_INVOICE">Tax Invoice</option>
-            <option value="BILL_OF_SUPPLY">Bill of Supply</option>
-            <option value="NON_GST">Non-GST Invoice</option>
-            <option value="PROFORMA">Proforma Invoice</option>
-            <option value="QUOTATION">Quotation / Estimate</option>
-            <option value="CASH_MEMO">Cash Memo</option>
-          </select>
+            onChange={(val) => setTypeFilter(val)}
+            includeAllOption={true}
+            variant="compact"
+            className="w-48"
+          />
 
           <div className="flex items-center gap-1 overflow-x-auto">
             {['All', 'Paid', 'Partial', 'Unpaid', 'Cancelled'].map((st) => (
@@ -220,8 +215,8 @@ export default function AllInvoicesPage() {
                         {inv.invoiceNumber}
                       </Link>
                       {inv.invoiceType && inv.invoiceType !== 'TAX_INVOICE' && (
-                        <span className="inline-block mt-0.5 text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                          {getInvoiceTypeTitle(inv.invoiceType)}
+                        <span className="inline-block mt-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          {getInvoiceTypeLabel(inv.invoiceType)}
                         </span>
                       )}
                     </td>
