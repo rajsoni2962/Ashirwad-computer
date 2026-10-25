@@ -90,7 +90,7 @@ export function getInvoiceTypeTitle(type?: string): string {
     case 'BILL_OF_SUPPLY':
       return 'BILL OF SUPPLY';
     case 'NON_GST':
-      return 'NON-GST INVOICE';
+      return 'INVOICE';
     case 'PROFORMA':
       return 'PROFORMA INVOICE';
     case 'QUOTATION':

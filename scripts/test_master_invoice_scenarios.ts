@@ -129,7 +129,7 @@ async function runScenarioTests() {
     customer: baseCustomer,
     items: [{ description: 'Kingston 500GB NVMe M.2 SSD + Installation', hsn: '8471', quantity: 1, unit: 'Pcs', rate: 4500, total: 4500 }],
   }, baseBusiness);
-  assert(getInvoiceTypeTitle('NON_GST') === 'NON-GST INVOICE', 'Non-GST title resolved');
+  assert(getInvoiceTypeTitle('NON_GST') === 'INVOICE', 'Non-GST title resolved as INVOICE');
   assert(sc4.arrayBuffer && sc4.arrayBuffer.byteLength > 1000, 'Scenario 4 Non-GST PDF generated');
 
   // Scenario 5: GST Invoice with CGST + SGST (Intrastate)

@@ -14,9 +14,10 @@ assert.strictEqual(nonGstOption.label, 'Invoice', 'UI label for NON_GST is renam
 assert(!nonGstOption.label.includes('Non-GST'), 'Option label does not contain "Non-GST"');
 console.log('✅ PASS: UI label for NON_GST is "Invoice"');
 
-// 2. Verify getInvoiceTypeLabel
+// 2. Verify getInvoiceTypeLabel & getInvoiceTypeTitle
 assert.strictEqual(getInvoiceTypeLabel('NON_GST'), 'Invoice', 'getInvoiceTypeLabel("NON_GST") returns "Invoice"');
-console.log('✅ PASS: getInvoiceTypeLabel("NON_GST") returns "Invoice"');
+assert.strictEqual(getInvoiceTypeTitle('NON_GST'), 'INVOICE', 'getInvoiceTypeTitle("NON_GST") returns "INVOICE"');
+console.log('✅ PASS: getInvoiceTypeLabel("NON_GST") returns "Invoice" and getInvoiceTypeTitle("NON_GST") returns "INVOICE"');
 
 // 3. Verify other options remain unchanged
 assert.strictEqual(getInvoiceTypeLabel('TAX_INVOICE'), 'Tax Invoice');

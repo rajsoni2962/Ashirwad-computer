@@ -274,7 +274,7 @@ async function runTestSuite() {
   });
 
   assert(inv4.invoiceType === 'NON_GST', 'Invoice 4 has invoiceType NON_GST');
-  assert(getInvoiceTypeTitle(inv4.invoiceType) === 'NON-GST INVOICE', 'getInvoiceTypeTitle returns "NON-GST INVOICE"');
+  assert(getInvoiceTypeTitle(inv4.invoiceType) === 'INVOICE', 'getInvoiceTypeTitle returns "INVOICE"');
 
   // ============================================================================
   // TEST 5: Quotation / Estimate (Stock & Ledger Isolation)
