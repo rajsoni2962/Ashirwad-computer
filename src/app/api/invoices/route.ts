@@ -140,9 +140,10 @@ export async function POST(request: Request) {
 
     // Pre-calculate items data for create payload in memory
     const itemsCreateData = items.map((it: any) => {
-      const prod = productMap.get(it.productId);
-      const prodName = prod?.name || it.description || 'Laptop';
-      const warranty = prod?.warranty || it.warranty || '6 Months';
+      const isInvoiceOnly = Boolean(it.isInvoiceOnly || !it.productId);
+      const prod = it.productId ? productMap.get(it.productId) : null;
+      const prodName = prod?.name || it.productName || it.description || 'Item';
+      const warranty = prod?.warranty || it.warranty || (isInvoiceOnly ? (it.warranty || null) : '6 Months');
       const rate = parseFloat(it.rate) || 0;
       const disc = parseFloat(it.discount) || 0;
       const gstPct = it.gstPercent !== undefined ? parseFloat(it.gstPercent) : 0;
@@ -154,7 +155,8 @@ export async function POST(request: Request) {
       const unit = it.unit || 'Pcs';
 
       return {
-        productId: it.productId,
+        productId: it.productId ? it.productId : null,
+        isInvoiceOnly,
         productName: prodName,
         warranty: warranty,
         serialNumber: it.serialNumber || null,
@@ -169,10 +171,11 @@ export async function POST(request: Request) {
         gstAmount: gst,
         total: itemTotal,
         itemSnapshot: JSON.stringify({
-          productId: it.productId,
+          productId: it.productId || null,
+          isInvoiceOnly,
           productName: prodName,
-          brand: prod?.brand,
-          model: prod?.model,
+          brand: prod?.brand || null,
+          model: prod?.model || null,
           hsn,
           warranty,
           serialNumber: it.serialNumber || null,
@@ -248,6 +251,9 @@ export async function POST(request: Request) {
           for (const it of items) {
             const prod = productMap.get(it.productId);
             const isService = prod?.productType === 'SERVICE' || prod?.category?.toLowerCase() === 'service';
+
+            const isInvoiceOnly = Boolean(it.isInvoiceOnly || !it.productId);
+            if (isInvoiceOnly) continue;
 
             if (!isService && it.productId) {
               const qty = parseInt(it.quantity) || 1;

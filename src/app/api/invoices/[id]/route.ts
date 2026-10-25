@@ -81,7 +81,7 @@ export async function DELETE(
       if (invoice.status === 'Confirmed' && invoice.invoiceType !== 'QUOTATION') {
         for (const it of invoice.items) {
           const isService = it.product?.productType === 'SERVICE' || it.product?.category?.toLowerCase() === 'service';
-          if (!isService && it.productId) {
+          if (!it.isInvoiceOnly && !isService && it.productId) {
             const updatedProd = await tx.product.update({
               where: { id: it.productId },
               data: { currentStock: { increment: it.quantity } },
@@ -273,7 +273,7 @@ export async function PUT(
         if (existingInvoice.invoiceType !== 'QUOTATION') {
           for (const oldIt of existingInvoice.items) {
             const isService = oldIt.product?.productType === 'SERVICE' || oldIt.product?.category?.toLowerCase() === 'service';
-            if (!isService && oldIt.productId) {
+            if (!oldIt.isInvoiceOnly && !isService && oldIt.productId) {
               oldPhysicalQtys.set(oldIt.productId, (oldPhysicalQtys.get(oldIt.productId) || 0) + oldIt.quantity);
             }
           }
@@ -292,7 +292,7 @@ export async function PUT(
           for (const newIt of items) {
             const prod = productMap.get(newIt.productId);
             const isService = prod?.productType === 'SERVICE' || prod?.category?.toLowerCase() === 'service';
-            if (!isService && newIt.productId) {
+            if (!newIt.isInvoiceOnly && !isService && newIt.productId) {
               const qty = parseInt(newIt.quantity) || 1;
               newPhysicalQtys.set(newIt.productId, (newPhysicalQtys.get(newIt.productId) || 0) + qty);
             }
@@ -353,9 +353,10 @@ export async function PUT(
 
         await tx.invoiceItem.createMany({
           data: items.map((it: any) => {
-            const prod = productMap.get(it.productId);
-            const prodName = prod?.name || it.description || 'Item';
-            const warranty = prod?.warranty || it.warranty || '6 Months';
+            const isInvoiceOnly = Boolean(it.isInvoiceOnly || !it.productId);
+            const prod = it.productId ? productMap.get(it.productId) : null;
+            const prodName = prod?.name || it.productName || it.description || 'Item';
+            const warranty = prod?.warranty || it.warranty || (isInvoiceOnly ? (it.warranty || null) : '6 Months');
             const rate = parseFloat(it.rate) || 0;
             const disc = parseFloat(it.discount) || 0;
             const gstPct = it.gstPercent !== undefined ? parseFloat(it.gstPercent) : 0;
@@ -368,7 +369,8 @@ export async function PUT(
 
             return {
               invoiceId: id,
-              productId: it.productId,
+              productId: it.productId ? it.productId : null,
+              isInvoiceOnly,
               productName: prodName,
               warranty,
               serialNumber: it.serialNumber || null,
@@ -383,10 +385,11 @@ export async function PUT(
               gstAmount: gst,
               total: itemTotal,
               itemSnapshot: JSON.stringify({
-                productId: it.productId,
+                productId: it.productId || null,
+                isInvoiceOnly,
                 productName: prodName,
-                brand: prod?.brand,
-                model: prod?.model,
+                brand: prod?.brand || null,
+                model: prod?.model || null,
                 hsn,
                 warranty,
                 serialNumber: it.serialNumber || null,

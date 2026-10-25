@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, Package, Wrench, Check, AlertTriangle, Hash } from 'lucide-react';
+import { Search, X, Package, Wrench, Check, AlertTriangle, Hash, FileText, PackagePlus, Plus } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 export interface Product {
@@ -29,6 +29,8 @@ interface ProductSearchSelectProps {
   onSelectProduct: (product: Product | null) => void;
   disabled?: boolean;
   placeholder?: string;
+  onAddToInvoiceOnly?: (query: string) => void;
+  onCreateAndAddToStock?: (query: string) => void;
 }
 
 export default function ProductSearchSelect({
@@ -36,6 +38,8 @@ export default function ProductSearchSelect({
   onSelectProduct,
   disabled = false,
   placeholder = 'Search Product: Dell Latitude 5410, i5, 8GB, Cleaning, Repair...',
+  onAddToInvoiceOnly,
+  onCreateAndAddToStock,
 }: ProductSearchSelectProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -219,8 +223,53 @@ export default function ProductSearchSelect({
                 {loading && results.length === 0 ? (
                   <li className="p-4 text-center text-slate-400">Loading inventory...</li>
                 ) : results.length === 0 ? (
-                  <li className="p-4 text-center text-slate-500 font-medium">
-                    No products or services found matching &quot;{query}&quot;
+                  <li className="p-4 bg-slate-50/50">
+                    <div className="text-center mb-3">
+                      <p className="text-xs font-semibold text-slate-700">
+                        0 items found matching &ldquo;<span className="text-slate-900 font-bold">{query || '...'}</span>&rdquo;
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Choose how you would like to add this item:
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      {/* Action 1: Add to Invoice Only */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsOpen(false);
+                          onAddToInvoiceOnly?.(query.trim());
+                        }}
+                        className="p-3 text-left bg-amber-50 hover:bg-amber-100/80 border border-amber-200 rounded-xl transition group shadow-2xs cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 text-amber-900 font-bold text-xs mb-1">
+                          <FileText className="w-4 h-4 text-amber-700 shrink-0 group-hover:scale-110 transition" />
+                          <span className="truncate">Add &ldquo;{query || 'item'}&rdquo; to Invoice Only</span>
+                        </div>
+                        <p className="text-[10px] text-amber-800/80 leading-snug">
+                          Bill item directly without creating an inventory product or tracking stock.
+                        </p>
+                      </button>
+
+                      {/* Action 2: Create Item & Add to Stock */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsOpen(false);
+                          onCreateAndAddToStock?.(query.trim());
+                        }}
+                        className="p-3 text-left bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200 rounded-xl transition group shadow-2xs cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 text-indigo-900 font-bold text-xs mb-1">
+                          <PackagePlus className="w-4 h-4 text-indigo-700 shrink-0 group-hover:scale-110 transition" />
+                          <span className="truncate">Create &ldquo;{query || 'item'}&rdquo; & Add to Stock</span>
+                        </div>
+                        <p className="text-[10px] text-indigo-800/80 leading-snug">
+                          Open form to save specs, serials & stock in inventory, then insert into invoice.
+                        </p>
+                      </button>
+                    </div>
                   </li>
                 ) : (
                   results.map((p, idx) => {
@@ -272,6 +321,41 @@ export default function ProductSearchSelect({
                   })
                 )}
               </ul>
+
+              {/* Action menu in dropdown footer - accessible even when search results exist */}
+              {(onAddToInvoiceOnly || onCreateAndAddToStock) && (
+                <div className="p-2 border-t border-slate-100 bg-slate-50/90 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                  <span className="text-slate-500 font-medium">Additional Actions:</span>
+                  <div className="flex items-center gap-2">
+                    {onAddToInvoiceOnly && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsOpen(false);
+                          onAddToInvoiceOnly(query.trim());
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition"
+                      >
+                        <FileText className="w-3 h-3 text-amber-600" />
+                        <span>Add &ldquo;{query.trim() || 'Item'}&rdquo; to Invoice Only</span>
+                      </button>
+                    )}
+                    {onCreateAndAddToStock && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsOpen(false);
+                          onCreateAndAddToStock(query.trim());
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
+                      >
+                        <PackagePlus className="w-3 h-3 text-indigo-600" />
+                        <span>Create &ldquo;{query.trim() || 'Item'}&rdquo; & Add to Stock</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

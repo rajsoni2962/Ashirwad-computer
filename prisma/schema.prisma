@@ -273,8 +273,9 @@ model InvoiceItem {
   id            String   @id @default(cuid()) @map("_id")
   invoiceId     String
   invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  productId     String
-  product       Product  @relation(fields: [productId], references: [id])
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id])
+  isInvoiceOnly Boolean  @default(false)
   serialNumber  String?
   description   String?
   productName   String?

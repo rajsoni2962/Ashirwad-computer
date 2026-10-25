@@ -22,6 +22,9 @@ import {
   BookmarkCheck,
   Sparkles,
   FileImage,
+  PackagePlus,
+  ShieldOff,
+  ChevronDown,
 } from 'lucide-react';
 import { formatCurrency, numberToWords, getInvoiceTypeTitle, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
@@ -29,6 +32,7 @@ import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
 import CustomerSearchSelect from '@/components/common/CustomerSearchSelect';
 import ProductSearchSelect from '@/components/common/ProductSearchSelect';
+import QuickCreateProductModal from '@/components/inventory/QuickCreateProductModal';
 import {
   InvoiceDraft,
   getLocalDrafts,
@@ -291,6 +295,8 @@ export default function NewSalesInvoicePage() {
     if (!prod) {
       item.productId = '';
       item.product = null;
+      item.isInvoiceOnly = false;
+      item.productName = '';
       item.isService = false;
       item.description = '';
       item.rate = 0;
@@ -308,6 +314,8 @@ export default function NewSalesInvoicePage() {
 
     item.productId = prod.id;
     item.product = prod;
+    item.isInvoiceOnly = false;
+    item.productName = prod.name;
     item.isService = isService;
     item.description = prod.name;
     item.hsn = prod.hsn || (isService ? '9987' : '8471');
@@ -366,6 +374,9 @@ export default function NewSalesInvoicePage() {
       ...items,
       {
         productId: '',
+        product: null,
+        isInvoiceOnly: false,
+        productName: '',
         serialNumber: '',
         description: '',
         hsn: '8471',
@@ -373,13 +384,151 @@ export default function NewSalesInvoicePage() {
         unit: 'Pcs',
         rate: 0,
         discount: 0,
-        gstPercent: 0,
+        gstPercent: (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : 18,
         taxableAmount: 0,
         gstAmount: 0,
         total: 0,
         availableSerials: [],
       },
     ]);
+  };
+
+  const addInvoiceOnlyRow = (initialName: string = '') => {
+    const name = initialName.trim() || 'Custom Item';
+    const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : 18;
+    setItems([
+      ...items,
+      {
+        productId: '',
+        product: null,
+        isInvoiceOnly: true,
+        productName: name,
+        description: name,
+        isService: false,
+        serialNumber: '',
+        hsn: '8471',
+        quantity: 1,
+        unit: 'Pcs',
+        rate: 0,
+        discount: 0,
+        gstPercent: effectiveGst,
+        taxableAmount: 0,
+        gstAmount: 0,
+        total: 0,
+        availableSerials: [],
+      },
+    ]);
+    showToast(`Added custom invoice-only row`);
+  };
+
+  const handleAddToInvoiceOnly = (index: number, queryText: string) => {
+    const updated = [...items];
+    const item = { ...updated[index] };
+    const name = queryText.trim() || 'Custom Item';
+
+    item.productId = '';
+    item.product = null;
+    item.isInvoiceOnly = true;
+    item.productName = name;
+    item.description = name;
+    item.isService = false;
+    item.serialNumber = '';
+    item.availableSerials = [];
+    item.hsn = '8471';
+    item.gstPercent = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : 18;
+
+    const qty = parseFloat(item.quantity) || 1;
+    const rate = parseFloat(item.rate) || 0;
+    const disc = parseFloat(item.discount) || 0;
+    const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (parseFloat(item.gstPercent) || 0);
+
+    const baseAmount = Math.max(0, qty * rate - disc);
+    let taxable = baseAmount;
+    let gstAmt = 0;
+    if (!isNoTax && !isExempt && taxConfiguration !== 'NONE' && effectiveGst > 0) {
+      taxable = round2(baseAmount / (1 + effectiveGst / 100));
+      gstAmt = round2(baseAmount - taxable);
+    }
+
+    item.taxableAmount = taxable;
+    item.gstAmount = gstAmt;
+    item.total = round2(baseAmount);
+
+    updated[index] = item;
+    setItems(updated);
+    showToast(`Set line #${index + 1} to Invoice-Only: "${name}"`);
+  };
+
+  const handleSwitchToInventory = (index: number) => {
+    const updated = [...items];
+    const item = { ...updated[index] };
+    item.isInvoiceOnly = false;
+    item.productId = '';
+    item.product = null;
+    item.productName = '';
+    item.description = '';
+    item.rate = 0;
+    item.serialNumber = '';
+    item.availableSerials = [];
+    item.taxableAmount = 0;
+    item.gstAmount = 0;
+    item.total = 0;
+    updated[index] = item;
+    setItems(updated);
+    showToast(`Switched line #${index + 1} to Inventory product search`);
+  };
+
+  // Quick Product Create Modal State
+  const [showQuickCreateModal, setShowQuickCreateModal] = useState(false);
+  const [quickCreateQuery, setQuickCreateQuery] = useState('');
+  const [quickCreateTargetIndex, setQuickCreateTargetIndex] = useState<number | null>(null);
+
+  const handleOpenQuickCreate = (index: number | null, queryText: string) => {
+    setQuickCreateTargetIndex(index);
+    setQuickCreateQuery(queryText);
+    setShowQuickCreateModal(true);
+  };
+
+  const handleQuickCreateSuccess = (newProd: any) => {
+    setProducts((prev) => [newProd, ...prev]);
+    if (quickCreateTargetIndex !== null && quickCreateTargetIndex < items.length) {
+      handleProductSelect(quickCreateTargetIndex, newProd);
+    } else {
+      const isService = newProd.productType === 'SERVICE' || newProd.category?.toLowerCase() === 'service';
+      const effectiveGst = (isNoTax || isExempt || taxConfiguration === 'NONE') ? 0 : (newProd.gstPercent || 0);
+      const rate = newProd.sellingPrice || 0;
+      const baseAmount = Math.max(0, 1 * rate);
+      let taxable = baseAmount;
+      let gstAmt = 0;
+      if (!isNoTax && !isExempt && taxConfiguration !== 'NONE' && effectiveGst > 0) {
+        taxable = round2(baseAmount / (1 + effectiveGst / 100));
+        gstAmt = round2(baseAmount - taxable);
+      }
+
+      setItems((prev) => [
+        ...prev,
+        {
+          productId: newProd.id,
+          product: newProd,
+          isInvoiceOnly: false,
+          productName: newProd.name,
+          isService,
+          serialNumber: '',
+          description: newProd.name,
+          hsn: newProd.hsn || (isService ? '9987' : '8471'),
+          quantity: 1,
+          unit: 'Pcs',
+          rate,
+          discount: 0,
+          gstPercent: effectiveGst,
+          taxableAmount: taxable,
+          gstAmount: gstAmt,
+          total: round2(baseAmount),
+          availableSerials: newProd.serialNumbers || [],
+        },
+      ]);
+    }
+    showToast(`Created & added "${newProd.name}" to stock & invoice!`);
   };
 
   const removeItem = (idx: number) => {
@@ -519,9 +668,14 @@ export default function NewSalesInvoicePage() {
       return;
     }
 
-    const invalidItem = items.find((i) => !i.productId || i.rate <= 0);
+    const invalidItem = items.find((i) => {
+      if (i.isInvoiceOnly) {
+        return !(i.description?.trim() || i.productName?.trim()) || i.rate <= 0;
+      }
+      return !i.productId || i.rate <= 0;
+    });
     if (invalidItem) {
-      alert('Please select a valid product and price for all item rows.');
+      alert('Please provide a valid product/item name and selling price (> 0) for all item rows.');
       return;
     }
 
@@ -546,9 +700,11 @@ export default function NewSalesInvoicePage() {
         notes,
         terms,
         items: items.map((it) => ({
-          productId: it.productId,
-          serialNumber: it.serialNumber || null,
-          description: it.description,
+          productId: it.isInvoiceOnly ? null : (it.productId || null),
+          isInvoiceOnly: Boolean(it.isInvoiceOnly || !it.productId),
+          productName: it.productName || it.product?.name || it.description || 'Custom Item',
+          serialNumber: it.isInvoiceOnly ? null : (it.serialNumber || null),
+          description: it.description || it.productName || '',
           hsn: it.hsn,
           quantity: it.quantity,
           unit: it.unit,
@@ -840,29 +996,67 @@ export default function NewSalesInvoicePage() {
 
           {/* Line Items Table Card */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
                 <Package className="w-4 h-4 text-indigo-600" />
                 <span>Invoice Line Items</span>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {items.length} item{items.length === 1 ? '' : 's'}
+                </span>
               </div>
-              <button
-                type="button"
-                onClick={addItem}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Item Row</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={addItem}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>+ Add Product Row</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => addInvoiceOnlyRow()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>+ Invoice Only Item</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOpenQuickCreate(null, '')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition"
+                >
+                  <PackagePlus className="w-3.5 h-3.5" />
+                  <span>+ Create Product & Stock</span>
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
               {items.map((it, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3"
+                  className={`p-4 rounded-2xl border transition space-y-3 ${
+                    it.isInvoiceOnly
+                      ? 'border-amber-200 bg-amber-50/20'
+                      : 'border-slate-200 bg-slate-50/50'
+                  }`}
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-700"># {idx + 1}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-700"># {idx + 1}</span>
+                      {it.isInvoiceOnly ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                          <FileText className="w-3 h-3 text-amber-700" />
+                          <span>Invoice Only (No Stock Deduction)</span>
+                        </span>
+                      ) : it.productId ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          <Package className="w-3 h-3 text-indigo-600" />
+                          <span>Inventory Linked</span>
+                        </span>
+                      ) : null}
+                    </div>
                     {items.length > 1 && (
                       <button
                         onClick={() => removeItem(idx)}
@@ -873,16 +1067,59 @@ export default function NewSalesInvoicePage() {
                     )}
                   </div>
 
-                  {/* Product Search Autocomplete */}
+                  {/* Product Search Autocomplete OR Custom Invoice Only Item Name */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs">
                     <div className="sm:col-span-8">
-                      <label className="block text-slate-600 font-semibold mb-1">
-                        Select Product / Service (Search Name, Specs, Brand, Model, Serial...)
-                      </label>
-                      <ProductSearchSelect
-                        selectedProduct={it.product || products.find((p) => p.id === it.productId) || null}
-                        onSelectProduct={(p) => handleProductSelect(idx, p)}
-                      />
+                      {it.isInvoiceOnly ? (
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-amber-900 font-bold text-xs">
+                              Custom Item Name & Details *
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => handleSwitchToInventory(idx)}
+                              className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 hover:underline transition"
+                            >
+                              Switch to Inventory Product
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            value={it.productName || it.description}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              handleItemChange(idx, 'productName', val);
+                              if (!it.description || it.description === it.productName) {
+                                handleItemChange(idx, 'description', val);
+                              }
+                            }}
+                            placeholder="e.g. Dell Laptop / Custom Service / Accessories"
+                            className="w-full px-3 py-2 bg-white border border-amber-300 rounded-xl text-slate-900 font-bold text-xs focus:outline-none focus:border-amber-600"
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-slate-600 font-semibold">
+                              Select Product / Service (Search Name, Specs, Brand, Model, Serial...)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => handleAddToInvoiceOnly(idx, '')}
+                              className="text-[11px] font-semibold text-amber-700 hover:text-amber-900 hover:underline transition"
+                            >
+                              Switch to Invoice Only
+                            </button>
+                          </div>
+                          <ProductSearchSelect
+                            selectedProduct={it.product || products.find((p) => p.id === it.productId) || null}
+                            onSelectProduct={(p) => handleProductSelect(idx, p)}
+                            onAddToInvoiceOnly={(q) => handleAddToInvoiceOnly(idx, q)}
+                            onCreateAndAddToStock={(q) => handleOpenQuickCreate(idx, q)}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="sm:col-span-4">
@@ -890,7 +1127,12 @@ export default function NewSalesInvoicePage() {
                         <Hash className="w-3.5 h-3.5" />
                         <span>Serial Number</span>
                       </label>
-                      {it.isService ? (
+                      {it.isInvoiceOnly ? (
+                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-medium text-xs flex items-center gap-1.5">
+                          <ShieldOff className="w-3.5 h-3.5 text-slate-400" />
+                          <span>N/A (Invoice Only - No Stock)</span>
+                        </div>
+                      ) : it.isService ? (
                         <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-medium text-xs flex items-center gap-1.5">
                           <Wrench className="w-3.5 h-3.5 text-blue-500" />
                           <span>N/A (Service Item)</span>
@@ -1356,6 +1598,14 @@ export default function NewSalesInvoicePage() {
           setSavedDrafts(getLocalDrafts());
         }}
         onNewBill={handleStartFresh}
+      />
+
+      {/* Quick Create Inventory Product Modal */}
+      <QuickCreateProductModal
+        isOpen={showQuickCreateModal}
+        onClose={() => setShowQuickCreateModal(false)}
+        initialName={quickCreateQuery}
+        onSuccess={handleQuickCreateSuccess}
       />
 
       {/* Draft Notification Toast */}

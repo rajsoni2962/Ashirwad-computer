@@ -58,7 +58,7 @@ export async function POST(
       if (invoice.status === 'Confirmed') {
         for (const it of invoice.items) {
           const isService = it.product?.productType === 'SERVICE' || it.product?.category?.toLowerCase() === 'service';
-          if (!isService && it.productId) {
+          if (!it.isInvoiceOnly && !isService && it.productId) {
             const updatedProd = await tx.product.update({
               where: { id: it.productId },
               data: { currentStock: { decrement: it.quantity } },

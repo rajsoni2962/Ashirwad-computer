@@ -124,6 +124,39 @@ export async function POST(request: Request) {
     const pPrice = parseFloat(sanitized.purchasePrice) || 0;
     const sPrice = parseFloat(sanitized.sellingPrice) || 0;
 
+    // Prevent duplicate active products with identical name and model/brand
+    const duplicateQuery: any = {
+      isDeleted: false,
+      name: { equals: sanitized.name.trim(), mode: 'insensitive' },
+    };
+    if (sanitized.brand && typeof sanitized.brand === 'string' && sanitized.brand.trim()) {
+      duplicateQuery.brand = { equals: sanitized.brand.trim(), mode: 'insensitive' };
+    }
+    if (sanitized.model && typeof sanitized.model === 'string' && sanitized.model.trim()) {
+      duplicateQuery.model = { equals: sanitized.model.trim(), mode: 'insensitive' };
+    }
+
+    const existingDuplicate = await db.product.findFirst({
+      where: duplicateQuery,
+      include: {
+        serialNumbers: {
+          where: { status: 'In Stock' },
+          select: { id: true, serialNumber: true, status: true },
+        },
+      },
+    });
+
+    if (existingDuplicate) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `A product with name "${existingDuplicate.name}"${existingDuplicate.model ? ` (${existingDuplicate.model})` : ''} already exists in inventory (Current Stock: ${existingDuplicate.currentStock}).`,
+          existingProduct: existingDuplicate,
+        },
+        { status: 409 }
+      );
+    }
+
     const newProduct = await db.$transaction(async (tx) => {
       const product = await tx.product.create({
         data: {
