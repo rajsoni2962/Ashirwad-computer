@@ -389,8 +389,22 @@ export async function generateInvoicePdf(
       const isPng = logoBase64.includes('image/png') || logoBase64.startsWith('iVBORw0KGgo');
       const format = isPng ? 'PNG' : 'JPEG';
       const imgData = logoBase64.startsWith('data:') ? logoBase64 : `data:image/${isPng ? 'png' : 'jpeg'};base64,${logoBase64}`;
-      const imgW = 82;
-      const imgH = 66; // Maintain 1024x825 aspect ratio
+      let imgW = 84;
+      let imgH = 84;
+      try {
+        const props = doc.getImageProperties(imgData);
+        if (props.width && props.height) {
+          const aspect = props.width / props.height;
+          const maxDim = 84;
+          if (aspect >= 1) {
+            imgW = maxDim;
+            imgH = maxDim / aspect;
+          } else {
+            imgH = maxDim;
+            imgW = maxDim * aspect;
+          }
+        }
+      } catch {}
       const imgX = logoBoxX + (logoBoxSize - imgW) / 2;
       const imgY = logoBoxY + (logoBoxSize - imgH) / 2;
       doc.addImage(imgData, format, imgX, imgY, imgW, imgH);
