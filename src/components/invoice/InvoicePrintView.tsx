@@ -302,9 +302,9 @@ export default function InvoicePrintView({
     'p-8 sm:p-10';
 
   const fontScaleClass =
-    design.fontSizeScale === 'compact' ? 'text-[13px] leading-snug' :
-    design.fontSizeScale === 'large' ? 'text-[15px] leading-relaxed' :
-    'text-[14px] leading-snug';
+    design.fontSizeScale === 'compact' ? 'text-[12px] leading-snug' :
+    design.fontSizeScale === 'large' ? 'text-[14px] leading-relaxed' :
+    'text-[13px] leading-snug';
 
   const tableHeaderStyle =
     design.tableHeaderStyle === 'filled'
@@ -549,7 +549,7 @@ export default function InvoicePrintView({
           className={`print-container bg-white w-full max-w-[210mm] min-h-[297mm] shadow-lg border border-slate-200 print:border-none print:shadow-none print:rounded-none print:p-0 print:m-0 print:w-full text-slate-900 ${radiusClass} ${paddingClass} ${fontScaleClass}`}
         >
           {/* Top Title Banner */}
-          <div className="w-full py-2.5 bg-[#EEF0FD] text-[#4257B8] font-black text-xs sm:text-sm tracking-wider uppercase text-center rounded-sm">
+          <div className="w-full py-2 bg-[#EEF0FD] text-[#4257B8] font-bold text-xs tracking-wider uppercase text-center rounded-sm">
             {getInvoiceTypeTitle(currentInvoice.invoiceType)}
           </div>
 
@@ -601,27 +601,27 @@ export default function InvoicePrintView({
                   : 'col-span-9 order-2 text-right'
               }
             >
-              <h1 className="text-3xl sm:text-[32px] font-black tracking-tight text-slate-900 leading-none">
+              <h1 className="text-2xl sm:text-[26px] font-black tracking-tight text-slate-900 leading-none">
                 <span>{business.companyName}</span>
               </h1>
               {design.showTagline && business.tagline && (
-                <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#4257B8] mt-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-[#4257B8] mt-1">
                   {business.tagline}
                 </p>
               )}
-              <p className="text-xs sm:text-[13px] text-slate-600 mt-1.5 max-w-lg ml-auto font-normal">
+              <p className="text-xs text-slate-600 mt-1 max-w-md ml-auto font-normal">
                 {business.address}
               </p>
               {design.showContactInfo && (
-                <div className="text-xs sm:text-[13px] text-slate-600 mt-1 space-x-2">
-                  <span>Phone no.: <strong className="font-bold text-slate-900">{business.phone}</strong></span>
+                <div className="text-xs text-slate-600 mt-1 space-x-2">
+                  <span>Phone no.: <strong className="font-semibold text-slate-900">{business.phone}</strong></span>
                   <span>•</span>
-                  <span>Email: <strong className="font-bold text-slate-900">{business.email}</strong></span>
+                  <span>Email: <strong className="font-semibold text-slate-900">{business.email}</strong></span>
                 </div>
               )}
               {business.gstin && business.gstin.trim() && business.gstin !== 'null' && business.gstin !== '24AANPA0000A1Z5' && (
-                <p className="text-xs sm:text-[13px] text-slate-600 mt-0.5">
-                  GSTIN: <strong className="font-bold text-slate-900">{business.gstin}</strong>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  GSTIN: <strong className="font-semibold text-slate-900">{business.gstin}</strong>
                 </p>
               )}
 
@@ -634,58 +634,58 @@ export default function InvoicePrintView({
               <>
                 {/* Swapped: Invoice Details on Left */}
                 <div className="border-r border-[#CAD5E2] pr-4 space-y-1 text-left">
-                  <div className="text-xs sm:text-[13px] font-black uppercase tracking-wider mb-2 text-[#4257B8]">
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
                     {design.invoiceMetaTitle || 'INVOICE DETAILS'}
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600">
+                  <div className="text-xs text-slate-600">
                     <span>
                       {getInvoiceNumberLabel(currentInvoice.invoiceType)}:
                     </span>{' '}
-                    <strong className="text-base sm:text-lg text-slate-900 font-black">{invoice.invoiceNumber}</strong>
+                    <strong className="text-sm font-bold text-slate-900">{invoice.invoiceNumber}</strong>
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600">
+                  <div className="text-xs text-slate-600">
                     <span>Date:</span>{' '}
-                    <strong className="font-bold text-slate-900">{formatDate(invoice.date)}</strong>
+                    <strong className="font-semibold text-slate-900">{formatDate(invoice.date)}</strong>
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600">
+                  <div className="text-xs text-slate-600">
                     <span>Payment Mode:</span>{' '}
-                    <strong className="font-bold text-slate-900">{invoice.paymentMode || 'Cash'}</strong>
+                    <strong className="font-semibold text-slate-900">{invoice.paymentMode || 'Cash'}</strong>
                   </div>
                   {invoice.dueDate && (
-                    <div className="text-xs sm:text-[13px] text-slate-600">
+                    <div className="text-xs text-slate-600">
                       <span>Due Date:</span>{' '}
-                      <span className="font-bold text-slate-800">{formatDate(invoice.dueDate)}</span>
+                      <span className="font-semibold text-slate-800">{formatDate(invoice.dueDate)}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Bill To on Right */}
                 <div className="pl-4 text-right">
-                  <div className="text-xs sm:text-[13px] font-black uppercase tracking-wider mb-2 text-[#4257B8]">
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
                     {design.customerCardTitle || 'BILLED TO'}
                   </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
+                  <div className="text-base font-bold text-slate-900 leading-snug">
                     {customer.name || invoice.customer?.name || 'Walk-in Customer'}
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600 mt-1">
-                    Contact No.: <strong className="font-bold text-slate-900">{customer.phone || invoice.customer?.phone || '-'}</strong>
+                  <div className="text-xs text-slate-600 mt-0.5">
+                    Contact No.: <strong className="font-semibold text-slate-900">{customer.phone || invoice.customer?.phone || '-'}</strong>
                   </div>
                   {(customer.email || invoice.customer?.email) && (
-                    <div className="text-xs sm:text-[13px] text-slate-600 mt-0.5">
+                    <div className="text-xs text-slate-600 mt-0.5">
                       Email: {customer.email || invoice.customer.email}
                     </div>
                   )}
                   {(customer.address || invoice.customer?.address) && (
-                    <div className="text-xs sm:text-[13px] text-slate-600 mt-1 leading-snug">
+                    <div className="text-xs text-slate-600 mt-0.5 leading-snug">
                       Address: {customer.address || invoice.customer.address}
                     </div>
                   )}
-                  <div className="text-xs sm:text-[13px] text-slate-600 mt-1">
+                  <div className="text-xs text-slate-600 mt-0.5">
                     State: {customer.state || invoice.customer?.state || 'Gujarat'} (Code: {customer.stateCode || invoice.customer?.stateCode || '24'})
                   </div>
                   {(customer.gstin || invoice.customer?.gstin) && (customer.gstin || invoice.customer?.gstin).trim() && (customer.gstin || invoice.customer?.gstin) !== 'null' && (
-                    <div className="text-xs sm:text-[13px] text-slate-600 mt-1">
-                      GSTIN: <strong className="font-bold text-slate-900">{customer.gstin || invoice.customer?.gstin}</strong>
+                    <div className="text-xs text-slate-600 mt-0.5">
+                      GSTIN: <strong className="font-semibold text-slate-900">{customer.gstin || invoice.customer?.gstin}</strong>
                     </div>
                   )}
 
@@ -695,31 +695,31 @@ export default function InvoicePrintView({
               <>
                 {/* Normal: Bill To on Left */}
                 <div className="border-r border-[#CAD5E2] pr-4">
-                  <div className="text-xs sm:text-[13px] font-black uppercase tracking-wider mb-2 text-[#4257B8]">
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
                     {design.customerCardTitle || 'BILLED TO'}
                   </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
+                  <div className="text-base font-bold text-slate-900 leading-snug">
                     {customer.name || invoice.customer?.name || 'Walk-in Customer'}
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600 mt-1">
-                    Contact No.: <strong className="font-bold text-slate-900">{customer.phone || invoice.customer?.phone || '-'}</strong>
+                  <div className="text-xs text-slate-600 mt-0.5">
+                    Contact No.: <strong className="font-semibold text-slate-900">{customer.phone || invoice.customer?.phone || '-'}</strong>
                   </div>
                   {(customer.email || invoice.customer?.email) && (
-                    <div className="text-xs sm:text-[13px] text-slate-600 mt-0.5">
+                    <div className="text-xs text-slate-600 mt-0.5">
                       Email: {customer.email || invoice.customer.email}
                     </div>
                   )}
                   {(customer.address || invoice.customer?.address) && (
-                    <div className="text-xs sm:text-[13px] text-slate-600 mt-1 leading-snug">
+                    <div className="text-xs text-slate-600 mt-0.5 leading-snug">
                       Address: {customer.address || invoice.customer.address}
                     </div>
                   )}
-                  <div className="text-xs sm:text-[13px] text-slate-600 mt-1">
+                  <div className="text-xs text-slate-600 mt-0.5">
                     State: {customer.state || invoice.customer?.state || 'Gujarat'} (Code: {customer.stateCode || invoice.customer?.stateCode || '24'})
                   </div>
                   {(customer.gstin || invoice.customer?.gstin) && (customer.gstin || invoice.customer?.gstin).trim() && (customer.gstin || invoice.customer?.gstin) !== 'null' && (
-                    <div className="text-xs sm:text-[13px] text-slate-600 mt-1">
-                      GSTIN: <strong className="font-bold text-slate-900">{customer.gstin || invoice.customer?.gstin}</strong>
+                    <div className="text-xs text-slate-600 mt-0.5">
+                      GSTIN: <strong className="font-semibold text-slate-900">{customer.gstin || invoice.customer?.gstin}</strong>
                     </div>
                   )}
 
@@ -727,27 +727,27 @@ export default function InvoicePrintView({
 
                 {/* Invoice Details on Right */}
                 <div className="pl-4 space-y-1 text-right">
-                  <div className="text-xs sm:text-[13px] font-black uppercase tracking-wider mb-2 text-[#4257B8]">
+                  <div className="text-xs font-bold uppercase tracking-wider mb-1.5 text-[#4257B8]">
                     {design.invoiceMetaTitle || 'INVOICE DETAILS'}
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600">
+                  <div className="text-xs text-slate-600">
                     <span>
                       {getInvoiceNumberLabel(currentInvoice.invoiceType)}:
                     </span>{' '}
-                    <strong className="text-base sm:text-lg text-slate-900 font-black">{invoice.invoiceNumber}</strong>
+                    <strong className="text-sm font-bold text-slate-900">{invoice.invoiceNumber}</strong>
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600">
+                  <div className="text-xs text-slate-600">
                     <span>Date:</span>{' '}
-                    <strong className="font-bold text-slate-900">{formatDate(invoice.date)}</strong>
+                    <strong className="font-semibold text-slate-900">{formatDate(invoice.date)}</strong>
                   </div>
-                  <div className="text-xs sm:text-[13px] text-slate-600">
+                  <div className="text-xs text-slate-600">
                     <span>Payment Mode:</span>{' '}
-                    <strong className="font-bold text-slate-900">{invoice.paymentMode || 'Cash'}</strong>
+                    <strong className="font-semibold text-slate-900">{invoice.paymentMode || 'Cash'}</strong>
                   </div>
                   {invoice.dueDate && (
-                    <div className="text-xs sm:text-[13px] text-slate-600">
+                    <div className="text-xs text-slate-600">
                       <span>Due Date:</span>{' '}
-                      <span className="font-bold text-slate-800">{formatDate(invoice.dueDate)}</span>
+                      <span className="font-semibold text-slate-800">{formatDate(invoice.dueDate)}</span>
                     </div>
                   )}
                 </div>
@@ -759,42 +759,42 @@ export default function InvoicePrintView({
           <div className="py-3">
             <table className="w-full text-left border-collapse border border-[#CAD5E2]">
               <thead>
-                <tr className="text-xs sm:text-[13px] uppercase font-black bg-[#EEF0FD] text-[#1A202C]">
+                <tr className="text-xs uppercase font-bold bg-[#EEF0FD] text-[#1A202C]">
                   {design.showSerialColumn && (
-                    <th className="py-3 px-2.5 w-10 text-center border-r border-[#CAD5E2]">#</th>
+                    <th className="py-2.5 px-2.5 w-8 text-center border-r border-[#CAD5E2]">#</th>
                   )}
-                  <th className="py-3 px-3 border-r border-[#CAD5E2]">ITEM NAME & SPECIFICATIONS</th>
+                  <th className="py-2.5 px-3 border-r border-[#CAD5E2]">ITEM NAME & SPECIFICATIONS</th>
                   {design.showHsnColumn && (
-                    <th className="py-3 px-2 text-center w-20 border-r border-[#CAD5E2]">HSN</th>
+                    <th className="py-2.5 px-2 text-center w-16 border-r border-[#CAD5E2]">HSN</th>
                   )}
-                  <th className="py-3 px-2 text-center w-16 border-r border-[#CAD5E2]">QTY</th>
+                  <th className="py-2.5 px-2 text-center w-14 border-r border-[#CAD5E2]">QTY</th>
                   {design.showUnitColumn && (
-                    <th className="py-3 px-2 text-center w-14 border-r border-[#CAD5E2]">UNIT</th>
+                    <th className="py-2.5 px-2 text-center w-12 border-r border-[#CAD5E2]">UNIT</th>
                   )}
                   {design.showDiscountColumn && (
-                    <th className="py-3 px-2 text-center w-16 border-r border-[#CAD5E2]">DISC</th>
+                    <th className="py-2.5 px-2 text-center w-14 border-r border-[#CAD5E2]">DISC</th>
                   )}
-                  <th className="py-3 px-3 text-right w-28 border-r border-[#CAD5E2]">PRICE / UNIT</th>
-                  <th className="py-3 px-3 text-right w-32">AMOUNT</th>
+                  <th className="py-2.5 px-3 text-right w-24 border-r border-[#CAD5E2]">PRICE / UNIT</th>
+                  <th className="py-2.5 px-3 text-right w-28">AMOUNT</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#CAD5E2] text-xs sm:text-sm">
+              <tbody className="divide-y divide-[#CAD5E2] text-xs">
                 {invoice.items?.map((item: any, idx: number) => (
                   <tr
                     key={item.id || idx}
                     className="bg-white hover:bg-slate-50/50"
                   >
                     {design.showSerialColumn && (
-                      <td className="py-3 px-2.5 text-center font-semibold text-slate-600 border-r border-[#CAD5E2]">
+                      <td className="py-2.5 px-2.5 text-center font-medium text-slate-500 border-r border-[#CAD5E2]">
                         {idx + 1}
                       </td>
                     )}
-                    <td className="py-3 px-3 border-r border-[#CAD5E2]">
-                      <div className="font-bold text-sm sm:text-base text-slate-900 leading-snug">
+                    <td className="py-2.5 px-3 border-r border-[#CAD5E2]">
+                      <div className="font-bold text-[13px] text-slate-900 leading-snug">
                         {item.description || item.product?.name}
                       </div>
                       {design.showWarrantyColumn && (item.serialNumber || item.warranty) && (
-                        <div className="text-xs font-mono text-purple-700 font-semibold mt-1 flex items-center gap-1.5">
+                        <div className="text-[11px] font-mono text-purple-700 font-semibold mt-0.5 flex items-center gap-1">
                           {item.serialNumber && <span>S/N: {item.serialNumber}</span>}
                           {item.serialNumber && item.warranty && <span>•</span>}
                           {item.warranty && <span>Warranty: {item.warranty}</span>}
@@ -802,45 +802,45 @@ export default function InvoicePrintView({
                       )}
                     </td>
                     {design.showHsnColumn && (
-                      <td className="py-3 px-2 text-center text-slate-700 font-medium border-r border-[#CAD5E2]">
+                      <td className="py-2.5 px-2 text-center text-slate-600 border-r border-[#CAD5E2]">
                         {item.hsn || '8471'}
                       </td>
                     )}
-                    <td className="py-3 px-2 text-center font-bold text-slate-900 border-r border-[#CAD5E2]">
+                    <td className="py-2.5 px-2 text-center font-bold text-slate-900 border-r border-[#CAD5E2]">
                       {item.quantity}
                     </td>
                     {design.showUnitColumn && (
-                      <td className="py-3 px-2 text-center text-slate-700 font-medium border-r border-[#CAD5E2]">
+                      <td className="py-2.5 px-2 text-center text-slate-600 border-r border-[#CAD5E2]">
                         {item.unit || 'Pcs'}
                       </td>
                     )}
                     {design.showDiscountColumn && (
-                      <td className="py-3 px-2 text-center text-emerald-700 font-semibold border-r border-[#CAD5E2]">
+                      <td className="py-2.5 px-2 text-center text-emerald-700 font-semibold border-r border-[#CAD5E2]">
                         {item.discountAmount ? formatCurrency(item.discountAmount) : '-'}
                       </td>
                     )}
-                    <td className="py-3 px-3 text-right text-slate-800 font-medium border-r border-[#CAD5E2]">
+                    <td className="py-2.5 px-3 text-right text-slate-800 font-medium border-r border-[#CAD5E2]">
                       {formatCurrency(item.rate)}
                     </td>
-                    <td className="py-3 px-3 text-right font-bold text-slate-900">
+                    <td className="py-2.5 px-3 text-right font-bold text-slate-900 text-[13px]">
                       {formatCurrency(item.total)}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="bg-[#F1F5F9] font-bold text-xs sm:text-sm border-t-2 border-[#CAD5E2]">
+                <tr className="bg-[#F1F5F9] font-bold text-xs border-t-2 border-[#CAD5E2]">
                   <td
                     colSpan={(design.showSerialColumn ? 1 : 0) + 1 + (design.showHsnColumn ? 1 : 0)}
-                    className="py-2.5 px-3 text-center font-bold text-slate-900 border-r border-[#CAD5E2]"
+                    className="py-2 px-3 text-center border-r border-[#CAD5E2]"
                   >
                     Total
                   </td>
-                  <td className="py-2.5 px-2 text-center font-bold text-slate-900 border-r border-[#CAD5E2]">
+                  <td className="py-2 px-2 text-center font-bold text-slate-900 border-r border-[#CAD5E2]">
                     {totalQuantity}
                   </td>
                   {design.showUnitColumn && (
-                    <td className="py-2.5 px-2 text-center font-bold text-slate-900 border-r border-[#CAD5E2]">
+                    <td className="py-2 px-2 text-center border-r border-[#CAD5E2]">
                       Pcs
                     </td>
                   )}
@@ -848,7 +848,7 @@ export default function InvoicePrintView({
                     <td className="border-r border-[#CAD5E2]"></td>
                   )}
                   <td className="border-r border-[#CAD5E2]"></td>
-                  <td className="py-2.5 px-3 text-right font-black text-slate-900 text-sm sm:text-base">
+                  <td className="py-2 px-3 text-right font-bold text-slate-900 text-[13px]">
                     {formatCurrency(invoice.subtotal)}
                   </td>
                 </tr>
@@ -860,22 +860,22 @@ export default function InvoicePrintView({
           <div className="grid grid-cols-12 gap-4 py-2 border-t border-b border-[#CAD5E2]">
             {/* Amount In Words & Optional Bank Info */}
             <div className="col-span-7 pr-4">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                 INVOICE AMOUNT IN WORDS:
               </div>
-              <div className="font-bold text-slate-900 text-sm sm:text-base italic bg-[#F8FAFC] p-3 rounded-lg border border-[#CAD5E2]">
+              <div className="font-bold text-slate-800 text-xs sm:text-[13px] italic bg-[#F8FAFC] p-2.5 rounded-lg border border-[#CAD5E2]">
                 {numberToWords(grandTotal)}
               </div>
 
               {/* Quality Guarantee Box */}
-              <div className="mt-3 p-3 bg-[#F5FAFF] rounded-lg border border-[#BFDBFE] text-xs sm:text-[13px] text-slate-700">
+              <div className="mt-3 p-2.5 bg-[#F5FAFF] rounded-lg border border-[#BFDBFE] text-xs text-slate-700">
                 <span className="font-bold text-[#2563EB] block mb-0.5">Description & Condition:</span>
                 {invoice.notes || "Professionally refurbished, fully tested, and ready to use. Clean, reliable, and backed by quality service."}
               </div>
 
               {/* Bank & UPI Details (Side Position) */}
               {design.bankDetailsPosition === 'left' && (
-                <div className="mt-3 flex items-start gap-4 p-3 bg-[#F8FAFC] rounded-lg border border-[#CAD5E2] text-xs sm:text-[13px]">
+                <div className="mt-3 flex items-start gap-4 p-2.5 bg-[#F8FAFC] rounded-lg border border-[#CAD5E2] text-xs">
                   <div className="flex-1 space-y-0.5">
                     <span
                       className="font-bold block mb-1 text-[#4257B8]"
@@ -896,7 +896,7 @@ export default function InvoicePrintView({
                         style={{ width: `${design.qrCodeSize}px`, height: `${design.qrCodeSize}px` }}
                         className="rounded border border-[#CAD5E2] p-0.5 bg-white object-contain"
                       />
-                      <span className="text-[11px] text-slate-500 block mt-0.5">Scan & Pay</span>
+                      <span className="text-[10px] text-slate-500 block mt-0.5">Scan & Pay</span>
                     </div>
                   )}
                 </div>
@@ -904,15 +904,15 @@ export default function InvoicePrintView({
             </div>
 
             {/* Calculations Breakdown */}
-            <div className="col-span-5 space-y-1.5 text-xs sm:text-sm">
+            <div className="col-span-5 space-y-1.5 text-xs">
               <div className="flex justify-between py-1 border-b border-slate-100">
                 <span className="text-slate-600 font-medium">Sub Total:</span>
-                <span className="font-bold text-slate-900 text-sm sm:text-base">{formatCurrency(invoice.subtotal)}</span>
+                <span className="font-semibold text-slate-800">{formatCurrency(invoice.subtotal)}</span>
               </div>
               {invoice.discountAmount > 0 && (
                 <div className="flex justify-between py-1 border-b border-slate-100 text-emerald-700">
                   <span className="font-medium">Discount {invoice.discountPercent ? `(${invoice.discountPercent}%)` : ''}:</span>
-                  <span className="font-bold">- {formatCurrency(invoice.discountAmount)}</span>
+                  <span className="font-semibold">- {formatCurrency(invoice.discountAmount)}</span>
                 </div>
               )}
               {(() => {
@@ -943,13 +943,13 @@ export default function InvoicePrintView({
                       {invoice.taxableAmount > 0 && (
                         <div className="flex justify-between py-1 border-b border-slate-100">
                           <span className="text-slate-600 font-medium">Taxable Value:</span>
-                          <span className="font-bold text-slate-900">{formatCurrency(invoice.taxableAmount)}</span>
+                          <span className="font-semibold text-slate-800">{formatCurrency(invoice.taxableAmount)}</span>
                         </div>
                       )}
                       {invoice.igst > 0 && (
                         <div className="flex justify-between py-1 border-b border-slate-100 text-slate-600">
                           <span className="font-medium">IGST (18%):</span>
-                          <span className="font-bold text-slate-900">{formatCurrency(invoice.igst)}</span>
+                          <span>{formatCurrency(invoice.igst)}</span>
                         </div>
                       )}
                     </>
@@ -961,39 +961,39 @@ export default function InvoicePrintView({
                     {invoice.taxableAmount > 0 && (
                       <div className="flex justify-between py-1 border-b border-slate-100">
                         <span className="text-slate-600 font-medium">Taxable Value:</span>
-                        <span className="font-bold text-slate-900">{formatCurrency(invoice.taxableAmount)}</span>
+                        <span className="font-semibold text-slate-800">{formatCurrency(invoice.taxableAmount)}</span>
                       </div>
                     )}
                     {invoice.cgst > 0 && (
                       <div className="flex justify-between py-1 border-b border-slate-100 text-slate-600">
                         <span className="font-medium">CGST (9%):</span>
-                        <span className="font-bold text-slate-900">{formatCurrency(invoice.cgst)}</span>
+                        <span>{formatCurrency(invoice.cgst)}</span>
                       </div>
                     )}
                     {invoice.sgst > 0 && (
                       <div className="flex justify-between py-1 border-b border-slate-100 text-slate-600">
                         <span className="font-medium">SGST (9%):</span>
-                        <span className="font-bold text-slate-900">{formatCurrency(invoice.sgst)}</span>
+                        <span>{formatCurrency(invoice.sgst)}</span>
                       </div>
                     )}
                   </>
                 );
               })()}
-              <div className="flex justify-between py-2 border-b-2 border-slate-900 text-sm sm:text-base font-bold text-slate-900 items-baseline">
-                <span className="text-base sm:text-lg font-black text-slate-900">Grand Total:</span>
-                <span className="text-xl sm:text-2xl font-black text-[#4257B8]">
+              <div className="flex justify-between py-1.5 border-b-2 border-slate-900 text-sm font-bold text-slate-900 items-baseline">
+                <span>Grand Total:</span>
+                <span className="text-lg font-black text-[#4257B8]">
                   {formatCurrency(grandTotal)}
                 </span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-100">
                 <span className="text-slate-600 font-medium">Received / Paid:</span>
-                <span className="font-bold text-[#059669] text-sm sm:text-base">{formatCurrency(paidAmount)}</span>
+                <span className="font-bold text-[#059669]">{formatCurrency(paidAmount)}</span>
               </div>
-              <div className="flex justify-between py-1 text-sm sm:text-base font-bold items-baseline">
+              <div className="flex justify-between py-1 text-xs sm:text-sm font-bold items-baseline">
                 <span className={balanceDue > 0 ? 'text-rose-600' : 'text-slate-600'}>
                   Balance Due:
                 </span>
-                <span className={balanceDue > 0 ? 'text-rose-600 text-base sm:text-lg font-black' : 'text-slate-800'}>
+                <span className={balanceDue > 0 ? 'text-rose-600 text-sm sm:text-base font-black' : 'text-slate-800'}>
                   {formatCurrency(balanceDue)}
                 </span>
               </div>
@@ -1002,7 +1002,7 @@ export default function InvoicePrintView({
 
           {/* Full Width Bank Details Option */}
           {design.bankDetailsPosition === 'full' && (
-            <div className="my-3 flex items-start gap-4 p-3 bg-[#F8FAFC] rounded-xl border border-[#CAD5E2] text-xs sm:text-[13px]">
+            <div className="my-3 flex items-start gap-4 p-3 bg-[#F8FAFC] rounded-xl border border-[#CAD5E2] text-xs">
               <div className="flex-1 space-y-0.5">
                 <span className="font-bold block mb-1 text-[#4257B8]">
                   Bank & Payment Details:
@@ -1023,7 +1023,7 @@ export default function InvoicePrintView({
                     style={{ width: `${design.qrCodeSize}px`, height: `${design.qrCodeSize}px` }}
                     className="rounded border border-[#CAD5E2] p-0.5 bg-white object-contain"
                   />
-                  <span className="text-[11px] text-slate-500 block mt-0.5">Scan & Pay</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Scan & Pay</span>
                 </div>
               )}
             </div>
@@ -1033,11 +1033,11 @@ export default function InvoicePrintView({
           <div className="grid grid-cols-12 gap-4 pt-4 items-end border-t border-[#CAD5E2] mt-4">
             {/* Terms and Conditions */}
             {design.termsPosition !== 'hidden' ? (
-              <div className="col-span-8 text-xs sm:text-[12.5px] text-slate-600 leading-normal pr-4">
-                <div className="font-black uppercase tracking-wider mb-1.5 text-[#4257B8]">
+              <div className="col-span-8 text-[11px] text-slate-600 leading-relaxed pr-4">
+                <div className="font-bold uppercase tracking-wider mb-1 text-[#4257B8]">
                   TERMS AND CONDITIONS:
                 </div>
-                <div className="whitespace-pre-line text-slate-700 space-y-1">
+                <div className="whitespace-pre-line text-slate-600 space-y-0.5">
                   {business.terms}
                 </div>
               </div>
@@ -1055,10 +1055,10 @@ export default function InvoicePrintView({
                   : 'text-right'
               }`}
             >
-              <div className="text-xs sm:text-sm font-bold text-slate-900 mb-0.5">
+              <div className="text-xs font-bold text-slate-800 mb-0.5">
                 For: {business.companyName}
               </div>
-              <div className="text-[11px] sm:text-xs text-slate-500 mb-1">
+              <div className="text-[10px] text-slate-500 mb-1">
                 Ashirwad Technologies
               </div>
               {design.showSignatureImage && (
@@ -1081,7 +1081,7 @@ export default function InvoicePrintView({
                 </div>
               )}
               <div
-                className={`text-xs sm:text-sm font-bold text-slate-900 border-t border-[#CAD5E2] pt-1 mt-1 ${
+                className={`text-xs font-bold text-slate-800 border-t border-[#CAD5E2] pt-1 mt-1 ${
                   design.signatoryPosition === 'left'
                     ? 'text-left'
                     : design.signatoryPosition === 'center'
@@ -1095,7 +1095,7 @@ export default function InvoicePrintView({
           </div>
 
           {/* Footer Note */}
-          <div className="mt-6 pt-2 border-t border-[#CAD5E2] text-center text-xs text-slate-500">
+          <div className="mt-6 pt-2 border-t border-[#CAD5E2] text-center text-[10px] text-slate-400">
             {design.footerText || business.footer}
           </div>
         </div>

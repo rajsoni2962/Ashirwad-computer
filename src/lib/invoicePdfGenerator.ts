@@ -369,7 +369,7 @@ export async function generateInvoicePdf(
 
   const invoiceTitle = getInvoiceTypeTitle(invoice?.invoiceType);
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(10.5);
+  doc.setFontSize(9.5);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text(invoiceTitle, PAGE_WIDTH / 2, titleY + 17.0, { align: 'center' });
 
@@ -413,17 +413,17 @@ export async function generateInvoicePdf(
 
   // Business Identity Block (Right-Aligned at CONTENT_RIGHT)
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(22);
+  doc.setFontSize(20);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   doc.text(business.companyName, CONTENT_RIGHT, 88, { align: 'right' });
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9.5);
+  doc.setFontSize(8.5);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text(business.tagline, CONTENT_RIGHT, 102, { align: 'right' });
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   doc.text(business.address, CONTENT_RIGHT, 115.5, { align: 'right' });
 
@@ -435,25 +435,25 @@ export async function generateInvoicePdf(
   const phoneLabel = 'Phone no.: ';
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   const emailW = doc.getTextWidth(emailPart);
   doc.text(emailPart, CONTENT_RIGHT, contactY, { align: 'right' });
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   const emailLabelW = doc.getTextWidth(emailLabel);
   doc.text(emailLabel, CONTENT_RIGHT - emailW, contactY, { align: 'right' });
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   const phoneW = doc.getTextWidth(phonePart);
   doc.text(phonePart, CONTENT_RIGHT - emailW - emailLabelW, contactY, { align: 'right' });
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   doc.text(phoneLabel, CONTENT_RIGHT - emailW - emailLabelW - phoneW, contactY, { align: 'right' });
 
@@ -464,13 +464,13 @@ export async function generateInvoicePdf(
     const gstinPart = rawBizGstin;
     const gstinLabel = 'GSTIN: ';
     doc.setFont(fontFamily, 'bold');
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
     doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
     const gstinW = doc.getTextWidth(gstinPart);
     doc.text(gstinPart, CONTENT_RIGHT, gstinY, { align: 'right' });
 
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
     doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
     doc.text(gstinLabel, CONTENT_RIGHT - gstinW, gstinY, { align: 'right' });
   }
@@ -491,27 +491,27 @@ export async function generateInvoicePdf(
 
   // Left Column: BILLED TO
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text('BILLED TO', CONTENT_LEFT, partyY + 16);
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(12);
+  doc.setFontSize(10.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   doc.text(customer.name || 'Walk-in Customer', CONTENT_LEFT, partyY + 31);
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
   doc.text('Contact No.: ', CONTENT_LEFT, partyY + 44.5);
   const contactLabelW = doc.getTextWidth('Contact No.: ');
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   doc.text(customer.phone || '-', CONTENT_LEFT + contactLabelW, partyY + 44.5);
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   const custAddr = customer.address || '';
   const addrLines = doc.splitTextToSize(`Address: ${custAddr || '-'}`, 240);
@@ -529,19 +529,19 @@ export async function generateInvoicePdf(
   if (rawCustGstin && rawCustGstin !== 'null') {
     const custGstinY = stateY + 12.0;
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
     doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
     doc.text('GSTIN: ', CONTENT_LEFT, custGstinY);
     const custGstinLabelW = doc.getTextWidth('GSTIN: ');
     doc.setFont(fontFamily, 'bold');
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
     doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
     doc.text(rawCustGstin, CONTENT_LEFT + custGstinLabelW, custGstinY);
   }
 
   // Right Column: INVOICE DETAILS (Right-aligned at CONTENT_RIGHT)
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text('INVOICE DETAILS', CONTENT_RIGHT, partyY + 16, { align: 'right' });
 
@@ -549,36 +549,36 @@ export async function generateInvoicePdf(
   const invTypeLabel = `${getInvoiceNumberLabel(invoice?.invoiceType)}: `;
   const invNum = invoice?.invoiceNumber || '-';
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(9.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   const invNumW = doc.getTextWidth(invNum);
   doc.text(invNum, CONTENT_RIGHT, partyY + 31, { align: 'right' });
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
   doc.text(invTypeLabel, CONTENT_RIGHT - invNumW, partyY + 31, { align: 'right' });
 
   // Date
   const dateStr = formatDate(invoice?.date);
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   const dateW = doc.getTextWidth(dateStr);
   doc.text(dateStr, CONTENT_RIGHT, partyY + 44.5, { align: 'right' });
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
   doc.text('Date: ', CONTENT_RIGHT - dateW, partyY + 44.5, { align: 'right' });
 
   // Payment Mode
   const modeStr = invoice?.paymentMode || 'Cash';
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   const modeW = doc.getTextWidth(modeStr);
   doc.text(modeStr, CONTENT_RIGHT, partyY + 57.5, { align: 'right' });
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
   doc.text('Payment Mode: ', CONTENT_RIGHT - modeW, partyY + 57.5, { align: 'right' });
 
@@ -586,12 +586,12 @@ export async function generateInvoicePdf(
   if (invoice?.dueDate) {
     const dueStr = formatDate(invoice.dueDate);
     doc.setFont(fontFamily, 'bold');
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
     const dueW = doc.getTextWidth(dueStr);
     doc.text(dueStr, CONTENT_RIGHT, partyY + 70.5, { align: 'right' });
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
     doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
     doc.text('Due Date: ', CONTENT_RIGHT - dueW, partyY + 70.5, { align: 'right' });
   }
@@ -630,7 +630,7 @@ export async function generateInvoicePdf(
     x = CONTENT_LEFT;
     colDef.forEach((col) => {
       doc.setFont(fontFamily, 'bold');
-      doc.setFontSize(8.5);
+      doc.setFontSize(7.5);
       doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
 
       if (col.id === 'rate') {
@@ -665,14 +665,14 @@ export async function generateInvoicePdf(
     totalQty += qty;
 
     const descText = item.description || item.productName || itemSnapshot.productName || item.product?.name || 'Item';
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     const splitDesc = doc.splitTextToSize(descText, colDef[1].w - 18);
     const serial = item.serialNumber || itemSnapshot.serialNumber;
     const warranty = item.warranty || itemSnapshot.warranty || item.product?.warranty;
     const hasExtraNote = Boolean(serial || warranty);
 
-    const descHeight = splitDesc.length * 12;
-    const rowH = Math.max(30.0, descHeight + (hasExtraNote ? 14 : 0) + 8);
+    const descHeight = splitDesc.length * 11;
+    const rowH = Math.max(26.0, descHeight + (hasExtraNote ? 12 : 0) + 8);
 
     // Multi-page overflow check
     if (curRowY + rowH > 740) {
@@ -695,21 +695,21 @@ export async function generateInvoicePdf(
 
     // # index
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-    doc.text(String(idx + 1), CONTENT_LEFT + colDef[0].w / 2, curRowY + 18, { align: 'center' });
+    doc.text(String(idx + 1), CONTENT_LEFT + colDef[0].w / 2, curRowY + 17, { align: 'center' });
 
     // Item description
     doc.setFont(fontFamily, 'bold');
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
-    doc.text(splitDesc, CONTENT_LEFT + colDef[0].w + 10, curRowY + 18);
+    doc.text(splitDesc, CONTENT_LEFT + colDef[0].w + 10, curRowY + 17);
 
     // Serial & Warranty Note underneath
     if (hasExtraNote) {
-      const extraY = curRowY + 18 + (splitDesc.length * 12);
+      const extraY = curRowY + 17 + (splitDesc.length * 11);
       doc.setFont(fontFamily, 'bold');
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(109, 40, 217); // Purple-700
       let extraStr = '';
       if (serial && warranty) extraStr = `S/N: ${serial}  •  Warranty: ${warranty}`;
@@ -721,45 +721,45 @@ export async function generateInvoicePdf(
     // HSN
     const hsnVal = item.hsn || itemSnapshot.hsn || '8471';
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
-    doc.text(hsnVal, CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w / 2, curRowY + 18, { align: 'center' });
+    doc.text(hsnVal, CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w / 2, curRowY + 17, { align: 'center' });
 
     // Qty
     doc.setFont(fontFamily, 'bold');
-    doc.setFontSize(9.5);
+    doc.setFontSize(8.5);
     doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
-    doc.text(String(qty), CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w / 2, curRowY + 18, { align: 'center' });
+    doc.text(String(qty), CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w / 2, curRowY + 17, { align: 'center' });
 
     // Unit
     const unitVal = item.unit || itemSnapshot.unit || 'Pcs';
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
-    doc.text(unitVal, CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w + colDef[4].w / 2, curRowY + 18, { align: 'center' });
+    doc.text(unitVal, CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w + colDef[4].w / 2, curRowY + 17, { align: 'center' });
 
     // Price / Unit
     const rateVal = Number(item.rate !== undefined ? item.rate : itemSnapshot.rate) || 0;
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(9.5);
+    doc.setFontSize(8.5);
     doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
     const rateStr = formatPdfCurrency(rateVal);
     const rateX = CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w + colDef[4].w + colDef[5].w - 12;
-    doc.text(rateStr, rateX, curRowY + 18, { align: 'right' });
+    doc.text(rateStr, rateX, curRowY + 17, { align: 'right' });
 
     // Amount
     const totalVal = Number(item.total !== undefined ? item.total : itemSnapshot.total) || (qty * rateVal);
     doc.setFont(fontFamily, 'bold');
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     const amtStr = formatPdfCurrency(totalVal);
     const amtX = CONTENT_RIGHT - 12;
-    doc.text(amtStr, amtX, curRowY + 18, { align: 'right' });
+    doc.text(amtStr, amtX, curRowY + 17, { align: 'right' });
 
     curRowY += rowH;
   });
 
   // Total Row
-  const totalRowH = 24.0;
+  const totalRowH = 22.0;
   let tx = CONTENT_LEFT;
   doc.setDrawColor(PDF_COLORS.tableBorder[0], PDF_COLORS.tableBorder[1], PDF_COLORS.tableBorder[2]);
   doc.setLineWidth(0.75);
@@ -772,22 +772,22 @@ export async function generateInvoicePdf(
 
   // "Total"
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9.5);
+  doc.setFontSize(8.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
-  doc.text('Total', CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w / 2, curRowY + 16, { align: 'center' });
+  doc.text('Total', CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w / 2, curRowY + 15, { align: 'center' });
 
   // Qty total
-  doc.setFontSize(9.5);
-  doc.text(String(totalQty), CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w / 2, curRowY + 16, { align: 'center' });
+  doc.setFontSize(8.5);
+  doc.text(String(totalQty), CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w / 2, curRowY + 15, { align: 'center' });
 
   // Unit
-  doc.setFontSize(9);
-  doc.text('Pcs', CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w + colDef[4].w / 2, curRowY + 16, { align: 'center' });
+  doc.setFontSize(8);
+  doc.text('Pcs', CONTENT_LEFT + colDef[0].w + colDef[1].w + colDef[2].w + colDef[3].w + colDef[4].w / 2, curRowY + 15, { align: 'center' });
 
   // Total Amount
   const subtotalVal = invoice?.subtotal !== undefined ? invoice.subtotal : grandTotal;
-  doc.setFontSize(10);
-  doc.text(formatPdfCurrency(subtotalVal), CONTENT_RIGHT - 12, curRowY + 16, { align: 'right' });
+  doc.setFontSize(9);
+  doc.text(formatPdfCurrency(subtotalVal), CONTENT_RIGHT - 12, curRowY + 15, { align: 'right' });
 
   curRowY += totalRowH;
 
@@ -797,7 +797,7 @@ export async function generateInvoicePdf(
   // LEFT BLOCK (Width: 294 pt)
   // Box 1: INVOICE AMOUNT IN WORDS:
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
   doc.text('INVOICE AMOUNT IN WORDS:', CONTENT_LEFT, secY);
 
@@ -810,7 +810,7 @@ export async function generateInvoicePdf(
   doc.roundedRect(CONTENT_LEFT, box1Y, box1W, box1H, 6, 6, 'FD');
 
   doc.setFont(fontFamily, 'bolditalic');
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   const wordsStr = numberToWords(Math.round(grandTotal));
   doc.text(wordsStr, CONTENT_LEFT + 10, box1Y + 16.5);
@@ -824,12 +824,12 @@ export async function generateInvoicePdf(
   doc.roundedRect(CONTENT_LEFT, box2Y, box2W, box2H, 7, 7, 'FD');
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text('Description & Condition:', CONTENT_LEFT + 8, box2Y + 14);
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(7.5);
+  doc.setFontSize(7);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   const defaultNotes = 'Professionally refurbished, fully tested, and ready to use. Clean, reliable, and backed by quality service.';
   const notesText = invoice?.notes || defaultNotes;
@@ -845,12 +845,12 @@ export async function generateInvoicePdf(
   doc.roundedRect(CONTENT_LEFT, box3Y, box3W, box3H, 7, 7, 'FD');
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text('Bank & Payment Details:', CONTENT_LEFT + 8, box3Y + 14);
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   doc.text(`Bank Name: ${business.bankName}`, CONTENT_LEFT + 8, box3Y + 28);
   doc.text(`Account No.: ${business.accountNumber}`, CONTENT_LEFT + 8, box3Y + 41);
@@ -888,7 +888,7 @@ export async function generateInvoicePdf(
 
   // Sub Total Row
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   doc.text('Sub Total:', rightX, calcY);
   doc.setFont(fontFamily, 'bold');
@@ -903,7 +903,7 @@ export async function generateInvoicePdf(
     calcY += 18.0;
     const discLabel = invoice?.discountPercent ? `Discount (${invoice.discountPercent}%):` : 'Discount:';
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setTextColor(PDF_COLORS.received[0], PDF_COLORS.received[1], PDF_COLORS.received[2]);
     doc.text(discLabel, rightX, calcY);
     doc.setFont(fontFamily, 'bold');
@@ -928,7 +928,7 @@ export async function generateInvoicePdf(
     if (isExempt) {
       calcY += 18.0;
       doc.setFont(fontFamily, 'normal');
-      doc.setFontSize(9);
+      doc.setFontSize(8);
       doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
       doc.text('GST (Exempt / Nil-Rated):', rightX, calcY);
       doc.text('₹0.00 (0%)', CONTENT_RIGHT, calcY, { align: 'right' });
@@ -939,7 +939,7 @@ export async function generateInvoicePdf(
       if (invoice?.taxableAmount > 0) {
         calcY += 18.0;
         doc.setFont(fontFamily, 'normal');
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
         doc.text('Taxable Value:', rightX, calcY);
         doc.text(formatPdfCurrency(invoice.taxableAmount), CONTENT_RIGHT, calcY, { align: 'right' });
@@ -950,7 +950,7 @@ export async function generateInvoicePdf(
       if (invoice?.igst > 0) {
         calcY += 18.0;
         doc.setFont(fontFamily, 'normal');
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
         doc.text('IGST (18%):', rightX, calcY);
         doc.text(formatPdfCurrency(invoice.igst), CONTENT_RIGHT, calcY, { align: 'right' });
@@ -962,7 +962,7 @@ export async function generateInvoicePdf(
       if (invoice?.taxableAmount > 0) {
         calcY += 18.0;
         doc.setFont(fontFamily, 'normal');
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
         doc.text('Taxable Value:', rightX, calcY);
         doc.text(formatPdfCurrency(invoice.taxableAmount), CONTENT_RIGHT, calcY, { align: 'right' });
@@ -973,7 +973,7 @@ export async function generateInvoicePdf(
       if (invoice?.cgst > 0) {
         calcY += 18.0;
         doc.setFont(fontFamily, 'normal');
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
         doc.text('CGST (9%):', rightX, calcY);
         doc.text(formatPdfCurrency(invoice.cgst), CONTENT_RIGHT, calcY, { align: 'right' });
@@ -984,7 +984,7 @@ export async function generateInvoicePdf(
       if (invoice?.sgst > 0) {
         calcY += 18.0;
         doc.setFont(fontFamily, 'normal');
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
         doc.text('SGST (9%):', rightX, calcY);
         doc.text(formatPdfCurrency(invoice.sgst), CONTENT_RIGHT, calcY, { align: 'right' });
@@ -999,7 +999,7 @@ export async function generateInvoicePdf(
   if (invoice?.roundOff && invoice.roundOff !== 0) {
     calcY += 18.0;
     doc.setFont(fontFamily, 'normal');
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
     doc.text('Round-Off:', rightX, calcY);
     doc.text(`${invoice.roundOff > 0 ? '+' : ''}${formatPdfCurrency(invoice.roundOff)}`, CONTENT_RIGHT, calcY, { align: 'right' });
@@ -1008,10 +1008,10 @@ export async function generateInvoicePdf(
     doc.line(rightX, calcY + 6.0, CONTENT_RIGHT, calcY + 6.0);
   }
 
-  // Grand Total Row (14 pt bold, #4F46E5)
+  // Grand Total Row (12.5 pt bold, #4F46E5)
   calcY += 28.0;
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(13.5);
+  doc.setFontSize(12.5);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   doc.text('Grand Total:', rightX, calcY);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
@@ -1020,10 +1020,10 @@ export async function generateInvoicePdf(
   doc.setLineWidth(0.75);
   doc.line(rightX, calcY + 7.0, CONTENT_RIGHT, calcY + 7.0);
 
-  // Received / Paid Row (9 pt bold, #059669)
+  // Received / Paid Row (8.5 pt bold, #059669)
   calcY += 23.0;
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   doc.text('Received / Paid:', rightX, calcY);
   doc.setFont(fontFamily, 'bold');
@@ -1033,10 +1033,10 @@ export async function generateInvoicePdf(
   doc.setLineWidth(0.5);
   doc.line(rightX, calcY + 6.0, CONTENT_RIGHT, calcY + 6.0);
 
-  // Balance Due Row (9.5 pt bold, #334155, or red if > 0)
+  // Balance Due Row (9 pt bold, #334155, or red if > 0)
   calcY += 22.0;
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(9.5);
+  doc.setFontSize(9);
   doc.setTextColor(PDF_COLORS.bodyText[0], PDF_COLORS.bodyText[1], PDF_COLORS.bodyText[2]);
   doc.text('Balance Due:', rightX, calcY);
   const dueColor = balanceDue > 0 ? PDF_COLORS.balanceDueRed : PDF_COLORS.bodyText;
@@ -1052,12 +1052,12 @@ export async function generateInvoicePdf(
   // Terms and Conditions (Left)
   const termsY = termsDividerY + 12.0;
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(PDF_COLORS.accent[0], PDF_COLORS.accent[1], PDF_COLORS.accent[2]);
   doc.text('TERMS AND CONDITIONS:', CONTENT_LEFT, termsY);
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(7);
+  doc.setFontSize(6.8);
   doc.setTextColor(PDF_COLORS.muted[0], PDF_COLORS.muted[1], PDF_COLORS.muted[2]);
   const termsList = business.terms.split('\n').map((t: string) => t.trim()).filter(Boolean);
   let curTermY = termsY + 11.0;
@@ -1069,7 +1069,7 @@ export async function generateInvoicePdf(
   // Authorized Signatory (Right)
   const sigX = 389.0;
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   doc.text(`For: ${business.companyName}`, CONTENT_RIGHT, termsDividerY + 18.0, { align: 'right' });
 
@@ -1087,7 +1087,7 @@ export async function generateInvoicePdf(
   doc.line(sigX, sigLineY, CONTENT_RIGHT, sigLineY);
 
   doc.setFont(fontFamily, 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(8);
   doc.setTextColor(PDF_COLORS.mainText[0], PDF_COLORS.mainText[1], PDF_COLORS.mainText[2]);
   doc.text('Authorized Signatory', CONTENT_RIGHT, sigLineY + 11.0, { align: 'right' });
 
@@ -1098,7 +1098,7 @@ export async function generateInvoicePdf(
   doc.line(CONTENT_LEFT, footerLineY, CONTENT_RIGHT, footerLineY);
 
   doc.setFont(fontFamily, 'normal');
-  doc.setFontSize(7.5);
+  doc.setFontSize(7);
   doc.setTextColor(PDF_COLORS.footerText[0], PDF_COLORS.footerText[1], PDF_COLORS.footerText[2]);
   doc.text(business.footer, PAGE_WIDTH / 2, 735, { align: 'center' });
 
