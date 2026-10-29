@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, phone, deviceType, issueDescription, locality, brand } = body;
+    const body = await request.json().catch(() => ({}));
+    const { name, phone, deviceType, issueDescription, description, locality, brand } = body;
+
+    const finalDescription = (issueDescription || description || '').trim();
 
     // 1. Validation
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!issueDescription || typeof issueDescription !== 'string' || issueDescription.trim().length < 4) {
+    if (!finalDescription || finalDescription.length < 3) {
       return NextResponse.json(
         { success: false, error: 'Please briefly describe the problem or service needed.' },
         { status: 400 }
@@ -47,7 +49,7 @@ export async function POST(request: Request) {
       `*Phone:* +91 ${cleanPhone.slice(-10)}\n` +
       `*Device:* ${deviceType} ${brand ? `(${brand})` : ''}\n` +
       `*Locality:* ${locality || 'Ahmedabad'}\n` +
-      `*Issue Details:* ${issueDescription.trim()}\n` +
+      `*Issue Details:* ${finalDescription}\n` +
       `*Requested At:* ${formattedDate}\n` +
       `--------------------------------\n` +
       `Please provide estimated repair cost & turnaround time.`
@@ -70,7 +72,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: 'Failed to process service inquiry. Please call or WhatsApp us directly.' },
+      { success: false, error: error?.message || 'Failed to process service inquiry. Please call or WhatsApp us directly.' },
       { status: 500 }
     );
   }
