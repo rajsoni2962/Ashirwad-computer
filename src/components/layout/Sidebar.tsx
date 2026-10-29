@@ -22,7 +22,8 @@ import {
   BookOpen,
   SlidersHorizontal,
   X,
-  Trash2
+  Trash2,
+  Globe
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -60,7 +61,7 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
       >
         {/* Brand Banner Header */}
         <div className="p-4 border-b border-amber-500/20 bg-gradient-to-b from-slate-950 to-slate-900 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group" onClick={onCloseMobile}>
+          <Link href="/dashboard" className="flex items-center gap-3 group" onClick={onCloseMobile}>
             <div className="relative w-11 h-11 rounded-2xl overflow-hidden border border-amber-500/40 shadow-sm shrink-0 bg-white p-0.5">
               <img
                 src="/brand/logo.png"
@@ -90,17 +91,32 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
 
         {/* Navigation Links Scrollable */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm custom-scrollbar">
-          {/* Dashboard */}
+          {/* Public Website Quick Link */}
           <Link
             href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onCloseMobile}
+            className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold text-sky-300 bg-sky-950/40 hover:bg-sky-900/50 border border-sky-800/40 transition mb-2"
+          >
+            <div className="flex items-center gap-2">
+              <Globe className="w-3.5 h-3.5 text-sky-400" />
+              <span>Public Website</span>
+            </div>
+            <span className="text-[10px] text-sky-400 uppercase tracking-wider font-bold">Visit ↗</span>
+          </Link>
+
+          {/* ERP Dashboard */}
+          <Link
+            href="/dashboard"
             onClick={onCloseMobile}
             className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium transition ${
-              isActive('/')
+              isActive('/dashboard') || isActive('/')
                 ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20'
                 : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
             }`}
           >
-            <LayoutDashboard className={`w-4 h-4 ${isActive('/') ? 'text-slate-950' : 'text-amber-400'}`} />
+            <LayoutDashboard className={`w-4 h-4 ${isActive('/dashboard') || isActive('/') ? 'text-slate-950' : 'text-amber-400'}`} />
             <span>Dashboard</span>
           </Link>
 

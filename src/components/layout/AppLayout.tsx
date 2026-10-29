@@ -12,8 +12,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  // If on login page or already inside an AppLayout, avoid rendering outer frame/sidebar/header
-  if (isInside || pathname === '/login') {
+  // If on public landing page, login page, or already inside an AppLayout, avoid rendering outer frame/sidebar/header
+  if (isInside || pathname === '/' || pathname === '/login') {
     return <>{children}</>;
   }
 

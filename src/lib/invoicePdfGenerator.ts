@@ -546,7 +546,7 @@ export async function generateInvoicePdf(
   doc.text('INVOICE DETAILS', CONTENT_RIGHT, partyY + 16, { align: 'right' });
 
   // Invoice No. / Doc No.
-  const invTypeLabel = `${getInvoiceNumberLabel(invoice?.invoiceType)}: `;
+  const invTypeLabel = `${getInvoiceNumberLabel(invoice?.invoiceType).replace(/:+$/, '')}: `;
   const invNum = invoice?.invoiceNumber || '-';
   doc.setFont(fontFamily, 'bold');
   doc.setFontSize(9.5);

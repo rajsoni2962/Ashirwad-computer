@@ -44,13 +44,28 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/login') {
     if (isAuthenticated) {
       // Already logged in, redirect to dashboard or requested URL
-      const redirectParam = request.nextUrl.searchParams.get('redirect') || '/';
+      const redirectParam = request.nextUrl.searchParams.get('redirect') || '/dashboard';
       return NextResponse.redirect(new URL(redirectParam, request.url));
     }
     return NextResponse.next();
   }
 
-  // 4. Protect API mutation endpoints (POST, PUT, DELETE, PATCH)
+  // 4. Public website and inquiries
+  if (pathname === '/' || pathname === '/api/contact') {
+    return NextResponse.next();
+  }
+
+  // Allow read-only public GET requests for product catalog, serial lookup, and settings
+  if (
+    request.method.toUpperCase() === 'GET' &&
+    (pathname === '/api/products' ||
+      pathname === '/api/serial-numbers' ||
+      pathname === '/api/settings')
+  ) {
+    return NextResponse.next();
+  }
+
+  // 5. Protect API mutation endpoints (POST, PUT, DELETE, PATCH)
   if (pathname.startsWith('/api/')) {
     const method = request.method.toUpperCase();
     const isMutation = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
@@ -69,12 +84,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 5. Protect all application management and billing pages
+  // 6. Protect all ERP application management and billing pages
   if (!isAuthenticated) {
     const loginUrl = new URL('/login', request.url);
-    if (pathname !== '/') {
-      loginUrl.searchParams.set('redirect', `${pathname}${search}`);
-    }
+    loginUrl.searchParams.set('redirect', `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 

@@ -639,7 +639,7 @@ export default function InvoicePrintView({
                   </div>
                   <div className="text-xs text-slate-600">
                     <span>
-                      {getInvoiceNumberLabel(currentInvoice.invoiceType)}:
+                      {getInvoiceNumberLabel(currentInvoice.invoiceType)}
                     </span>{' '}
                     <strong className="text-sm font-bold text-slate-900">{invoice.invoiceNumber}</strong>
                   </div>
@@ -732,7 +732,7 @@ export default function InvoicePrintView({
                   </div>
                   <div className="text-xs text-slate-600">
                     <span>
-                      {getInvoiceNumberLabel(currentInvoice.invoiceType)}:
+                      {getInvoiceNumberLabel(currentInvoice.invoiceType)}
                     </span>{' '}
                     <strong className="text-sm font-bold text-slate-900">{invoice.invoiceNumber}</strong>
                   </div>
