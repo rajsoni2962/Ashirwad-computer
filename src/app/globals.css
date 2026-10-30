@@ -1,19 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  
-  /* Brand Tech Palette: Deep Navy, Silver, Subtle Electric Blue */
-  --brand-navy: #0b132b;
-  --brand-navy-light: #1c2541;
-  --brand-silver: #e2e8f0;
-  --brand-silver-dark: #94a3b8;
-  --brand-blue: #2563eb;
-  --brand-blue-hover: #1d4ed8;
-  --brand-blue-light: #dbeafe;
-  
-  /* Legacy ERP Theme compatibility */
+  --background: #fbfaf8;
+  --foreground: #0d1117;
   --brand-gold: #c59b27;
   --brand-gold-light: #e5c158;
   --brand-gold-dark: #9a741e;
@@ -26,25 +15,7 @@ body {
   color: var(--foreground);
 }
 
-/* Subtle Tech Glows & Accents */
-.tech-blue-glow {
-  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.15);
-}
-
-.tech-card-shadow {
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
-}
-
-.tech-card-hover {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.tech-card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-}
-
-/* Metallic Gold Theme Utilities (Retained for ERP components) */
+/* Metallic Gold Theme Utilities */
 .gold-gradient-bg {
   background: linear-gradient(135deg, #dfb743 0%, #c59b27 50%, #9a741e 100%);
 }

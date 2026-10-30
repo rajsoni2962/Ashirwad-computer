@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, Suspense } from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { ShieldCheck, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -9,7 +8,7 @@ import { ShieldCheck, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle, CheckCir
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/dashboard';
+  const redirectUrl = searchParams.get('redirect') || '/';
 
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('');
@@ -187,20 +186,12 @@ function LoginForm() {
       </form>
 
       {/* Security notice footer */}
-      <div className="mt-8 pt-6 border-t border-slate-800/80 text-center relative z-10 space-y-3">
+      <div className="mt-8 pt-6 border-t border-slate-800/80 text-center relative z-10">
         <p className="text-[11px] text-slate-400 leading-relaxed">
           ASHIRWAD TECHNOLOGIES Secure Billing & ERP Environment.
           <br />
           All actions, invoice revisions, and payments are cryptographically audited.
         </p>
-        <div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs text-amber-400/90 hover:text-amber-300 transition hover:underline"
-          >
-            ← Return to Ashirwad Technologies Website
-          </Link>
-        </div>
       </div>
     </div>
   );
