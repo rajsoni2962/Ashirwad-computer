@@ -17,6 +17,7 @@ import {
   Store,
 } from 'lucide-react';
 import GlobalSearchModal from '../common/GlobalSearchModal';
+import LiveCloudSync from '../common/LiveCloudSync';
 
 interface HeaderProps {
   onToggleMobile?: () => void;
@@ -92,6 +93,9 @@ export default function Header({ onToggleMobile }: HeaderProps) {
 
         {/* Right: Business Branch Switcher & Quick Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Live Multi-Device Cloud Sync & Android App Link */}
+          <LiveCloudSync />
+
           {/* Active Business Profile Switcher */}
           {profiles.length > 0 && (
             <div className="relative">

@@ -27,7 +27,8 @@ import {
   CreditCard,
   Building2,
   ShieldAlert,
-  Landmark
+  Landmark,
+  Smartphone
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -491,6 +492,25 @@ export default function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarPr
           >
             <BarChart3 className="w-4 h-4 text-violet-400 shrink-0" />
             <span>Reports & GST</span>
+          </Link>
+
+          {/* Android App & Cloud Sync */}
+          <Link
+            href="/mobile-app"
+            onClick={onCloseMobile}
+            className={`flex items-center justify-between px-3 py-2 rounded-lg font-medium transition ${
+              isActive('/mobile-app')
+                ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Smartphone className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Android App & Sync</span>
+            </div>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              LIVE
+            </span>
           </Link>
 
           {/* Settings Section */}

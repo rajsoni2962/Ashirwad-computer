@@ -130,6 +130,15 @@ export default function DashboardPage() {
     fetchProducts(selectedCategory);
   }, [selectedCategory]);
 
+  useEffect(() => {
+    const handleCloudSync = () => {
+      fetchDashboard(range);
+      fetchProducts(selectedCategory);
+    };
+    window.addEventListener('cloudDataSynced', handleCloudSync);
+    return () => window.removeEventListener('cloudDataSynced', handleCloudSync);
+  }, [range, selectedCategory]);
+
   return (
     <div className="space-y-6">
       {/* 1. Header & Actions Bar */}

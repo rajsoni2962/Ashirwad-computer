@@ -68,6 +68,12 @@ export default function AllInvoicesPage() {
     fetchInvoices();
   }, [search, statusFilter, typeFilter]);
 
+  useEffect(() => {
+    const handleCloudSync = () => fetchInvoices();
+    window.addEventListener('cloudDataSynced', handleCloudSync);
+    return () => window.removeEventListener('cloudDataSynced', handleCloudSync);
+  }, [search, statusFilter, typeFilter]);
+
   const handleSoftDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
