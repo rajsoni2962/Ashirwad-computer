@@ -22,25 +22,46 @@ export async function POST(req: NextRequest) {
 
     const cleanUsername = username.trim();
 
-    // Find user by username or email
-    const user = await db.user.findFirst({
-      where: {
-        OR: [
-          {
-            username: {
-              equals: cleanUsername,
-              mode: 'insensitive',
+    // Find user by username or email, with cryptographic admin fallback if DB has a cold-start timeout
+    let user: any = null;
+    try {
+      user = await db.user.findFirst({
+        where: {
+          OR: [
+            {
+              username: {
+                equals: cleanUsername,
+                mode: 'insensitive',
+              },
             },
-          },
-          {
-            email: {
-              equals: cleanUsername,
-              mode: 'insensitive',
+            {
+              email: {
+                equals: cleanUsername,
+                mode: 'insensitive',
+              },
             },
-          },
-        ],
-      },
-    });
+          ],
+        },
+      });
+    } catch (dbErr: any) {
+      console.warn('Database lookup warning during login, checking primary admin hash:', dbErr?.message);
+      const isAdminIdentifier =
+        cleanUsername.toLowerCase() === 'admin' ||
+        cleanUsername.toLowerCase() === 'rajsoni2962@gmail.com';
+      if (isAdminIdentifier) {
+        user = {
+          id: 'cmvmvk05i0000ujf83fpdyfu5',
+          username: 'admin',
+          name: 'Raj Soni',
+          email: 'rajsoni2962@gmail.com',
+          role: 'admin',
+          password:
+            'scrypt$e74e904cef4556d8262afbc675c12084$062568868e72f8306d6d74d8cf2e8ca623b7d77e38f160ca9710a35ce8d9e53f500bfc4160d1b8a9e226a890a62e6fbfa037ebafc9ac513ac538392fc1ea9097',
+        };
+      } else {
+        throw dbErr;
+      }
+    }
 
     if (!user) {
       // Timing attack mitigation

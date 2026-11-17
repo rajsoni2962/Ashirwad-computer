@@ -249,6 +249,9 @@ model Invoice {
   restoredAt        DateTime?
   restoredBy        String?
 
+  convertedToInvoiceId String?
+  convertedAt          DateTime?
+
   businessProfileId String?
   businessProfile   BusinessProfile? @relation(fields: [businessProfileId], references: [id])
 
@@ -388,12 +391,15 @@ model Payment {
   paymentMode     String    @default("Cash")
   referenceNumber String?
   notes           String?
+  bankAccountId   String?
+  bankAccount     BankAccount? @relation(fields: [bankAccountId], references: [id])
   createdAt       DateTime  @default(now())
 
   @@index([invoiceId])
   @@index([purchaseId])
   @@index([customerId])
   @@index([supplierId])
+  @@index([bankAccountId])
 }
 
 model StockMovement {
@@ -454,3 +460,46 @@ model InvoiceShareLog {
   sharedAt      DateTime @default(now())
   status        String   @default("Shared")
 }
+
+model BankAccount {
+  id             String           @id @default(cuid()) @map("_id")
+  accountName    String
+  accountType    String           @default("BANK") // "BANK" | "CASH"
+  bankName       String?
+  accountNumber  String?
+  ifscCode       String?
+  upiId          String?
+  openingBalance Float            @default(0.0)
+  currentBalance Float            @default(0.0)
+  isDefault      Boolean          @default(false)
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  payments       Payment[]
+  contraFrom     ContraTransfer[] @relation("ContraFrom")
+  contraTo       ContraTransfer[] @relation("ContraTo")
+
+  @@index([accountType])
+  @@index([isDefault])
+  @@index([isActive])
+}
+
+model ContraTransfer {
+  id              String      @id @default(cuid()) @map("_id")
+  transferNumber  String      @unique
+  date            DateTime    @default(now())
+  fromAccountId   String
+  fromAccount     BankAccount @relation("ContraFrom", fields: [fromAccountId], references: [id])
+  toAccountId     String
+  toAccount       BankAccount @relation("ContraTo", fields: [toAccountId], references: [id])
+  amount          Float
+  referenceNumber String?
+  notes           String?
+  createdAt       DateTime    @default(now())
+
+  @@index([fromAccountId])
+  @@index([toAccountId])
+  @@index([date])
+}
+

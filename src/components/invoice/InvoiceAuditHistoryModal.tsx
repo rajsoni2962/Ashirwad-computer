@@ -29,14 +29,14 @@ export default function InvoiceAuditHistoryModal({
               <History className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <span>Invoice Change History & Audit Log</span>
-                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+              <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <span>Audit History</span>
+                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200 tabular-nums">
                   {invoice.invoiceNumber}
                 </span>
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Immutable, append-only record of all invoice revisions, edits, soft-deletions, and restorations.
+                Audit trail of invoice revisions, modifications, and restorations.
               </p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export default function InvoiceAuditHistoryModal({
               if (rev.diffSummary) {
                 try {
                   diffs = typeof rev.diffSummary === 'string' ? JSON.parse(rev.diffSummary) : rev.diffSummary;
-                } catch {}
+                } catch { }
               }
 
               const formattedDate = new Date(rev.createdAt).toLocaleString('en-IN', {
@@ -85,27 +85,26 @@ export default function InvoiceAuditHistoryModal({
                         v{rev.revisionNumber}
                       </span>
                       <span
-                        className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${
-                          rev.action === 'CREATED_FINALIZED'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200'
-                            : rev.action === 'EDITED'
+                        className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${rev.action === 'CREATED_FINALIZED'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : rev.action === 'EDITED'
                             ? 'bg-amber-50 text-amber-700 border-amber-200'
                             : rev.action === 'SOFT_DELETED'
-                            ? 'bg-rose-50 text-rose-700 border-rose-200'
-                            : rev.action === 'RESTORED'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-slate-100 text-slate-700 border-slate-200'
-                        }`}
+                              ? 'bg-rose-50 text-rose-700 border-rose-200'
+                              : rev.action === 'RESTORED'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-slate-100 text-slate-700 border-slate-200'
+                          }`}
                       >
                         {rev.action === 'CREATED_FINALIZED'
                           ? 'Created & Finalized'
                           : rev.action === 'EDITED'
-                          ? 'Invoice Edited'
-                          : rev.action === 'SOFT_DELETED'
-                          ? 'Moved to Recently Deleted'
-                          : rev.action === 'RESTORED'
-                          ? 'Restored to Active'
-                          : rev.action}
+                            ? 'Invoice Edited'
+                            : rev.action === 'SOFT_DELETED'
+                              ? 'Moved to Recently Deleted'
+                              : rev.action === 'RESTORED'
+                                ? 'Restored to Active'
+                                : rev.action}
                       </span>
                       <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />

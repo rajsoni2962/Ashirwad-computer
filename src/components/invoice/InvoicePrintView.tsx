@@ -21,6 +21,11 @@ import {
   Copy,
   ChevronDown,
   Check,
+  Receipt,
+  ArrowRightLeft,
+  ArrowRight,
+  FileText,
+  Sparkles,
 } from 'lucide-react';
 import { formatCurrency, formatDate, numberToWords, getInvoiceTypeTitle, getInvoiceTypeLabel, getInvoiceNumberLabel, getTaxConfigLabel } from '@/lib/utils';
 import Link from 'next/link';
@@ -28,6 +33,7 @@ import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceAuditHistoryModal from '@/components/invoice/InvoiceAuditHistoryModal';
 import InvoiceVersionCompareModal from '@/components/invoice/InvoiceVersionCompareModal';
 import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
+import ThermalPrintModal from '@/components/invoice/ThermalPrintModal';
 import {
   downloadInvoiceImage,
   copyInvoiceImageToClipboard,
@@ -71,6 +77,8 @@ export default function InvoicePrintView({
   const [isImageMenuOpen, setIsImageMenuOpen] = useState(false);
   const [imageDownloading, setImageDownloading] = useState(false);
   const [imageCopied, setImageCopied] = useState(false);
+  const [isThermalModalOpen, setIsThermalModalOpen] = useState(false);
+  const [converting, setConverting] = useState(false);
 
   // 1. Reconstruct business from saved historical snapshot (prioritized over mutable live settings)
   let bizSnapshot: any = {};
@@ -279,6 +287,34 @@ export default function InvoicePrintView({
     }
   };
 
+  const handleConvertQuotation = async () => {
+    if (
+      !confirm(
+        `Convert Quotation ${currentInvoice.invoiceNumber} to an official Tax Invoice?\n\nThis will generate the next official invoice number, deduct stock for inventory items, update customer balance, and log the transaction.`
+      )
+    ) {
+      return;
+    }
+    setConverting(true);
+    try {
+      const res = await fetch(`/api/invoices/${currentInvoice.id}/convert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        alert(`Quotation successfully converted to Tax Invoice ${json.data.invoiceNumber}!`);
+        window.location.href = `/sales/invoices/${json.data.id}`;
+      } else {
+        alert(json.error || 'Failed to convert quotation');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error converting quotation');
+    } finally {
+      setConverting(false);
+    }
+  };
+
   // Dynamic style calculations
   const fontStyle = {
     fontFamily:
@@ -339,6 +375,54 @@ export default function InvoicePrintView({
             <span>{restoring ? 'Restoring...' : 'Restore Invoice'}</span>
           </button>
         </div>
+      )}
+
+      {/* Quotation / Estimate Status Banners */}
+      {!isDesignerPreview && currentInvoice.invoiceType === 'QUOTATION' && (
+        <>
+          {currentInvoice.convertedToInvoiceId ? (
+            <div className="print:hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-xs">
+              <div className="flex items-center gap-3 text-emerald-950">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div>
+                  <p className="font-bold text-xs sm:text-sm">Converted to Tax Invoice</p>
+                  <p className="text-xs text-emerald-700 mt-0.5">
+                    This quotation was successfully converted into official Tax Invoice{' '}
+                    <strong className="font-mono">{currentInvoice.convertedToInvoice?.invoiceNumber || ''}</strong>.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href={`/sales/invoices/${currentInvoice.convertedToInvoiceId}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              >
+                <span>View Tax Invoice</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ) : (
+            <div className="print:hidden bg-indigo-50 border border-indigo-200 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-xs">
+              <div className="flex items-center gap-3 text-indigo-950">
+                <FileText className="w-5 h-5 text-indigo-600 shrink-0" />
+                <div>
+                  <p className="font-bold text-xs sm:text-sm">Estimate / Price Quotation</p>
+                  <p className="text-xs text-indigo-700 mt-0.5">
+                    Inventory stock and customer balance have not been deducted. Convert to an official Tax Invoice when the customer approves.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleConvertQuotation}
+                disabled={converting}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition disabled:opacity-50"
+              >
+                <ArrowRightLeft className="w-4 h-4" />
+                <span>{converting ? 'Converting...' : 'Convert to Tax Invoice'}</span>
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Action Header (Hidden in Print or Designer Preview) */}
@@ -522,12 +606,34 @@ export default function InvoicePrintView({
               )}
             </div>
 
+            {currentInvoice.invoiceType === 'QUOTATION' && !currentInvoice.convertedToInvoiceId && (
+              <button
+                type="button"
+                onClick={handleConvertQuotation}
+                disabled={converting}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition disabled:opacity-50"
+                title="Convert this quotation to an official tax invoice"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5" />
+                <span>{converting ? 'Converting...' : 'Convert to Invoice'}</span>
+              </button>
+            )}
+
             <button
               onClick={() => setIsWhatsAppOpen(true)}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               <span>WhatsApp</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsThermalModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition"
+              title="Print 80mm or 58mm Thermal POS Receipt"
+            >
+              <Receipt className="w-3.5 h-3.5 text-slate-600" />
+              <span>Thermal POS</span>
             </button>
             <button
               onClick={handlePrint}
@@ -1198,6 +1304,14 @@ export default function InvoicePrintView({
           setIsImageModalOpen(false);
           setIsWhatsAppOpen(true);
         }}
+      />
+
+      {/* Thermal POS Receipt Print Modal */}
+      <ThermalPrintModal
+        isOpen={isThermalModalOpen}
+        onClose={() => setIsThermalModalOpen(false)}
+        invoice={currentInvoice}
+        business={business}
       />
 
       {/* Image Copied Toast Notification */}

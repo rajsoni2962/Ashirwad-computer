@@ -3,8 +3,8 @@ import './globals.css';
 import AppLayout from '@/components/layout/AppLayout';
 
 export const metadata: Metadata = {
-  title: 'ASHIRWAD TECH — Repair | Upgrade | Build | Service',
-  description: 'Official Billing, Inventory, and Business Management System for ASHIRWAD TECH.',
+  title: 'Apna Vyaapar — Billing & Inventory Management',
+  description: 'Enterprise billing, GST tax invoicing, inventory control, and purchase management.',
   icons: {
     icon: '/brand/logo.png',
   },
@@ -20,7 +20,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/brand/logo.png" />
       </head>
-      <body className="h-full bg-slate-50 text-slate-800 antialiased font-sans">
+      <body className="h-full bg-slate-50 text-slate-900 antialiased font-sans selection:bg-slate-900 selection:text-white">
         <AppLayout>{children}</AppLayout>
       </body>
     </html>

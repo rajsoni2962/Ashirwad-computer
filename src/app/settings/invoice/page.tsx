@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AppLayout from '@/components/layout/AppLayout';
 import InvoicePrintView from '@/components/invoice/InvoicePrintView';
 import {
   InvoiceDesignConfig,
@@ -332,69 +331,58 @@ export default function InvoiceDesignerPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        {/* Top Header & Save Actions */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-                <Sliders className="w-5 h-5" />
-              </div>
-              <div>
-                <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  100% Visual Graphic Invoice Designer Studio
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
-                    WYSIWYG Live
-                  </span>
-                </h1>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Customize every pixel of your invoice: colors, logo size, typography, table columns, bank details, and layout position.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Business Profile Picker */}
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-              <Building2 className="w-3.5 h-3.5 text-slate-500" />
-              <span className="text-xs text-slate-500 font-medium">Design Target:</span>
-              <select
-                value={selectedProfileId}
-                onChange={(e) => handleProfileChange(e.target.value)}
-                className="text-xs font-bold text-slate-800 bg-transparent border-none focus:ring-0 p-0 cursor-pointer"
-              >
-                <option value="default">Default Business (All Branches)</option>
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} {p.isDefault ? '(Default)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleResetToDefault}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
-              title="Revert back to Modern Factory Default"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-              <span>Reset Default</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-slate-950 gold-gradient-bg hover:opacity-95 rounded-xl shadow-md gold-glow transition disabled:opacity-50"
-            >
-              <Save className="w-4 h-4 stroke-[2.5]" />
-              <span>{saving ? 'Applying...' : 'Save & Apply Design'}</span>
-            </button>
-          </div>
+    <div className="space-y-6">
+      {/* Top Header & Save Actions */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            Invoice Template Designer
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Customize invoice layout, typography, logo placement, table columns, and payment instructions.
+          </p>
         </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Business Profile Picker */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+            <Building2 className="w-3.5 h-3.5 text-slate-500" />
+            <span className="text-xs text-slate-500 font-medium">Profile:</span>
+            <select
+              value={selectedProfileId}
+              onChange={(e) => handleProfileChange(e.target.value)}
+              className="text-xs font-semibold text-slate-800 bg-transparent border-none focus:ring-0 p-0 cursor-pointer"
+            >
+              <option value="default">Default (All Branches)</option>
+              {profiles.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} {p.isDefault ? '(Default)' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleResetToDefault}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+            title="Revert back to Factory Default"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+            <span>Reset Default</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-xs transition disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            <span>{saving ? 'Saving...' : 'Save Design'}</span>
+          </button>
+        </div>
+      </div>
 
         {/* Alerts */}
         {successMsg && (
@@ -1341,6 +1329,5 @@ export default function InvoiceDesignerPage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }

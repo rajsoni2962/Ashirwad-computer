@@ -564,7 +564,7 @@ export default function ImportSupplierBillPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
         <div className="flex items-center gap-3">
           <Link
             href="/purchases/all"
@@ -574,18 +574,18 @@ export default function ImportSupplierBillPage() {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-indigo-50 text-indigo-700">
-                <Sparkles className="w-5 h-5" />
+              <span className="p-1.5 rounded-lg bg-slate-100 text-slate-700">
+                <Sparkles className="w-4 h-4" />
               </span>
-              <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                AI Bill Vision — Document Understanding
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                Import Supplier Bill
               </h1>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
-                Multimodal AI
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                Document OCR
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Direct multimodal vision inspection • Table & layout preservation • Mathematical ledger audit • Inventory matching
+              Automated document inspection, table extraction, and line item matching.
             </p>
           </div>
         </div>
@@ -594,32 +594,32 @@ export default function ImportSupplierBillPage() {
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => setConfigModalOpen(true)}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition"
           >
-            <Settings className="w-3.5 h-3.5 text-indigo-600" />
-            <span>AI Model: <strong className="text-indigo-700 font-bold">{apiConfig.model}</strong></span>
+            <Settings className="w-3.5 h-3.5 text-slate-500" />
+            <span>Model: <strong className="text-slate-900 font-semibold">{apiConfig.model}</strong></span>
             {apiConfig.hasAnyKey ? (
               <span className="w-2 h-2 rounded-full bg-emerald-500" title="API Key Connected" />
             ) : (
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" title="API Key Needed" />
+              <span className="w-2 h-2 rounded-full bg-amber-500" title="API Key Needed" />
             )}
           </button>
 
           {/* Trigger Upload Buttons */}
           <button
             onClick={() => cameraInputRef.current?.click()}
-            className="sm:hidden px-3 py-2 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-xl border border-indigo-200"
-            title="Take Photo"
+            className="sm:hidden px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 rounded-xl border border-slate-200"
+            title="Capture Photo"
           >
             <Camera className="w-4 h-4" />
           </button>
 
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-xs transition"
           >
             <Upload className="w-4 h-4" />
-            <span>Upload Bill / PDF</span>
+            <span>Upload Bill</span>
           </button>
         </div>
 
@@ -652,31 +652,31 @@ export default function ImportSupplierBillPage() {
 
       {/* Screen 1: Upload Dropzone if no file selected */}
       {selectedFiles.length === 0 && (
-        <div className="bg-white rounded-3xl border-2 border-dashed border-indigo-200 hover:border-indigo-400 p-8 sm:p-14 text-center transition">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-xs">
-            <Camera className="w-8 h-8" />
+        <div className="bg-white rounded-2xl border-2 border-dashed border-slate-200 hover:border-slate-400 p-8 sm:p-12 text-center transition">
+          <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto mb-4">
+            <Camera className="w-7 h-7" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800">
-            Upload or Photograph Supplier Purchase Bill
+          <h2 className="text-lg font-bold text-slate-900">
+            Upload Supplier Bill
           </h2>
-          <p className="text-xs text-slate-500 max-w-lg mx-auto mt-1.5 mb-6 leading-relaxed">
-            The AI inspects your original bill image directly using multimodal document understanding — reading multi-line item tables, GST breakdowns, supplier metadata, and cross-referencing your laptop catalog.
+          <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-6 leading-relaxed">
+            Upload an invoice PDF or image to extract items, tax rates, and supplier information.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl shadow-sm transition inline-flex items-center gap-2"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-xl shadow-xs transition inline-flex items-center gap-2"
             >
-              <Upload className="w-4 h-4" />
-              <span>Select Images or PDF (Single or Multi-Page)</span>
+              <Upload className="w-3.5 h-3.5" />
+              <span>Select File (PDF / Image)</span>
             </button>
             <button
               onClick={() => cameraInputRef.current?.click()}
-              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition inline-flex items-center gap-2"
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-xl transition inline-flex items-center gap-2"
             >
-              <Camera className="w-4 h-4 text-indigo-600" />
-              <span>Take Photo (Camera)</span>
+              <Camera className="w-3.5 h-3.5 text-slate-600" />
+              <span>Capture Photo</span>
             </button>
           </div>
 
@@ -685,11 +685,11 @@ export default function ImportSupplierBillPage() {
             <div className="mt-6 max-w-md mx-auto p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2 text-left">
               <Key className="w-4 h-4 text-amber-600 shrink-0" />
               <div className="flex-1">
-                <strong>API Key Needed:</strong> Add your Google Gemini or OpenAI API key in settings to enable live multimodal vision parsing.
+                <strong>API Key Required:</strong> Configure Gemini or OpenAI key in settings to enable bill parsing.
               </div>
               <button
                 onClick={() => setConfigModalOpen(true)}
-                className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold rounded-lg shrink-0"
+                className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold rounded-lg shrink-0"
               >
                 Configure
               </button>
@@ -698,7 +698,7 @@ export default function ImportSupplierBillPage() {
 
           {/* Real sample bill 1-click test button */}
           <div className="mt-8 pt-6 border-t border-slate-100">
-            <span className="text-xs text-slate-400 block mb-3 font-medium">Or test with saved sample supplier bills:</span>
+            <span className="text-xs text-slate-400 block mb-2.5 font-medium">Or test with sample bill:</span>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 onClick={async () => {
@@ -713,9 +713,9 @@ export default function ImportSupplierBillPage() {
                     alert('Sample file could not be loaded');
                   }
                 }}
-                className="px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 rounded-xl border border-slate-200 transition"
+                className="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition"
               >
-                📄 Sample: Hardware Tax Invoice (PDF)
+                Sample Hardware Invoice (PDF)
               </button>
             </div>
           </div>
@@ -724,20 +724,17 @@ export default function ImportSupplierBillPage() {
 
       {/* Screen 2: Scanning In Progress State */}
       {scanning && (
-        <div className="bg-white rounded-3xl p-12 text-center border border-indigo-200 shadow-sm space-y-5">
-          <div className="relative w-20 h-20 mx-auto">
-            <div className="w-20 h-20 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin" />
-            <Sparkles className="w-8 h-8 text-indigo-600 absolute inset-0 m-auto animate-pulse" />
+        <div className="bg-white rounded-2xl p-10 text-center border border-slate-200 shadow-xs space-y-4">
+          <div className="relative w-16 h-16 mx-auto">
+            <div className="w-16 h-16 rounded-full border-4 border-slate-100 border-t-slate-900 animate-spin" />
+            <Sparkles className="w-6 h-6 text-slate-700 absolute inset-0 m-auto animate-pulse" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-900">
-              Multimodal AI Document Understanding in Progress...
+            <h3 className="text-base font-bold text-slate-900">
+              Processing Document...
             </h3>
-            <p className="text-xs font-medium text-indigo-700 mt-1 max-w-md mx-auto">
-              {scanStep || 'Inspecting document layout, row-column relationships & line items...'}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-2">
-              Analyzing {selectedFiles.length} uploaded document(s) with {apiConfig.model}
+            <p className="text-xs text-slate-600 mt-1 max-w-md mx-auto">
+              {scanStep || 'Extracting tables and line items...'}
             </p>
           </div>
         </div>
@@ -747,36 +744,36 @@ export default function ImportSupplierBillPage() {
       {selectedFiles.length > 0 && !scanning && scanResult && (
         <div className="space-y-4">
           {/* Top Review Bar: Classification + Math Status + Duplicate Warning */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 {/* Document Type Badge */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold border border-indigo-200">
-                  <FileCheck className="w-3.5 h-3.5 text-indigo-600" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-medium border border-slate-200">
+                  <FileCheck className="w-3.5 h-3.5 text-slate-600" />
                   <span>{scanResult.documentClassification.document_type}</span>
-                  <span className="text-[10px] text-indigo-600 font-mono">
-                    ({Math.round(scanResult.documentClassification.confidence * 100)}% confidence)
+                  <span className="text-[10px] text-slate-500 font-mono tabular-nums">
+                    ({Math.round(scanResult.documentClassification.confidence * 100)}%)
                   </span>
                 </div>
 
                 {/* Math Verification Badge */}
                 {scanResult.mathVerification.status === 'VERIFIED' ? (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-medium border border-emerald-200">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>✓ Calculations Verified</span>
+                    <span>Calculations Verified</span>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-                    <span>⚠ Math Mismatch Detected</span>
+                    <span>Total Mismatch</span>
                   </div>
                 )}
 
                 {/* Duplicate Detection Alert Badge */}
                 {scanResult.duplicateDetection?.isDuplicate && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-800 text-xs font-bold border border-rose-200">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-800 text-xs font-medium border border-rose-200">
                     <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
-                    <span>⚠ Possible Duplicate Bill</span>
+                    <span>Possible Duplicate</span>
                   </div>
                 )}
               </div>
@@ -785,10 +782,10 @@ export default function ImportSupplierBillPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => runVisionAnalysis(selectedFiles)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
                 >
                   <RefreshCw className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Re-scan with AI</span>
+                  <span>Re-scan</span>
                 </button>
                 <button
                   onClick={() => {
@@ -796,9 +793,9 @@ export default function ImportSupplierBillPage() {
                     setFilePreviews([]);
                     setScanResult(null);
                   }}
-                  className="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition"
+                  className="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition"
                 >
-                  Upload Different Bill
+                  Change File
                 </button>
               </div>
             </div>
@@ -945,9 +942,9 @@ export default function ImportSupplierBillPage() {
               <div className="flex items-center gap-1 border-b border-slate-200 pb-2">
                 <button
                   onClick={() => setActiveTab('items')}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-xl transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 ${
                     activeTab === 'items'
-                      ? 'bg-indigo-600 text-white shadow-xs'
+                      ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -956,9 +953,9 @@ export default function ImportSupplierBillPage() {
                 </button>
                 <button
                   onClick={() => setActiveTab('payment')}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-xl transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 ${
                     activeTab === 'payment'
-                      ? 'bg-indigo-600 text-white shadow-xs'
+                      ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -967,9 +964,9 @@ export default function ImportSupplierBillPage() {
                 </button>
                 <button
                   onClick={() => setActiveTab('terms')}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-xl transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 ${
                     activeTab === 'terms'
-                      ? 'bg-indigo-600 text-white shadow-xs'
+                      ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -978,14 +975,14 @@ export default function ImportSupplierBillPage() {
                 </button>
                 <button
                   onClick={() => setActiveTab('raw')}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-xl transition flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 ${
                     activeTab === 'raw'
-                      ? 'bg-indigo-600 text-white shadow-xs'
+                      ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
-                  <span>AI Raw JSON</span>
+                  <span>Raw Data</span>
                 </button>
               </div>
 
@@ -1231,33 +1228,33 @@ export default function ImportSupplierBillPage() {
                           {/* Row Financials: Qty, Rate, GST %, Total */}
                           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                             <div>
-                              <label className="block text-slate-500 text-[10px] font-bold uppercase mb-0.5">Qty</label>
+                              <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-0.5">Qty</label>
                               <input
                                 type="number"
                                 min="1"
                                 value={it.quantity}
                                 onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
-                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold"
+                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-semibold tabular-nums font-mono"
                               />
                             </div>
 
                             <div>
-                              <label className="block text-slate-500 text-[10px] font-bold uppercase mb-0.5">Unit Rate (₹)</label>
+                              <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-0.5">Unit Rate (₹)</label>
                               <input
                                 type="number"
                                 step="any"
                                 value={it.rate}
                                 onChange={(e) => handleItemChange(idx, 'rate', e.target.value)}
-                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold"
+                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-semibold tabular-nums font-mono"
                               />
                             </div>
 
                             <div>
-                              <label className="block text-slate-500 text-[10px] font-bold uppercase mb-0.5">GST Rate</label>
+                              <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-0.5">GST Rate</label>
                               <select
                                 value={it.gstPercent}
                                 onChange={(e) => handleItemChange(idx, 'gstPercent', e.target.value)}
-                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium"
+                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium tabular-nums font-mono"
                               >
                                 <option value="18">18% (Standard)</option>
                                 <option value="12">12%</option>
@@ -1268,22 +1265,22 @@ export default function ImportSupplierBillPage() {
                             </div>
 
                             <div>
-                              <label className="block text-slate-500 text-[10px] font-bold uppercase mb-0.5">HSN Code</label>
+                              <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-0.5">HSN Code</label>
                               <input
                                 type="text"
                                 value={it.hsn}
                                 onChange={(e) => handleItemChange(idx, 'hsn', e.target.value)}
-                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-800 font-mono"
+                                className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-slate-800 font-mono tabular-nums"
                               />
                             </div>
 
                             <div className="col-span-2 sm:col-span-1">
-                              <label className="block text-slate-500 text-[10px] font-bold uppercase mb-0.5">Line Total (₹)</label>
+                              <label className="block text-slate-500 text-[10px] font-semibold uppercase mb-0.5">Line Total (₹)</label>
                               <input
                                 type="text"
                                 readOnly
                                 value={formatCurrency(it.total)}
-                                className="w-full px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-black text-right"
+                                className="w-full px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-semibold tabular-nums font-mono text-right"
                               />
                             </div>
                           </div>
@@ -1363,9 +1360,9 @@ export default function ImportSupplierBillPage() {
                     <div className="pt-2 flex justify-end">
                       <button
                         onClick={handleConfirmPurchase}
-                        className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2"
                       >
-                        <CheckCircle2 className="w-5 h-5" />
+                        <CheckCircle2 className="w-4 h-4" />
                         <span>Confirm & Save Purchase</span>
                       </button>
                     </div>

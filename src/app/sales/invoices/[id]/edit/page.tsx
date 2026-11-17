@@ -548,19 +548,19 @@ export default function EditSalesInvoicePage() {
   if (loading) {
     return (
       <div className="py-20 text-center">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-sm text-slate-500 font-medium">Loading Invoice for Editing...</p>
+        <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs text-slate-500 font-medium">Loading invoice...</p>
       </div>
     );
   }
 
   if (!originalInvoice) {
     return (
-      <div className="py-20 text-center bg-white rounded-2xl border border-slate-200">
-        <h3 className="text-base font-bold text-slate-800">Invoice Not Found</h3>
+      <div className="py-20 text-center bg-white rounded-xl border border-slate-200">
+        <h3 className="text-sm font-semibold text-slate-900">Invoice not found</h3>
         <p className="text-xs text-slate-500 mt-1">Cannot find invoice with ID: {id}</p>
-        <Link href="/sales/invoices" className="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">
-          Back to All Invoices
+        <Link href="/sales/invoices" className="mt-4 inline-block px-3.5 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-semibold">
+          Back to Invoices
         </Link>
       </div>
     );
@@ -569,23 +569,23 @@ export default function EditSalesInvoicePage() {
   return (
     <div className="space-y-6 pb-20">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
         <div className="flex items-center gap-3">
           <Link
             href={`/sales/invoices/${id}`}
-            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
+            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <span>Edit Invoice {originalInvoice.invoiceNumber}</span>
-              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                Current: v{originalInvoice.revisionNumber || 1}
+              <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 tabular-nums">
+                v{originalInvoice.revisionNumber || 1}
               </span>
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Modify permitted customer details, item rates, discounts, or terms. All modifications are permanently recorded in the audit trail.
+              Update details or line items. Changes will be recorded in the audit trail.
             </p>
           </div>
         </div>
@@ -593,17 +593,17 @@ export default function EditSalesInvoicePage() {
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <Link
             href={`/sales/invoices/${id}`}
-            className="px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+            className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
           >
             Cancel
           </Link>
           <button
             onClick={handleSaveClick}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold text-xs rounded-xl shadow-xs transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-xs transition disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>Save & Record Revision</span>
+            <span>Save Revision</span>
           </button>
         </div>
       </div>
@@ -611,62 +611,62 @@ export default function EditSalesInvoicePage() {
       {/* Main Grid: Form Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column (8 cols): Customer & Line Items */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-5">
           {/* Document Type & Tax Configuration Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <span>Invoice Type & Tax Configuration</span>
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <span>Document & Tax Configuration</span>
               </h3>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                 {getInvoiceTypeLabel(invoiceType)}
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Invoice Document Type <span className="text-rose-500">*</span>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Document Type <span className="text-rose-500">*</span>
                 </label>
                 <InvoiceTypeSelect
                   value={invoiceType}
                   onChange={handleInvoiceTypeChange}
-                  showHelperDescription={true}
+                  showHelperDescription={false}
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Tax Configuration <span className="text-rose-500">*</span>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Tax Treatment <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={taxConfiguration}
                   onChange={(e) => setTaxConfiguration(e.target.value)}
                   disabled={invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST'}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 transition shadow-2xs"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-medium focus:outline-none focus:ring-1 focus:ring-slate-900 disabled:bg-slate-100 disabled:text-slate-400 transition"
                 >
-                  <option value="CGST_SGST">CGST + SGST (Intra-State: 50% CGST / 50% SGST)</option>
-                  <option value="IGST">IGST (Inter-State: Integrated GST)</option>
-                  <option value="EXEMPT">Exempt / Nil-Rated (0% GST)</option>
-                  <option value="NONE">No GST / Non-Taxable</option>
+                  <option value="CGST_SGST">Intra-State (CGST + SGST)</option>
+                  <option value="IGST">Inter-State (IGST)</option>
+                  <option value="EXEMPT">Exempt / Nil-Rated</option>
+                  <option value="NONE">Non-Taxable / No GST</option>
                 </select>
               </div>
             </div>
           </div>
 
           {/* Customer Selection Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <span>Customer (Bill To)</span>
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <span>Customer</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddCustomerModal(true)}
-                className="text-xs text-indigo-600 hover:text-indigo-800 font-bold inline-flex items-center gap-1"
+                className="text-xs text-slate-700 hover:text-slate-900 font-semibold inline-flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Add New Customer</span>
+                <span>Add Customer</span>
               </button>
             </div>
 
@@ -681,87 +681,85 @@ export default function EditSalesInvoicePage() {
 
             {/* Display Selected Customer Snapshot */}
             {selectedCustomerObj && (
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-xs text-slate-600 grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200/80 text-xs text-slate-600 grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Customer Name</span>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">Customer</span>
                   <span className="font-semibold text-slate-800">{selectedCustomerObj.name}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Phone Number</span>
-                  <span className="font-medium text-slate-700">{selectedCustomerObj.phone || 'N/A'}</span>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">Phone</span>
+                  <span className="font-mono text-slate-700 tabular-nums">{selectedCustomerObj.phone || '—'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">GSTIN</span>
-                  <span className="font-mono text-slate-700">{selectedCustomerObj.gstin || 'Unregistered'}</span>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">GSTIN</span>
+                  <span className="font-mono text-slate-700 tabular-nums">{selectedCustomerObj.gstin || 'Unregistered'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block">State</span>
-                  <span className="font-medium text-slate-700">{selectedCustomerObj.state || 'Gujarat (24)'}</span>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">State</span>
+                  <span className="text-slate-700">{selectedCustomerObj.state || 'Gujarat (24)'}</span>
                 </div>
               </div>
             )}
           </div>
 
           {/* Line Items Card */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Package className="w-4 h-4 text-indigo-600" />
-                <h3 className="text-sm font-bold text-slate-900">Line Items</h3>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  {items.length} item{items.length === 1 ? '' : 's'}
+                <Package className="w-4 h-4 text-slate-600" />
+                <h3 className="text-sm font-semibold text-slate-900">Line Items</h3>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 tabular-nums">
+                  {items.length} {items.length === 1 ? 'item' : 'items'}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={addItem}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>+ Add Product Row</span>
+                  <span>Add Item</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => addInvoiceOnlyRow()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>+ Invoice Only Item</span>
+                  <span>Custom Item</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleOpenQuickCreate(null, '')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition"
                 >
                   <PackagePlus className="w-3.5 h-3.5" />
-                  <span>+ Create Product & Stock</span>
+                  <span>New Product</span>
                 </button>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className={`p-4 rounded-xl border transition space-y-3 relative group ${
+                  className={`p-3.5 rounded-xl border transition space-y-3 ${
                     item.isInvoiceOnly
-                      ? 'border-amber-200 bg-amber-50/20'
-                      : 'border-slate-200 bg-slate-50/50'
+                      ? 'border-slate-300 bg-slate-50/50'
+                      : 'border-slate-200 bg-white'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-slate-500">ITEM #{index + 1}</span>
+                      <span className="text-xs font-semibold text-slate-500 tabular-nums">#{index + 1}</span>
                       {item.isInvoiceOnly ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                          <FileText className="w-3 h-3 text-amber-700" />
-                          <span>Invoice Only (No Stock Deduction)</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          Invoice Only
                         </span>
                       ) : item.productId ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                          <Package className="w-3 h-3 text-indigo-600" />
-                          <span>Inventory Linked</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          Inventory Linked
                         </span>
                       ) : null}
                     </div>
@@ -769,9 +767,10 @@ export default function EditSalesInvoicePage() {
                       <button
                         type="button"
                         onClick={() => removeItem(index)}
-                        className="text-slate-400 hover:text-rose-600 transition"
+                        className="text-slate-400 hover:text-rose-600 transition p-1"
+                        title="Remove row"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
@@ -781,15 +780,15 @@ export default function EditSalesInvoicePage() {
                     {item.isInvoiceOnly ? (
                       <div>
                         <div className="flex items-center justify-between mb-1">
-                          <label className="block text-[11px] font-bold text-amber-900 uppercase tracking-wider">
-                            Custom Item Name & Details *
+                          <label className="block text-xs font-medium text-slate-700">
+                            Item Description <span className="text-rose-500">*</span>
                           </label>
                           <button
                             type="button"
                             onClick={() => handleSwitchToInventory(index)}
-                            className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 hover:underline transition"
+                            className="text-[11px] font-medium text-slate-600 hover:text-slate-900 underline transition"
                           >
-                            Switch to Inventory Product
+                            Select from Inventory
                           </button>
                         </div>
                         <input
@@ -802,22 +801,22 @@ export default function EditSalesInvoicePage() {
                               handleItemChange(index, 'description', val);
                             }
                           }}
-                          placeholder="e.g. Dell Laptop / Custom Service / Accessories"
-                          className="w-full px-3 py-2 bg-white border border-amber-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                          placeholder="Item name / Service description"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                         />
                       </div>
                     ) : (
                       <div>
                         <div className="flex items-center justify-between mb-1">
-                          <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                            Search Product / Service
+                          <label className="block text-xs font-medium text-slate-700">
+                            Product / Service
                           </label>
                           <button
                             type="button"
                             onClick={() => handleAddToInvoiceOnly(index, '')}
-                            className="text-[11px] font-semibold text-amber-700 hover:text-amber-900 hover:underline transition"
+                            className="text-[11px] font-medium text-slate-600 hover:text-slate-900 underline transition"
                           >
-                            Switch to Invoice Only
+                            Switch to Custom Item
                           </button>
                         </div>
                         <ProductSearchSelect
@@ -833,41 +832,41 @@ export default function EditSalesInvoicePage() {
                   {/* Description & Serial Number */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        Invoice Description
+                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                        Specifications / Print Details
                       </label>
                       <input
                         type="text"
                         value={item.description}
                         onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                        placeholder="Item description on invoice..."
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                        placeholder="Specifications or warranty terms"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                        {item.isInvoiceOnly ? 'Unit Tracking' : item.isService ? 'Unit Type' : 'Unit Serial Number'}
+                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                        {item.isInvoiceOnly ? 'Tracking' : item.isService ? 'Unit Type' : 'Serial Number'}
                       </label>
                       {item.isInvoiceOnly ? (
-                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-400 font-medium flex items-center gap-1.5">
                           <ShieldOff className="w-3.5 h-3.5 text-slate-400" />
-                          <span>N/A (Invoice Only — No Stock)</span>
+                          <span>Not applicable</span>
                         </div>
                       ) : item.isService ? (
                         <input
                           type="text"
                           disabled
-                          value="N/A (Service Item — No Physical Stock)"
-                          className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-medium cursor-not-allowed"
+                          value="Service Item"
+                          className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-400 font-medium cursor-not-allowed"
                         />
                       ) : item.availableSerials && item.availableSerials.length > 0 ? (
                         <select
                           value={item.serialNumber}
                           onChange={(e) => handleItemChange(index, 'serialNumber', e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-mono focus:outline-indigo-600"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                         >
-                          <option value="">-- Choose In-Stock Serial # --</option>
+                          <option value="">Select Serial #</option>
                           {item.availableSerials.map((s: any) => (
                             <option key={s.serialNumber || s} value={s.serialNumber || s}>
                               {s.serialNumber || s} {s.status ? `(${s.status})` : ''}
@@ -879,17 +878,17 @@ export default function EditSalesInvoicePage() {
                           type="text"
                           value={item.serialNumber}
                           onChange={(e) => handleItemChange(index, 'serialNumber', e.target.value)}
-                          placeholder="Manual Serial Number (Optional)"
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-mono focus:outline-indigo-600"
+                          placeholder="Serial number (optional)"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                         />
                       )}
                     </div>
                   </div>
 
                   {/* Qty, Rate, Discount, GST %, Line Total */}
-                  <div className={`grid grid-cols-2 ${isNoTax || isExempt ? 'sm:grid-cols-4' : 'sm:grid-cols-5'} gap-2.5 pt-1`}>
+                  <div className={`grid grid-cols-2 ${isNoTax || isExempt ? 'sm:grid-cols-4' : 'sm:grid-cols-5'} gap-2.5 pt-1 text-xs`}>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      <label className="block text-slate-600 font-medium mb-1">
                         Qty
                       </label>
                       <input
@@ -897,12 +896,12 @@ export default function EditSalesInvoicePage() {
                         min="1"
                         value={item.quantity}
                         onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-bold focus:outline-indigo-600"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-semibold tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      <label className="block text-slate-600 font-medium mb-1">
                         Rate (₹)
                       </label>
                       <input
@@ -911,12 +910,12 @@ export default function EditSalesInvoicePage() {
                         step="any"
                         value={item.rate}
                         onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 font-bold focus:outline-indigo-600"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-semibold tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      <label className="block text-slate-600 font-medium mb-1">
                         Discount (₹)
                       </label>
                       <input
@@ -925,19 +924,19 @@ export default function EditSalesInvoicePage() {
                         step="any"
                         value={item.discount}
                         onChange={(e) => handleItemChange(index, 'discount', e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
 
                     {!isNoTax && !isExempt && (
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                        <label className="block text-slate-600 font-medium mb-1">
                           GST %
                         </label>
                         <select
                           value={item.gstPercent}
                           onChange={(e) => handleItemChange(index, 'gstPercent', e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                         >
                           <option value="0">0%</option>
                           <option value="5">5%</option>
@@ -948,13 +947,16 @@ export default function EditSalesInvoicePage() {
                       </div>
                     )}
 
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                    <div>
+                      <label className="block text-slate-600 font-medium mb-1">
                         Total (₹)
                       </label>
-                      <div className="px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-xl text-xs font-black text-indigo-700">
-                        {formatCurrency(item.total)}
-                      </div>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formatCurrency(item.total)}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-mono font-bold tabular-nums"
+                      />
                     </div>
                   </div>
                 </div>
@@ -964,91 +966,91 @@ export default function EditSalesInvoicePage() {
         </div>
 
         {/* Right Column (4 cols): Dates, Financials, Payment & Notes */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-5">
           {/* Invoice Dates Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Invoice Dates
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+              Dates
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                <label className="block text-slate-600 font-medium mb-1">
                   Invoice Date
                 </label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Due Date (Optional)
+                <label className="block text-slate-600 font-medium mb-1">
+                  Due Date
                 </label>
                 <input
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
             </div>
           </div>
 
           {/* Pricing & GST Summary Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Totals & Tax Summary
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+              Totals & Tax
             </h3>
 
             <div className="space-y-2 text-xs">
               <div className="flex justify-between text-slate-600">
-                <span>Items Subtotal:</span>
-                <span className="font-bold text-slate-800">{formatCurrency(rawSubtotal)}</span>
+                <span>Subtotal</span>
+                <span className="font-mono font-medium text-slate-900 tabular-nums">{formatCurrency(rawSubtotal)}</span>
               </div>
 
               <div className="flex items-center justify-between text-slate-600 pt-1">
-                <span className="text-[11px]">Extra Discount (%):</span>
+                <span>Discount (%)</span>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={overallDiscountPercent}
                   onChange={(e) => setOverallDiscountPercent(e.target.value)}
-                  className="w-20 px-2 py-1 text-right bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 focus:outline-indigo-600"
+                  className="w-20 px-2 py-1 text-right bg-white border border-slate-300 rounded-lg font-mono text-slate-900 tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               {overallDiscountAmount > 0 && (
-                <div className="flex justify-between text-emerald-600 text-[11px]">
-                  <span>Discount Amount:</span>
-                  <span className="font-bold">- {formatCurrency(overallDiscountAmount)}</span>
+                <div className="flex justify-between text-emerald-700">
+                  <span>Discount Amount</span>
+                  <span className="font-mono tabular-nums">- {formatCurrency(overallDiscountAmount)}</span>
                 </div>
               )}
 
               {!isNoTax && !isExempt && (
                 <>
-                  <div className="flex justify-between text-slate-500 text-[11px] pt-1">
-                    <span>Taxable Value:</span>
-                    <span>{formatCurrency(taxableTotal)}</span>
+                  <div className="flex justify-between text-slate-600 pt-1">
+                    <span>Taxable Value</span>
+                    <span className="font-mono tabular-nums">{formatCurrency(taxableTotal)}</span>
                   </div>
 
                   {isIgst ? (
-                    <div className="flex justify-between text-slate-500 text-[11px]">
-                      <span>IGST (18%):</span>
-                      <span>{formatCurrency(igst)}</span>
+                    <div className="flex justify-between text-slate-600">
+                      <span>IGST (18%)</span>
+                      <span className="font-mono tabular-nums">{formatCurrency(igst)}</span>
                     </div>
                   ) : (
                     <>
-                      <div className="flex justify-between text-slate-500 text-[11px]">
-                        <span>CGST (9%):</span>
-                        <span>{formatCurrency(cgst)}</span>
+                      <div className="flex justify-between text-slate-600">
+                        <span>CGST (9%)</span>
+                        <span className="font-mono tabular-nums">{formatCurrency(cgst)}</span>
                       </div>
-                      <div className="flex justify-between text-slate-500 text-[11px]">
-                        <span>SGST (9%):</span>
-                        <span>{formatCurrency(sgst)}</span>
+                      <div className="flex justify-between text-slate-600">
+                        <span>SGST (9%)</span>
+                        <span className="font-mono tabular-nums">{formatCurrency(sgst)}</span>
                       </div>
                     </>
                   )}
@@ -1056,46 +1058,46 @@ export default function EditSalesInvoicePage() {
               )}
 
               {isExempt && (
-                <div className="flex justify-between text-slate-500 text-[11px] pt-1">
-                  <span>Tax (Exempt / Nil-Rated):</span>
-                  <span>₹0.00 (0%)</span>
+                <div className="flex justify-between text-slate-500 pt-1">
+                  <span>Tax (Exempt)</span>
+                  <span className="font-mono tabular-nums">₹0.00</span>
                 </div>
               )}
 
-              <div className="border-t-2 border-slate-900 pt-2 flex justify-between items-baseline">
-                <span className="font-black text-slate-900 text-sm">Grand Total:</span>
-                <span className="font-black text-indigo-700 text-base">{formatCurrency(grandTotal)}</span>
+              <div className="border-t border-slate-200 pt-2 flex justify-between items-baseline font-bold text-slate-900 text-sm">
+                <span>Grand Total</span>
+                <span className="font-mono tabular-nums">{formatCurrency(grandTotal)}</span>
               </div>
             </div>
           </div>
 
           {/* Payment & Dues Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
               Payment Settlement
             </h3>
 
-            <div className="space-y-3">
+            <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Payment Mode
+                <label className="block text-slate-600 font-medium mb-1">
+                  Payment Method
                 </label>
                 <select
                   value={paymentMode}
                   onChange={(e) => setPaymentMode(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 >
                   <option value="Cash">Cash</option>
                   <option value="UPI">UPI</option>
                   <option value="Bank Transfer">Bank Transfer (NEFT/RTGS)</option>
                   <option value="Cheque">Cheque</option>
-                  <option value="Credit">Credit (Pay Later)</option>
+                  <option value="Credit">Credit / Due</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
-                  Amount Received / Paid (₹)
+                <label className="block text-slate-600 font-medium mb-1">
+                  Amount Received (₹)
                 </label>
                 <input
                   type="number"
@@ -1103,13 +1105,13 @@ export default function EditSalesInvoicePage() {
                   step="any"
                   value={paidAmount}
                   onChange={(e) => setPaidAmount(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
-              <div className="flex justify-between text-xs pt-1">
-                <span className="text-slate-600 font-medium">Balance Due:</span>
-                <span className={`font-black ${balanceDue > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 flex justify-between text-xs font-semibold">
+                <span className={balanceDue > 0 ? 'text-rose-600' : 'text-slate-700'}>Balance Due:</span>
+                <span className={`font-mono tabular-nums ${balanceDue > 0 ? 'text-rose-600 font-bold' : 'text-slate-900 font-bold'}`}>
                   {formatCurrency(balanceDue)}
                 </span>
               </div>
@@ -1117,31 +1119,31 @@ export default function EditSalesInvoicePage() {
           </div>
 
           {/* Notes & Terms */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-100 pb-2">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
               Notes & Terms
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                <label className="block text-slate-600 font-medium mb-1">
                   Invoice Notes
                 </label>
                 <textarea
                   rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                <label className="block text-slate-600 font-medium mb-1">
                   Terms & Conditions
                 </label>
                 <textarea
                   rows={3}
                   value={terms}
                   onChange={(e) => setTerms(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
             </div>
@@ -1151,38 +1153,38 @@ export default function EditSalesInvoicePage() {
 
       {/* Audit Reason Modal (Mandatory on Save) */}
       {showReasonModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-xs">
-                <History className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden">
+            <div className="p-5 border-b border-slate-100 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
+                <History className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-base font-black text-slate-900 tracking-tight">
-                  Record Revision Reason
+                <h3 className="text-sm font-bold text-slate-900">
+                  Revision Reason
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Explain why this invoice is being updated for audit compliance.
+                  Record reason for audit log compliance.
                 </p>
               </div>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-5 space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Change Reason <span className="text-rose-500">*</span>
+                <label className="block font-medium text-slate-700 mb-1">
+                  Reason for Revision <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={revisionReason}
                   onChange={(e) => setRevisionReason(e.target.value)}
-                  placeholder="e.g. Corrected selling price, updated customer phone..."
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  placeholder="e.g. Corrected price, updated customer details..."
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               {/* Quick Suggestions */}
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5 pt-1">
                 {[
                   'Customer details corrected',
                   'Selling price updated',
@@ -1194,7 +1196,7 @@ export default function EditSalesInvoicePage() {
                     key={sug}
                     type="button"
                     onClick={() => setRevisionReason(sug)}
-                    className="text-[11px] px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition"
+                    className="text-[11px] px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition"
                   >
                     {sug}
                   </button>
@@ -1207,7 +1209,7 @@ export default function EditSalesInvoicePage() {
                 type="button"
                 onClick={() => setShowReasonModal(false)}
                 disabled={saving}
-                className="px-4 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl transition"
+                className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition"
               >
                 Cancel
               </button>
@@ -1215,9 +1217,9 @@ export default function EditSalesInvoicePage() {
                 type="button"
                 onClick={handleConfirmSave}
                 disabled={saving || !revisionReason.trim()}
-                className="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition disabled:opacity-50"
+                className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-xs transition disabled:opacity-50"
               >
-                {saving ? 'Saving...' : 'Confirm & Save Revision'}
+                {saving ? 'Saving...' : 'Confirm Revision'}
               </button>
             </div>
           </div>

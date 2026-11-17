@@ -29,17 +29,17 @@ export default function InvoiceDetailsPage() {
   if (loading) {
     return (
       <div className="py-20 text-center">
-        <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-sm text-slate-500 font-medium">Loading Tax Invoice...</p>
+        <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs text-slate-500 font-medium">Loading invoice...</p>
       </div>
     );
   }
 
   if (!invoice) {
     return (
-      <div className="py-20 text-center bg-white rounded-2xl border border-slate-200">
-        <h3 className="text-base font-bold text-slate-800">Invoice Not Found</h3>
-        <p className="text-xs text-slate-500 mt-1">The requested sales invoice could not be located.</p>
+      <div className="py-20 text-center bg-white rounded-xl border border-slate-200">
+        <h3 className="text-sm font-semibold text-slate-900">Invoice not found</h3>
+        <p className="text-xs text-slate-500 mt-1">The requested document does not exist or has been removed.</p>
       </div>
     );
   }

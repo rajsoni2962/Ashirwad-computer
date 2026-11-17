@@ -117,22 +117,22 @@ export default function CustomerSearchSelect({
     <div className="relative w-full" ref={containerRef}>
       {/* If a customer is already selected, show selected customer chip with Clear button */}
       {selectedCustomer ? (
-        <div className="flex items-center justify-between p-3 bg-indigo-50/70 border border-indigo-200 rounded-xl">
+        <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0">
               {selectedCustomer.name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
               <div className="font-bold text-slate-900 text-sm flex items-center gap-2 truncate">
                 <span>{selectedCustomer.name}</span>
                 {selectedCustomer.currentBalance && selectedCustomer.currentBalance > 0 ? (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 shrink-0">
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 shrink-0 font-mono tabular-nums">
                     Due: {formatCurrency(selectedCustomer.currentBalance)}
                   </span>
                 ) : null}
               </div>
               <div className="text-xs text-slate-500 flex items-center gap-2 truncate mt-0.5">
-                <span className="flex items-center gap-1 font-mono">
+                <span className="flex items-center gap-1 font-mono tabular-nums">
                   <Phone className="w-3 h-3 text-slate-400" />
                   {selectedCustomer.phone}
                 </span>
@@ -150,7 +150,7 @@ export default function CustomerSearchSelect({
             <button
               type="button"
               onClick={handleClear}
-              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition shrink-0 ml-2"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-200 rounded-lg transition shrink-0 ml-2"
               title="Clear customer selection"
             >
               <X className="w-4 h-4" />
@@ -173,8 +173,8 @@ export default function CustomerSearchSelect({
               }}
               onFocus={() => setIsOpen(true)}
               onKeyDown={handleKeyDown}
-              placeholder="Search Customer: Type name, mobile, GSTIN, or city..."
-              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 focus:border-indigo-600 rounded-xl text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 transition focus:outline-none shadow-xs"
+              placeholder="Search Customer by name, mobile, or GSTIN..."
+              className="w-full pl-10 pr-10 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 focus:border-slate-900 rounded-xl text-xs sm:text-sm text-slate-900 font-medium placeholder-slate-400 transition focus:outline-none shadow-xs"
             />
             {query && (
               <button
@@ -189,10 +189,10 @@ export default function CustomerSearchSelect({
 
           {/* Autocomplete Dropdown */}
           {isOpen && (
-            <div className="absolute z-50 mt-1.5 w-full bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden animate-in fade-in-50 duration-150">
-              <div className="p-2 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 text-[11px] text-slate-500 font-semibold">
+            <div className="absolute z-50 mt-1.5 w-full bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden">
+              <div className="p-2 border-b border-slate-100 flex items-center justify-between bg-slate-50 text-[11px] text-slate-500 font-semibold">
                 <span>
-                  {loading ? 'Searching real database...' : `${results.length} customer${results.length === 1 ? '' : 's'} found`}
+                  {loading ? 'Searching...' : `${results.length} record${results.length === 1 ? '' : 's'}`}
                 </span>
                 {onAddNewCustomer && (
                   <button
@@ -201,20 +201,20 @@ export default function CustomerSearchSelect({
                       setIsOpen(false);
                       onAddNewCustomer();
                     }}
-                    className="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 transition"
+                    className="text-slate-900 hover:text-slate-700 font-bold flex items-center gap-1 transition"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>+ Add New Customer</span>
+                    <span>Add Customer</span>
                   </button>
                 )}
               </div>
 
               <ul ref={resultsRef} className="max-h-64 overflow-y-auto divide-y divide-slate-100 custom-scrollbar text-xs">
                 {loading && results.length === 0 ? (
-                  <li className="p-4 text-center text-slate-400">Loading customers...</li>
+                  <li className="p-4 text-center text-slate-400">Loading...</li>
                 ) : results.length === 0 ? (
                   <li className="p-5 text-center text-slate-500 space-y-2">
-                    <p className="font-medium">No matching customers found in database</p>
+                    <p className="font-medium">No matching customers found</p>
                     {onAddNewCustomer && (
                       <button
                         type="button"
@@ -222,10 +222,10 @@ export default function CustomerSearchSelect({
                           setIsOpen(false);
                           onAddNewCustomer();
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-xs transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg text-xs transition"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        <span>Create &quot;{query}&quot; as New Customer</span>
+                        <span>Create &ldquo;{query}&rdquo;</span>
                       </button>
                     )}
                   </li>
@@ -238,13 +238,13 @@ export default function CustomerSearchSelect({
                         onClick={() => handleSelect(c)}
                         onMouseEnter={() => setHighlightedIndex(idx)}
                         className={`p-3 cursor-pointer transition flex items-center justify-between ${
-                          isHighlighted ? 'bg-indigo-50/80 text-indigo-950' : 'hover:bg-slate-50 text-slate-800'
+                          isHighlighted ? 'bg-slate-100 text-slate-900' : 'hover:bg-slate-50 text-slate-800'
                         }`}
                       >
                         <div className="min-w-0 pr-3">
-                          <div className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
+                          <div className="font-semibold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
                             <span>{c.name}</span>
-                            <span className="text-slate-400 font-normal font-mono">• {c.phone}</span>
+                            <span className="text-slate-400 font-normal font-mono tabular-nums">• {c.phone}</span>
                           </div>
                           <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2 truncate">
                             {c.gstin && (
@@ -258,11 +258,11 @@ export default function CustomerSearchSelect({
 
                         <div className="shrink-0 text-right">
                           {c.currentBalance && c.currentBalance > 0 ? (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-mono tabular-nums">
                               Due: {formatCurrency(c.currentBalance)}
                             </span>
                           ) : (
-                            <span className="text-[10px] font-semibold text-slate-400">No Dues</span>
+                            <span className="text-[10px] text-slate-400">Nil</span>
                           )}
                         </div>
                       </li>

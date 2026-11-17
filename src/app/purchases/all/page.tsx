@@ -65,62 +65,65 @@ export default function AllPurchasesPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <Truck className="w-6 h-6 text-emerald-600" />
-            <span>Supplier Purchases & Bills</span>
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Truck className="w-5 h-5 text-slate-700" />
+            <span>Purchases</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Supplier purchase invoices, attached bill scans, inventory increments, and payments.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Supplier purchase invoices, incoming inventory, and payables
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Link
             href="/purchases/import-bill"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg transition"
           >
-            <Camera className="w-4 h-4" />
-            <span>📷 Import Bill</span>
+            <Camera className="w-3.5 h-3.5 text-slate-600" />
+            <span>Import Bill</span>
           </Link>
 
           <Link
             href="/purchases/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-xs transition"
           >
-            <Plus className="w-4 h-4" />
-            <span>+ Manual Entry</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Purchase</span>
           </Link>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-        <div className="relative max-w-md">
+      <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+        <div className="relative w-full max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search supplier, bill number, PO number..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-emerald-600"
+            placeholder="Search by supplier, bill #, PO #..."
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition"
           />
+        </div>
+        <div className="text-xs text-slate-500">
+          Records: <span className="font-mono font-semibold text-slate-800 tabular-nums">{purchases.length}</span>
         </div>
       </div>
 
       {/* Purchases Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
                 <th className="py-3 px-4">PO Ref</th>
                 <th className="py-3 px-4">Supplier Bill #</th>
                 <th className="py-3 px-4">Date</th>
                 <th className="py-3 px-4">Supplier</th>
-                <th className="py-3 px-4">Items Added to Stock</th>
-                <th className="py-3 px-4 text-right">Bill Total</th>
+                <th className="py-3 px-4">Items</th>
+                <th className="py-3 px-4 text-right">Total</th>
                 <th className="py-3 px-4 text-right">Paid</th>
                 <th className="py-3 px-4 text-right">Balance Due</th>
                 <th className="py-3 px-4 text-center">Status</th>
@@ -137,47 +140,46 @@ export default function AllPurchasesPage() {
               ) : purchases.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="py-12 text-center text-slate-400">
-                    No supplier purchases found.
+                    No records found.
                   </td>
                 </tr>
               ) : (
                 purchases.map((po) => (
                   <tr key={po.id} className="hover:bg-slate-50/80 transition">
-                    <td className="py-3 px-4 font-bold text-slate-900">{po.purchaseNumber}</td>
-                    <td className="py-3 px-4 font-semibold text-emerald-700">{po.supplierInvoiceNumber}</td>
-                    <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(po.date)}</td>
-                    <td className="py-3 px-4 font-semibold text-slate-800">{po.supplier?.name}</td>
-                    <td className="py-3 px-4 max-w-xs truncate">
+                    <td className="py-3 px-4 font-mono font-semibold text-slate-900 tabular-nums">{po.purchaseNumber}</td>
+                    <td className="py-3 px-4 font-mono text-slate-700 tabular-nums">{po.supplierInvoiceNumber || '—'}</td>
+                    <td className="py-3 px-4 text-slate-500 font-mono whitespace-nowrap tabular-nums">{formatDate(po.date)}</td>
+                    <td className="py-3 px-4 font-medium text-slate-800">{po.supplier?.name}</td>
+                    <td className="py-3 px-4 max-w-xs truncate text-slate-600">
                       {po.items?.map((it: any) => `${it.product?.name || it.description} (+${it.quantity})`).join(', ')}
                     </td>
-                    <td className="py-3 px-4 text-right font-black text-slate-900">
+                    <td className="py-3 px-4 text-right font-mono font-semibold text-slate-900 tabular-nums">
                       {formatCurrency(po.grandTotal)}
                     </td>
-                    <td className="py-3 px-4 text-right font-semibold text-emerald-600">
+                    <td className="py-3 px-4 text-right font-mono text-emerald-700 tabular-nums">
                       {formatCurrency(po.paidAmount)}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-rose-600">
+                    <td className="py-3 px-4 text-right font-mono font-semibold text-rose-600 tabular-nums">
                       {formatCurrency(po.balanceDue)}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          po.status === 'Cancelled'
-                            ? 'bg-rose-100 text-rose-700'
+                        className={`text-[11px] font-medium px-2 py-0.5 rounded ${po.status === 'Cancelled'
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
                             : po.paymentStatus === 'Paid'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-amber-100 text-amber-700'
-                        }`}
+                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                              : 'bg-amber-50 text-amber-800 border border-amber-200'
+                          }`}
                       >
                         {po.status === 'Cancelled' ? 'Cancelled' : po.paymentStatus}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
+                    <td className="py-3 px-4 text-right whitespace-nowrap space-x-1">
                       <button
                         onClick={() => setSelectedBill(po)}
                         className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition"
                       >
-                        <Eye className="w-3.5 h-3.5" />
+                        <Eye className="w-3.5 h-3.5 text-slate-500" />
                         <span>View</span>
                       </button>
 
@@ -185,7 +187,7 @@ export default function AllPurchasesPage() {
                         <button
                           onClick={() => handleCancelPurchase(po.id, po.purchaseNumber)}
                           className="inline-flex items-center gap-1 px-2 py-1 text-rose-600 hover:bg-rose-50 rounded-lg font-medium transition"
-                          title="Cancel Purchase & Reverse Stock"
+                          title="Cancel Purchase"
                         >
                           <XCircle className="w-3.5 h-3.5" />
                           <span>Cancel</span>
@@ -200,22 +202,22 @@ export default function AllPurchasesPage() {
         </div>
       </div>
 
-      {/* Bill Details & Scan Attachment Modal */}
+      {/* Bill Details Modal */}
       {selectedBill && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 border border-slate-200 max-h-[85vh] overflow-y-auto space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl p-5 border border-slate-200 max-h-[85vh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
-                  Purchase Bill: {selectedBill.supplierInvoiceNumber}
+                <h3 className="text-sm font-bold text-slate-900">
+                  Purchase Bill: <span className="font-mono tabular-nums">{selectedBill.supplierInvoiceNumber || selectedBill.purchaseNumber}</span>
                 </h3>
-                <p className="text-xs text-slate-500">
-                  PO Reference: {selectedBill.purchaseNumber} • Supplier: {selectedBill.supplier?.name}
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Supplier: {selectedBill.supplier?.name} • PO: {selectedBill.purchaseNumber}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedBill(null)}
-                className="text-slate-400 hover:text-slate-700 p-1"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
                 ✕
               </button>
@@ -223,8 +225,8 @@ export default function AllPurchasesPage() {
 
             {/* Items List */}
             <div>
-              <h4 className="text-xs font-bold text-slate-700 uppercase mb-2">Items Received</h4>
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <h4 className="text-xs font-semibold text-slate-700 uppercase mb-2">Items Received</h4>
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50 border-b border-slate-200 font-semibold text-slate-500">
                     <tr>
@@ -241,12 +243,12 @@ export default function AllPurchasesPage() {
                         <td className="py-2 px-3 font-medium text-slate-800">
                           {it.product?.name || it.description}
                         </td>
-                        <td className="py-2 px-3 text-center font-bold text-emerald-700">
+                        <td className="py-2 px-3 text-center font-mono font-medium text-slate-900 tabular-nums">
                           +{it.quantity} {it.unit}
                         </td>
-                        <td className="py-2 px-3 text-right">{formatCurrency(it.rate)}</td>
-                        <td className="py-2 px-3 text-right">{formatCurrency(it.taxableAmount)}</td>
-                        <td className="py-2 px-3 text-right font-bold">{formatCurrency(it.total)}</td>
+                        <td className="py-2 px-3 text-right font-mono tabular-nums">{formatCurrency(it.rate)}</td>
+                        <td className="py-2 px-3 text-right font-mono tabular-nums">{formatCurrency(it.taxableAmount)}</td>
+                        <td className="py-2 px-3 text-right font-mono font-semibold text-slate-900 tabular-nums">{formatCurrency(it.total)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -257,12 +259,12 @@ export default function AllPurchasesPage() {
             {/* Attached Scanned Document */}
             {selectedBill.billFileUrl && (
               <div>
-                <h4 className="text-xs font-bold text-slate-700 uppercase mb-2">Original Attached Bill Scan</h4>
-                <div className="p-2 border border-slate-200 rounded-xl bg-slate-50 flex items-center justify-center max-h-72 overflow-hidden">
+                <h4 className="text-xs font-semibold text-slate-700 uppercase mb-2">Attached Bill Document</h4>
+                <div className="p-2 border border-slate-200 rounded-lg bg-slate-50 flex items-center justify-center max-h-72 overflow-hidden">
                   <img
                     src={selectedBill.billFileUrl}
                     alt="Original Bill"
-                    className="max-h-64 object-contain rounded-lg shadow-sm"
+                    className="max-h-64 object-contain rounded-md"
                   />
                 </div>
               </div>
@@ -275,10 +277,10 @@ export default function AllPurchasesPage() {
                   download={`Purchase_Bill_${selectedBill.supplierInvoiceNumber || selectedBill.purchaseNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 font-bold rounded-xl text-xs transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download Bill Scan</span>
+                  <span>Download Scan</span>
                 </a>
               ) : (
                 <div />
@@ -286,7 +288,7 @@ export default function AllPurchasesPage() {
 
               <button
                 onClick={() => setSelectedBill(null)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition"
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition"
               >
                 Close
               </button>

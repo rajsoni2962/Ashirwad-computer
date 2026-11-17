@@ -130,29 +130,29 @@ export default function ProductSearchSelect({
   return (
     <div className="relative w-full" ref={containerRef}>
       {selectedProduct ? (
-        <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl">
+        <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div
               className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
-                isService ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'
+                isService ? 'bg-slate-200 text-slate-700' : 'bg-slate-900 text-white'
               }`}
             >
               {isService ? <Wrench className="w-3.5 h-3.5" /> : <Package className="w-3.5 h-3.5" />}
             </div>
 
             <div className="min-w-0">
-              <div className="font-bold text-slate-900 text-xs flex items-center gap-2 truncate">
+              <div className="font-semibold text-slate-900 text-xs flex items-center gap-2 truncate">
                 <span className="truncate">{selectedProduct.name}</span>
                 {isService ? (
-                  <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 shrink-0">
                     Service
                   </span>
                 ) : (
                   <span
-                    className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0 ${
+                    className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 font-mono tabular-nums ${
                       selectedProduct.currentStock <= 0
-                        ? 'bg-rose-100 text-rose-700'
-                        : 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                     }`}
                   >
                     Stock: {selectedProduct.currentStock}
@@ -164,8 +164,8 @@ export default function ProductSearchSelect({
                 {selectedProduct.cpu && <span>• {selectedProduct.cpu}</span>}
                 {selectedProduct.ram && <span>• {selectedProduct.ram}</span>}
                 {selectedProduct.storage && <span>• {selectedProduct.storage}</span>}
-                <span className="font-semibold text-indigo-700">
-                  • Price: {formatCurrency(selectedProduct.sellingPrice || 0)}
+                <span className="font-semibold text-slate-900 font-mono tabular-nums">
+                  • Rate: {formatCurrency(selectedProduct.sellingPrice || 0)}
                 </span>
               </div>
             </div>
@@ -198,7 +198,7 @@ export default function ProductSearchSelect({
               onFocus={() => setIsOpen(true)}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              className="w-full pl-9 pr-9 py-2 bg-white border border-slate-300 focus:border-indigo-600 rounded-xl text-xs text-slate-900 font-medium placeholder-slate-400 focus:outline-none shadow-xs"
+              className="w-full pl-9 pr-9 py-2 bg-white border border-slate-300 focus:border-slate-900 rounded-xl text-xs text-slate-900 font-medium placeholder-slate-400 focus:outline-none shadow-xs"
             />
             {query && (
               <button
@@ -212,24 +212,21 @@ export default function ProductSearchSelect({
           </div>
 
           {isOpen && (
-            <div className="absolute z-50 mt-1 w-full bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden animate-in fade-in-50 duration-150">
-              <div className="p-2 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 text-[11px] text-slate-500 font-semibold">
+            <div className="absolute z-50 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden">
+              <div className="p-2 border-b border-slate-100 flex items-center justify-between bg-slate-50 text-[11px] text-slate-500 font-semibold">
                 <span>
-                  {loading ? 'Searching products...' : `${results.length} item${results.length === 1 ? '' : 's'} found`}
+                  {loading ? 'Searching...' : `${results.length} record${results.length === 1 ? '' : 's'}`}
                 </span>
               </div>
 
               <ul ref={resultsRef} className="max-h-60 overflow-y-auto divide-y divide-slate-100 custom-scrollbar text-xs">
                 {loading && results.length === 0 ? (
-                  <li className="p-4 text-center text-slate-400">Loading inventory...</li>
+                  <li className="p-4 text-center text-slate-400">Loading...</li>
                 ) : results.length === 0 ? (
                   <li className="p-4 bg-slate-50/50">
                     <div className="text-center mb-3">
                       <p className="text-xs font-semibold text-slate-700">
-                        0 items found matching &ldquo;<span className="text-slate-900 font-bold">{query || '...'}</span>&rdquo;
-                      </p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        Choose how you would like to add this item:
+                        No products match &ldquo;<span className="text-slate-900 font-bold">{query || '...'}</span>&rdquo;
                       </p>
                     </div>
 
@@ -241,14 +238,14 @@ export default function ProductSearchSelect({
                           setIsOpen(false);
                           onAddToInvoiceOnly?.(query.trim());
                         }}
-                        className="p-3 text-left bg-amber-50 hover:bg-amber-100/80 border border-amber-200 rounded-xl transition group shadow-2xs cursor-pointer"
+                        className="p-3 text-left bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition group cursor-pointer"
                       >
-                        <div className="flex items-center gap-2 text-amber-900 font-bold text-xs mb-1">
-                          <FileText className="w-4 h-4 text-amber-700 shrink-0 group-hover:scale-110 transition" />
-                          <span className="truncate">Add &ldquo;{query || 'item'}&rdquo; to Invoice Only</span>
+                        <div className="flex items-center gap-2 text-slate-900 font-semibold text-xs mb-1">
+                          <FileText className="w-4 h-4 text-slate-600 shrink-0" />
+                          <span className="truncate">Add to Invoice Only</span>
                         </div>
-                        <p className="text-[10px] text-amber-800/80 leading-snug">
-                          Bill item directly without creating an inventory product or tracking stock.
+                        <p className="text-[10px] text-slate-500 leading-snug">
+                          Bill directly without creating inventory product.
                         </p>
                       </button>
 
@@ -259,14 +256,14 @@ export default function ProductSearchSelect({
                           setIsOpen(false);
                           onCreateAndAddToStock?.(query.trim());
                         }}
-                        className="p-3 text-left bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200 rounded-xl transition group shadow-2xs cursor-pointer"
+                        className="p-3 text-left bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition group cursor-pointer"
                       >
-                        <div className="flex items-center gap-2 text-indigo-900 font-bold text-xs mb-1">
-                          <PackagePlus className="w-4 h-4 text-indigo-700 shrink-0 group-hover:scale-110 transition" />
-                          <span className="truncate">Create &ldquo;{query || 'item'}&rdquo; & Add to Stock</span>
+                        <div className="flex items-center gap-2 font-semibold text-xs mb-1">
+                          <PackagePlus className="w-4 h-4 text-slate-300 shrink-0" />
+                          <span className="truncate">Add to Inventory & Stock</span>
                         </div>
-                        <p className="text-[10px] text-indigo-800/80 leading-snug">
-                          Open form to save specs, serials & stock in inventory, then insert into invoice.
+                        <p className="text-[10px] text-slate-300 leading-snug">
+                          Open product form, record stock, and insert.
                         </p>
                       </button>
                     </div>
@@ -283,22 +280,22 @@ export default function ProductSearchSelect({
                         onClick={() => handleSelect(p)}
                         onMouseEnter={() => setHighlightedIndex(idx)}
                         className={`p-2.5 cursor-pointer transition flex items-center justify-between ${
-                          isHighlighted ? 'bg-indigo-50/80 text-indigo-950' : 'hover:bg-slate-50 text-slate-800'
+                          isHighlighted ? 'bg-slate-100 text-slate-900' : 'hover:bg-slate-50 text-slate-800'
                         }`}
                       >
                         <div className="min-w-0 pr-3">
-                          <div className="font-bold text-slate-900 text-xs flex items-center gap-2">
+                          <div className="font-semibold text-slate-900 text-xs flex items-center gap-2">
                             <span>{p.name}</span>
                             {itemIsService ? (
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700">
                                 Service
                               </span>
                             ) : p.currentStock <= 0 ? (
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-700">
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-mono tabular-nums">
                                 Out of Stock
                               </span>
                             ) : (
-                              <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono tabular-nums">
                                 {p.currentStock} in stock
                               </span>
                             )}
@@ -313,7 +310,7 @@ export default function ProductSearchSelect({
                           </div>
                         </div>
 
-                        <div className="shrink-0 text-right font-black text-indigo-700 text-xs">
+                        <div className="shrink-0 text-right font-bold text-slate-900 font-mono tabular-nums text-xs">
                           {formatCurrency(p.sellingPrice || 0)}
                         </div>
                       </li>
@@ -322,10 +319,10 @@ export default function ProductSearchSelect({
                 )}
               </ul>
 
-              {/* Action menu in dropdown footer - accessible even when search results exist */}
+              {/* Action menu in dropdown footer */}
               {(onAddToInvoiceOnly || onCreateAndAddToStock) && (
-                <div className="p-2 border-t border-slate-100 bg-slate-50/90 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-                  <span className="text-slate-500 font-medium">Additional Actions:</span>
+                <div className="p-2 border-t border-slate-100 bg-slate-50 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                  <span className="text-slate-500 font-medium">Quick Actions:</span>
                   <div className="flex items-center gap-2">
                     {onAddToInvoiceOnly && (
                       <button
@@ -334,10 +331,10 @@ export default function ProductSearchSelect({
                           setIsOpen(false);
                           onAddToInvoiceOnly(query.trim());
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition"
                       >
-                        <FileText className="w-3 h-3 text-amber-600" />
-                        <span>Add &ldquo;{query.trim() || 'Item'}&rdquo; to Invoice Only</span>
+                        <FileText className="w-3 h-3 text-slate-500" />
+                        <span>Bill Directly</span>
                       </button>
                     )}
                     {onCreateAndAddToStock && (
@@ -347,10 +344,10 @@ export default function ProductSearchSelect({
                           setIsOpen(false);
                           onCreateAndAddToStock(query.trim());
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition"
                       >
-                        <PackagePlus className="w-3 h-3 text-indigo-600" />
-                        <span>Create &ldquo;{query.trim() || 'Item'}&rdquo; & Add to Stock</span>
+                        <PackagePlus className="w-3 h-3" />
+                        <span>Add to Inventory</span>
                       </button>
                     )}
                   </div>

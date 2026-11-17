@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth, verifyPassword } from '@/lib/auth';
 import { logSecurityEvent } from '@/lib/security-logger';
 import { getAppEnvironment } from '@/lib/db-guard';
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       where: { id: auth.user.id },
     });
 
-    if (!adminUser || adminUser.password !== password) {
+    if (!adminUser || !verifyPassword(password, adminUser.password)) {
       logSecurityEvent({
         type: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         message: `Failed admin database reset attempt for user "${auth.user.username}" due to incorrect password.`,

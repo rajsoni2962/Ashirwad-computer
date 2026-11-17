@@ -152,12 +152,12 @@ export default function InvoiceImageModal({
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-xs">
               <FileImage className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-slate-900 text-base">
+                <h3 className="font-bold text-slate-900 text-base">
                   Invoice Image Export
                 </h3>
                 <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
@@ -165,7 +165,7 @@ export default function InvoiceImageModal({
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Download or copy crisp, high-resolution invoice image (PNG / JPEG)
+                Download or copy invoice image
               </p>
             </div>
           </div>
@@ -180,28 +180,28 @@ export default function InvoiceImageModal({
         {/* Format Selector & Controls Toolbar */}
         <div className="px-5 py-3 border-b border-slate-100 bg-white flex flex-wrap items-center justify-between gap-3">
           {/* Format Tabs */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button
               type="button"
               onClick={() => setFormat('png')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
                 format === 'png'
-                  ? 'bg-white text-indigo-700 shadow-xs'
+                  ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              PNG (Lossless High-Res)
+              PNG (Lossless)
             </button>
             <button
               type="button"
               onClick={() => setFormat('jpeg')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
                 format === 'jpeg'
-                  ? 'bg-white text-indigo-700 shadow-xs'
+                  ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              JPEG / JPG (Compressed)
+              JPEG (Standard)
             </button>
           </div>
 
@@ -244,9 +244,9 @@ export default function InvoiceImageModal({
         <div className="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-900/5 flex items-center justify-center min-h-[320px]">
           {loading ? (
             <div className="text-center py-12 space-y-3">
-              <RefreshCw className="w-8 h-8 animate-spin text-indigo-600 mx-auto" />
-              <p className="text-xs font-semibold text-slate-600">
-                Rendering vector-sharp {format.toUpperCase()} invoice...
+              <RefreshCw className="w-8 h-8 animate-spin text-slate-800 mx-auto" />
+              <p className="text-xs font-medium text-slate-600">
+                Rendering {format.toUpperCase()} invoice...
               </p>
             </div>
           ) : previewDataUrl ? (
@@ -288,7 +288,7 @@ export default function InvoiceImageModal({
               type="button"
               onClick={handleDownload}
               disabled={loading || !previewDataUrl || downloading}
-              className="px-5 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition inline-flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              className="px-5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition inline-flex items-center gap-1.5 shadow-xs disabled:opacity-50"
             >
               <Download className="w-3.5 h-3.5" />
               <span>{downloading ? 'Downloading...' : `Download ${format.toUpperCase()}`}</span>

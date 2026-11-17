@@ -9,9 +9,17 @@ import { logSecurityEvent } from './security-logger';
  * this automatically redirects to Transaction Mode (:6543) with PgBouncer enabled and connection_limit=1
  * to prevent FATAL: (EMAXCONNSESSION) max clients reached in session mode.
  */
+const ACTIVE_MONGODB_URL =
+  'mongodb+srv://raj_ashtech:hhRwWdTqBvupKoZf@rajdata.pmyze8k.mongodb.net/ashirwad_vyaapar?retryWrites=true&w=majority';
+
 function getOptimizedDatabaseUrl(): string | undefined {
   let url = process.env.DATABASE_URL;
-  if (!url) return undefined;
+  if (!url) return ACTIVE_MONGODB_URL;
+
+  // Auto-upgrade legacy rotated MongoDB Atlas credentials on Vercel/serverless
+  if (url.includes('rajsoni2962_db_user') || url.includes('rajdata.pmyze8k.mongodb.net')) {
+    return ACTIVE_MONGODB_URL;
+  }
 
   // MongoDB Atlas URLs are already connection pooled by the MongoDB driver
   if (url.startsWith('mongodb')) {

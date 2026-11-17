@@ -748,49 +748,50 @@ export default function NewSalesInvoicePage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs gap-4">
         <div className="flex items-center gap-3">
           <Link
             href="/sales/invoices"
-            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
+            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+            title="Back to Invoices"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <ShoppingCart className="w-6 h-6 text-indigo-600" />
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5 text-slate-700" />
               <span>{getInvoiceTypeLabel(invoiceType)}</span>
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
               {invoiceType === 'QUOTATION'
-                ? 'Create formal quotation / estimate • Does not deduct stock or affect ledger'
+                ? 'Formal estimate without inventory deduction or ledger entry'
                 : invoiceType === 'BILL_OF_SUPPLY'
-                ? 'Bill of Supply • Composition / Nil-rated supply • No GST charged'
+                ? 'Composition or exempt supply without tax calculation'
                 : invoiceType === 'NON_GST'
-                ? 'Invoice • Unregistered goods & services • No tax breakdown'
-                : 'Official customer invoice • Select serialized laptop • Automatic stock & tax tracking'}
+                ? 'General invoice without tax breakdown'
+                : 'Commercial tax invoice with automated stock deduction and tax ledger'}
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {lastAutoSaveTime && (
-            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl hidden sm:inline-flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Auto-saved {lastAutoSaveTime}
+            <span className="text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg hidden sm:inline-flex items-center gap-1.5 tabular-nums">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Saved {lastAutoSaveTime}
             </span>
           )}
 
           <button
             type="button"
             onClick={() => setShowDraftsModal(true)}
-            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
-            title="View Saved Drafts"
+            className="px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs rounded-lg transition inline-flex items-center gap-1.5"
+            title="View Drafts"
           >
-            <FileClock className="w-4 h-4 text-amber-600" />
+            <FileClock className="w-3.5 h-3.5 text-slate-500" />
             <span>Drafts</span>
             {savedDrafts.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[10px] font-black">
+              <span className="px-1.5 py-0.2 rounded-full bg-slate-800 text-white text-[10px] font-bold tabular-nums">
                 {savedDrafts.length}
               </span>
             )}
@@ -799,55 +800,50 @@ export default function NewSalesInvoicePage() {
           <button
             type="button"
             onClick={handleManualSaveDraft}
-            className="px-3.5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
-            title="Save Current Half-Filled Bill as Draft"
+            className="px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs rounded-lg transition inline-flex items-center gap-1.5"
+            title="Save as Draft"
           >
-            <BookmarkCheck className="w-4 h-4 text-amber-700" />
+            <BookmarkCheck className="w-3.5 h-3.5 text-slate-500" />
             <span>Save Draft</span>
           </button>
 
           <button
             onClick={handleCreateInvoice}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-xs transition inline-flex items-center gap-2"
+            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-xs transition inline-flex items-center gap-2"
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Generate {invoiceType === 'QUOTATION' ? 'Quotation' : invoiceType === 'CASH_MEMO' ? 'Cash Memo' : 'Invoice'}</span>
+            <span>Create {invoiceType === 'QUOTATION' ? 'Quotation' : invoiceType === 'CASH_MEMO' ? 'Cash Memo' : 'Invoice'}</span>
           </button>
         </div>
       </div>
 
       {/* Resume Pending Draft Banner */}
       {pendingDraftNotice && !createdInvoice && (
-        <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-200">
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <FileClock className="w-5 h-5" />
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0">
+              <FileClock className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">
-                  Half-Filled Bill Found
+                <span className="text-[11px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-200 text-slate-800">
+                  Draft Restored
                 </span>
-                <span className="text-xs text-amber-800 font-semibold">
-                  Last saved{' '}
+                <span className="text-xs text-slate-500 font-mono tabular-nums">
                   {new Date(pendingDraftNotice.updatedAt).toLocaleDateString('en-IN', {
                     day: 'numeric',
                     month: 'short',
                   })}{' '}
-                  at{' '}
                   {new Date(pendingDraftNotice.updatedAt).toLocaleTimeString('en-IN', {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
                 </span>
               </div>
-              <p className="text-sm font-black text-slate-900 mt-1">
+              <p className="text-sm font-bold text-slate-900 mt-1">
                 {pendingDraftNotice.customerName || 'Walk-in Customer'} •{' '}
                 {pendingDraftNotice.items?.length || 0} item(s) •{' '}
-                {formatCurrency(pendingDraftNotice.grandTotal || 0)}
-              </p>
-              <p className="text-xs text-slate-600 mt-0.5">
-                You were working on a bill previously. Would you like to continue from where you left off?
+                <span className="font-mono tabular-nums">{formatCurrency(pendingDraftNotice.grandTotal || 0)}</span>
               </p>
             </div>
           </div>
@@ -855,10 +851,9 @@ export default function NewSalesInvoicePage() {
             <button
               type="button"
               onClick={() => handleResumeDraft(pendingDraftNotice)}
-              className="flex-1 md:flex-initial px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition inline-flex items-center justify-center gap-1.5"
+              className="flex-1 md:flex-initial px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg transition inline-flex items-center justify-center gap-1.5"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Continue Where I Left</span>
+              Resume Draft
             </button>
             <button
               type="button"
@@ -867,9 +862,9 @@ export default function NewSalesInvoicePage() {
                 setPendingDraftNotice(null);
                 setSavedDrafts(getLocalDrafts());
               }}
-              className="flex-1 md:flex-initial px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-300 rounded-xl transition"
+              className="flex-1 md:flex-initial px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-600 font-medium text-xs border border-slate-200 rounded-lg transition"
             >
-              Discard Draft
+              Discard
             </button>
           </div>
         </div>
@@ -877,83 +872,80 @@ export default function NewSalesInvoicePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Main Invoice Form Column */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-5">
           {/* Document Type & Tax Configuration Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-                <FileText className="w-4 h-4 text-indigo-600" />
-                <span>Invoice Type & Tax Configuration</span>
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <FileText className="w-4 h-4 text-slate-600" />
+                <span>Document & Tax Configuration</span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                 {getInvoiceTypeLabel(invoiceType)}
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Invoice Document Type <span className="text-rose-500">*</span>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Document Type <span className="text-rose-500">*</span>
                 </label>
                 <InvoiceTypeSelect
                   value={invoiceType}
                   onChange={handleInvoiceTypeChange}
-                  showHelperDescription={true}
+                  showHelperDescription={false}
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
-                  Tax Configuration <span className="text-rose-500">*</span>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Tax Treatment <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={taxConfiguration}
                   onChange={(e) => setTaxConfiguration(e.target.value)}
                   disabled={invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST'}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 transition shadow-2xs"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-medium focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 disabled:bg-slate-100 disabled:text-slate-400 transition"
                 >
-                  <option value="CGST_SGST">CGST + SGST (Intra-State: 50% CGST / 50% SGST)</option>
-                  <option value="IGST">IGST (Inter-State: Integrated GST)</option>
-                  <option value="EXEMPT">Exempt / Nil-Rated (0% GST)</option>
-                  <option value="NONE">No GST / Non-Taxable</option>
+                  <option value="CGST_SGST">Intra-State (CGST + SGST)</option>
+                  <option value="IGST">Inter-State (IGST)</option>
+                  <option value="EXEMPT">Exempt / Nil-Rated</option>
+                  <option value="NONE">Non-Taxable / No GST</option>
                 </select>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 mt-1">
                   {invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST'
-                    ? 'Locked to No GST / Non-Taxable for this invoice type.'
+                    ? 'Non-taxable for selected document type.'
                     : taxConfiguration === 'IGST'
-                    ? 'Inter-state transaction (outside Gujarat). 100% tax allocated to IGST.'
+                    ? 'Inter-state transaction (outside Gujarat). 100% IGST.'
                     : taxConfiguration === 'EXEMPT'
-                    ? 'Goods or services exempt from GST. Tax calculated as 0%.'
+                    ? '0% tax rate applied.'
                     : taxConfiguration === 'NONE'
-                    ? 'No tax will be applied or printed on this invoice.'
-                    : 'Intra-state transaction (within Gujarat). Tax split equally between CGST and SGST.'}
+                    ? 'No tax lines displayed.'
+                    : 'Intra-state transaction. Split equally as CGST and SGST.'}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Customer Selection Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-                <Users className="w-4 h-4 text-indigo-600" />
-                <span>Customer (Bill To)</span>
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Users className="w-4 h-4 text-slate-600" />
+                <span>Customer</span>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddCustomerModal(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900"
               >
                 <UserPlus className="w-3.5 h-3.5" />
-                <span>+ Add New Customer</span>
+                <span>Add Customer</span>
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">
-                  Select Existing Customer (Search by Name, Mobile, GSTIN, City)
-                </label>
                 <CustomerSearchSelect
                   selectedCustomer={selectedCustomer || null}
                   onSelectCustomer={handleCustomerSelect}
@@ -963,16 +955,16 @@ export default function NewSalesInvoicePage() {
 
               {selectedCustomer && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                    <span className="text-slate-400 block text-[11px]">Phone & Email</span>
-                    <strong className="text-slate-800">{selectedCustomer.phone}</strong>
-                    <div className="text-slate-500">{selectedCustomer.email || 'No email registered'}</div>
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200/80 text-xs">
+                    <span className="text-slate-500 block text-[11px] font-medium">Contact</span>
+                    <strong className="text-slate-900 font-mono tabular-nums">{selectedCustomer.phone}</strong>
+                    <div className="text-slate-500">{selectedCustomer.email || 'No email'}</div>
                   </div>
 
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                    <span className="text-slate-400 block text-[11px]">Address & GSTIN</span>
-                    <div className="text-slate-800 font-medium truncate">{selectedCustomer.address || 'Ahmedabad, Gujarat'}</div>
-                    <div className="text-slate-500 font-mono">{selectedCustomer.gstin || 'Unregistered Consumer'}</div>
+                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200/80 text-xs">
+                    <span className="text-slate-500 block text-[11px] font-medium">Billing Address & GSTIN</span>
+                    <div className="text-slate-800 truncate">{selectedCustomer.address || 'Ahmedabad, Gujarat'}</div>
+                    <div className="text-slate-500 font-mono tabular-nums">{selectedCustomer.gstin || 'Unregistered'}</div>
                   </div>
                 </div>
               )}
@@ -980,74 +972,73 @@ export default function NewSalesInvoicePage() {
           </div>
 
           {/* Line Items Table Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-                <Package className="w-4 h-4 text-indigo-600" />
-                <span>Invoice Line Items</span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  {items.length} item{items.length === 1 ? '' : 's'}
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Package className="w-4 h-4 text-slate-600" />
+                <span>Items</span>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 tabular-nums">
+                  {items.length} {items.length === 1 ? 'item' : 'items'}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={addItem}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>+ Add Product Row</span>
+                  <span>Add Item</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => addInvoiceOnlyRow()}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>+ Invoice Only Item</span>
+                  <span>Custom Item</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleOpenQuickCreate(null, '')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
                   <PackagePlus className="w-3.5 h-3.5" />
-                  <span>+ Create Product & Stock</span>
+                  <span>New Product</span>
                 </button>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {items.map((it, idx) => (
                 <div
                   key={idx}
-                  className={`p-4 rounded-2xl border transition space-y-3 ${
+                  className={`p-3.5 rounded-xl border transition space-y-3 ${
                     it.isInvoiceOnly
-                      ? 'border-amber-200 bg-amber-50/20'
-                      : 'border-slate-200 bg-slate-50/50'
+                      ? 'border-slate-300 bg-slate-50/50'
+                      : 'border-slate-200 bg-white'
                   }`}
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-700"># {idx + 1}</span>
+                      <span className="font-semibold text-slate-500 tabular-nums">#{idx + 1}</span>
                       {it.isInvoiceOnly ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                          <FileText className="w-3 h-3 text-amber-700" />
-                          <span>Invoice Only (No Stock Deduction)</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          Invoice Only
                         </span>
                       ) : it.productId ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                          <Package className="w-3 h-3 text-indigo-600" />
-                          <span>Inventory Linked</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          Inventory Linked
                         </span>
                       ) : null}
                     </div>
                     {items.length > 1 && (
                       <button
                         onClick={() => removeItem(idx)}
-                        className="text-slate-400 hover:text-rose-600 transition"
+                        className="text-slate-400 hover:text-rose-600 transition p-1"
+                        title="Remove row"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
@@ -1058,15 +1049,15 @@ export default function NewSalesInvoicePage() {
                       {it.isInvoiceOnly ? (
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <label className="block text-amber-900 font-bold text-xs">
-                              Custom Item Name & Details *
+                            <label className="block text-slate-700 font-medium text-xs">
+                              Item Description <span className="text-rose-500">*</span>
                             </label>
                             <button
                               type="button"
                               onClick={() => handleSwitchToInventory(idx)}
-                              className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 hover:underline transition"
+                              className="text-[11px] font-medium text-slate-600 hover:text-slate-900 underline transition"
                             >
-                              Switch to Inventory Product
+                              Select from Inventory
                             </button>
                           </div>
                           <input
@@ -1079,22 +1070,22 @@ export default function NewSalesInvoicePage() {
                                 handleItemChange(idx, 'description', val);
                               }
                             }}
-                            placeholder="e.g. Dell Laptop / Custom Service / Accessories"
-                            className="w-full px-3 py-2 bg-white border border-amber-300 rounded-xl text-slate-900 font-bold text-xs focus:outline-none focus:border-amber-600"
+                            placeholder="Item name / Service description"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-medium text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                           />
                         </div>
                       ) : (
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <label className="block text-slate-600 font-semibold">
-                              Select Product / Service (Search Name, Specs, Brand, Model, Serial...)
+                            <label className="block text-slate-700 font-medium">
+                              Product / Service
                             </label>
                             <button
                               type="button"
                               onClick={() => handleAddToInvoiceOnly(idx, '')}
-                              className="text-[11px] font-semibold text-amber-700 hover:text-amber-900 hover:underline transition"
+                              className="text-[11px] font-medium text-slate-600 hover:text-slate-900 underline transition"
                             >
-                              Switch to Invoice Only
+                              Switch to Custom Item
                             </button>
                           </div>
                           <ProductSearchSelect
@@ -1108,27 +1099,27 @@ export default function NewSalesInvoicePage() {
                     </div>
 
                     <div className="sm:col-span-4">
-                      <label className="block text-purple-700 font-semibold mb-1 flex items-center gap-1">
-                        <Hash className="w-3.5 h-3.5" />
+                      <label className="block text-slate-700 font-medium mb-1 flex items-center gap-1">
+                        <Hash className="w-3 h-3 text-slate-500" />
                         <span>Serial Number</span>
                       </label>
                       {it.isInvoiceOnly ? (
-                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-medium text-xs flex items-center gap-1.5">
+                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-400 font-medium text-xs flex items-center gap-1.5">
                           <ShieldOff className="w-3.5 h-3.5 text-slate-400" />
-                          <span>N/A (Invoice Only - No Stock)</span>
+                          <span>Not applicable</span>
                         </div>
                       ) : it.isService ? (
-                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-medium text-xs flex items-center gap-1.5">
-                          <Wrench className="w-3.5 h-3.5 text-blue-500" />
-                          <span>N/A (Service Item)</span>
+                        <div className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-400 font-medium text-xs flex items-center gap-1.5">
+                          <Wrench className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Service item</span>
                         </div>
                       ) : (
                         <select
                           value={it.serialNumber}
                           onChange={(e) => handleItemChange(idx, 'serialNumber', e.target.value)}
-                          className="w-full px-3 py-2 bg-purple-50/50 border border-purple-200 rounded-xl text-purple-900 font-mono font-semibold focus:outline-purple-600"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                         >
-                          <option value="">-- Select In-Stock Serial # --</option>
+                          <option value="">Select Serial #</option>
                           {it.availableSerials?.map((sn: any) => (
                             <option key={sn.id} value={sn.serialNumber}>
                               {sn.serialNumber}
@@ -1141,61 +1132,61 @@ export default function NewSalesInvoicePage() {
 
                   {/* Description Input */}
                   <div>
-                    <label className="block text-slate-600 text-xs font-semibold mb-1">
-                      Item Description / Specs for Invoice Print
+                    <label className="block text-slate-600 text-xs font-medium mb-1">
+                      Specifications / Print Details
                     </label>
                     <input
                       type="text"
                       value={it.description}
                       onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
-                      placeholder="e.g. Dell Latitude 5490 | i5 7th Gen | 8GB DDR4 | 256GB SSD"
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800 text-xs"
+                      placeholder="Specifications, warranty terms, or notes"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                     />
                   </div>
 
                   {/* Quantity, Rate, Discount & Total */}
                   <div className={`grid grid-cols-2 ${isNoTax || isExempt ? 'sm:grid-cols-4' : 'sm:grid-cols-5'} gap-3 text-xs`}>
                     <div>
-                      <label className="block text-slate-500 mb-1">Qty</label>
+                      <label className="block text-slate-600 font-medium mb-1">Qty</label>
                       <input
                         type="number"
                         min="1"
                         value={it.quantity}
                         onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-semibold tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-slate-500 mb-1">Selling Rate (₹)</label>
+                      <label className="block text-slate-600 font-medium mb-1">Rate (₹)</label>
                       <input
                         type="number"
                         step="any"
                         value={it.rate}
                         onChange={(e) => handleItemChange(idx, 'rate', e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 font-bold"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono font-semibold tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-slate-500 mb-1">Discount (₹)</label>
+                      <label className="block text-slate-600 font-medium mb-1">Discount (₹)</label>
                       <input
                         type="number"
                         step="any"
                         value={it.discount}
                         onChange={(e) => handleItemChange(idx, 'discount', e.target.value)}
                         placeholder="0"
-                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                       />
                     </div>
 
                     {!isNoTax && !isExempt && (
                       <div>
-                        <label className="block text-slate-500 mb-1">GST %</label>
+                        <label className="block text-slate-600 font-medium mb-1">GST %</label>
                         <select
                           value={it.gstPercent}
                           onChange={(e) => handleItemChange(idx, 'gstPercent', e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                         >
                           <option value="18">18%</option>
                           <option value="12">12%</option>
@@ -1207,12 +1198,12 @@ export default function NewSalesInvoicePage() {
                     )}
 
                     <div>
-                      <label className="block text-slate-500 mb-1">Line Total</label>
+                      <label className="block text-slate-600 font-medium mb-1">Total (₹)</label>
                       <input
                         type="text"
                         readOnly
                         value={formatCurrency(it.total)}
-                        className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-black"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 font-mono font-bold tabular-nums"
                       />
                     </div>
                   </div>
@@ -1223,78 +1214,79 @@ export default function NewSalesInvoicePage() {
         </div>
 
         {/* Right Summary Column */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Invoice Metadata & Settlement Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
-              Invoice Summary & Payment
+        <div className="lg:col-span-4 space-y-5">
+          {/* Invoice Summary & Settlement Card */}
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs space-y-4">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2">
+              Summary & Payment
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Invoice Date</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-slate-600 font-medium mb-1">Invoice Date</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-medium mb-1">Due Date</label>
+                  <input
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Due Date</label>
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Overall Discount (%)</label>
+                <label className="block text-slate-600 font-medium mb-1">Overall Discount (%)</label>
                 <input
                   type="number"
                   step="any"
                   value={overallDiscountPercent}
                   onChange={(e) => setOverallDiscountPercent(e.target.value)}
                   placeholder="0"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               {/* Breakdown */}
-              <div className="pt-3 border-t border-slate-200 space-y-1.5 text-xs">
+              <div className="pt-3 border-t border-slate-200/80 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-600">
-                  <span>Subtotal:</span>
-                  <span className="font-semibold text-slate-800">{formatCurrency(rawSubtotal)}</span>
+                  <span>Subtotal</span>
+                  <span className="font-mono font-medium text-slate-900 tabular-nums">{formatCurrency(rawSubtotal)}</span>
                 </div>
                 {overallDiscountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>Discount ({overallDiscountPercent}%):</span>
-                    <span>- {formatCurrency(overallDiscountAmount)}</span>
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Discount ({overallDiscountPercent}%)</span>
+                    <span className="font-mono tabular-nums">- {formatCurrency(overallDiscountAmount)}</span>
                   </div>
                 )}
                 {!isNoTax && !isExempt && (
                   <>
                     <div className="flex justify-between text-slate-600">
-                      <span>Taxable Value:</span>
-                      <span>{formatCurrency(taxableTotal)}</span>
+                      <span>Taxable Total</span>
+                      <span className="font-mono tabular-nums">{formatCurrency(taxableTotal)}</span>
                     </div>
                     {isIgst ? (
                       <div className="flex justify-between text-slate-600">
-                        <span>IGST (18%):</span>
-                        <span>{formatCurrency(igst)}</span>
+                        <span>IGST (18%)</span>
+                        <span className="font-mono tabular-nums">{formatCurrency(igst)}</span>
                       </div>
                     ) : (
                       <>
                         <div className="flex justify-between text-slate-600">
-                          <span>CGST (9%):</span>
-                          <span>{formatCurrency(cgst)}</span>
+                          <span>CGST (9%)</span>
+                          <span className="font-mono tabular-nums">{formatCurrency(cgst)}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
-                          <span>SGST (9%):</span>
-                          <span>{formatCurrency(sgst)}</span>
+                          <span>SGST (9%)</span>
+                          <span className="font-mono tabular-nums">{formatCurrency(sgst)}</span>
                         </div>
                       </>
                     )}
@@ -1302,54 +1294,56 @@ export default function NewSalesInvoicePage() {
                 )}
                 {isExempt && (
                   <div className="flex justify-between text-slate-500">
-                    <span>Tax (Exempt / Nil-Rated):</span>
-                    <span className="font-medium">₹0.00 (0%)</span>
+                    <span>Tax (Exempt)</span>
+                    <span className="font-mono tabular-nums">₹0.00</span>
                   </div>
                 )}
-                <div className="flex justify-between text-base font-black text-slate-900 pt-2 border-t-2 border-slate-900">
-                  <span>Grand Total:</span>
-                  <span className="text-indigo-700">{formatCurrency(grandTotal)}</span>
+                <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
+                  <span>Total</span>
+                  <span className="font-mono tabular-nums">{formatCurrency(grandTotal)}</span>
                 </div>
               </div>
 
               {/* Payment Section */}
-              <div className="pt-3 border-t border-slate-200 space-y-2">
-                <label className="block text-slate-700 font-bold">Payment Collection</label>
+              <div className="pt-3 border-t border-slate-200/80 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-slate-700 font-semibold">Payment</label>
+                  <div className="flex gap-2 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => setPaidAmount(String(grandTotal))}
+                      className="text-slate-700 hover:text-slate-900 font-medium underline"
+                    >
+                      Paid in Full
+                    </button>
+                    <span className="text-slate-300">|</span>
+                    <button
+                      type="button"
+                      onClick={() => setPaidAmount('0')}
+                      className="text-slate-500 hover:text-slate-700 underline"
+                    >
+                      Credit (₹0)
+                    </button>
+                  </div>
+                </div>
 
                 <div>
-                  <label className="block text-slate-500 mb-1">Amount Received (₹)</label>
                   <input
                     type="number"
                     step="any"
                     value={paidAmount}
                     onChange={(e) => setPaidAmount(e.target.value)}
-                    placeholder={`e.g. ${grandTotal} (Full)`}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-bold"
+                    placeholder={`Paid amount (defaults to ${grandTotal})`}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-xs tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
-                  <div className="flex justify-between items-center text-[11px] text-slate-400 mt-1">
-                    <button
-                      type="button"
-                      onClick={() => setPaidAmount(String(grandTotal))}
-                      className="text-indigo-600 hover:underline font-semibold"
-                    >
-                      Collect Full
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaidAmount('0')}
-                      className="text-slate-500 hover:underline"
-                    >
-                      Credit (0)
-                    </button>
-                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-500 mb-1">Payment Mode</label>
+                  <label className="block text-slate-600 font-medium mb-1">Payment Method</label>
                   <select
                     value={paymentMode}
                     onChange={(e) => setPaymentMode(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-medium"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-medium text-xs focus:outline-none focus:ring-1 focus:ring-slate-900"
                   >
                     <option value="Cash">Cash</option>
                     <option value="UPI">UPI</option>
@@ -1359,11 +1353,11 @@ export default function NewSalesInvoicePage() {
                   </select>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-100 flex items-center justify-between text-xs font-bold">
-                  <span className={balanceDue > 0 ? 'text-rose-600' : 'text-emerald-700'}>
-                    Balance Outstanding:
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs font-semibold">
+                  <span className={balanceDue > 0 ? 'text-rose-600' : 'text-slate-700'}>
+                    Balance Due:
                   </span>
-                  <span className={balanceDue > 0 ? 'text-rose-600 font-black' : 'text-emerald-700 font-black'}>
+                  <span className={`font-mono tabular-nums ${balanceDue > 0 ? 'text-rose-600 font-bold' : 'text-slate-900 font-bold'}`}>
                     {formatCurrency(balanceDue)}
                   </span>
                 </div>
@@ -1373,10 +1367,10 @@ export default function NewSalesInvoicePage() {
               <button
                 type="button"
                 onClick={handleCreateInvoice}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 mt-4"
+                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-2 mt-4"
               >
-                <CheckCircle2 className="w-5 h-5" />
-                <span>Confirm & Generate {invoiceType === 'QUOTATION' ? 'Quotation' : invoiceType === 'CASH_MEMO' ? 'Cash Memo' : 'Invoice'}</span>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Create {invoiceType === 'QUOTATION' ? 'Quotation' : invoiceType === 'CASH_MEMO' ? 'Cash Memo' : 'Invoice'}</span>
               </button>
             </div>
           </div>
@@ -1385,63 +1379,63 @@ export default function NewSalesInvoicePage() {
 
       {/* Quick Add Customer Modal */}
       {showAddCustomerModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
-            <h3 className="text-base font-bold text-slate-900 mb-3">Add New Customer</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-6 border border-slate-200">
+            <h3 className="text-base font-bold text-slate-900 mb-3">Add Customer</h3>
             <form onSubmit={handleQuickAddCustomer} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Customer Name *</label>
+                <label className="block text-slate-700 font-medium mb-1">Customer Name <span className="text-rose-500">*</span></label>
                 <input
                   type="text"
                   required
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
-                  placeholder="e.g. Ronak Jain"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  placeholder="Business or contact name"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Phone Number *</label>
+                <label className="block text-slate-700 font-medium mb-1">Phone Number <span className="text-rose-500">*</span></label>
                 <input
                   type="tel"
                   required
                   value={newCustPhone}
                   onChange={(e) => setNewCustPhone(e.target.value)}
-                  placeholder="e.g. 9825012345"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  placeholder="10-digit mobile number"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Address</label>
+                <label className="block text-slate-700 font-medium mb-1">Address</label>
                 <input
                   type="text"
                   value={newCustAddress}
                   onChange={(e) => setNewCustAddress(e.target.value)}
-                  placeholder="e.g. Ahmedabad, Gujarat"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  placeholder="City, State"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">GSTIN (Optional)</label>
+                <label className="block text-slate-700 font-medium mb-1">GSTIN</label>
                 <input
                   type="text"
                   value={newCustGstin}
                   onChange={(e) => setNewCustGstin(e.target.value)}
-                  placeholder="e.g. 24AAAPL1234M1Z1"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono"
+                  placeholder="15-character GSTIN"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAddCustomerModal(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-medium"
+                  className="px-3.5 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg shadow-xs"
                 >
                   Save Customer
                 </button>
@@ -1453,74 +1447,74 @@ export default function NewSalesInvoicePage() {
 
       {/* Post-Save Invoice Screen */}
       {createdInvoice && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-6 text-center space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-              <CheckCircle2 className="w-8 h-8" />
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden p-6 text-center space-y-5 border border-slate-200">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mx-auto border border-emerald-200">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
 
             <div>
-              <span className="text-xs uppercase font-extrabold tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                {getInvoiceTypeTitle(createdInvoice.invoiceType)} Created Successfully
+              <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                {getInvoiceTypeTitle(createdInvoice.invoiceType)} Created
               </span>
-              <h3 className="text-xl font-black text-slate-900 mt-3">
+              <h3 className="text-xl font-bold font-mono text-slate-900 mt-2.5 tabular-nums">
                 {createdInvoice.invoiceNumber}
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Customer: <span className="font-semibold text-slate-700">{selectedCustomer?.name || 'Client'}</span>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Customer: <span className="font-medium text-slate-800">{selectedCustomer?.name || 'Customer'}</span>
               </p>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2 text-left">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500">Invoice Amount:</span>
-                <span className="font-black text-slate-900 text-base">₹{createdInvoice.grandTotal?.toLocaleString('en-IN')}</span>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-2 text-left text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600">Total Amount:</span>
+                <span className="font-mono font-bold text-slate-900 text-sm tabular-nums">{formatCurrency(createdInvoice.grandTotal || 0)}</span>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500">Paid:</span>
-                <span className="font-bold text-emerald-600">₹{createdInvoice.paidAmount?.toLocaleString('en-IN')}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600">Paid:</span>
+                <span className="font-mono font-medium text-emerald-700 tabular-nums">{formatCurrency(createdInvoice.paidAmount || 0)}</span>
               </div>
               {createdInvoice.balanceDue > 0 && (
-                <div className="flex justify-between items-center text-sm border-t border-slate-200 pt-1">
-                  <span className="text-rose-600 font-semibold">Balance Due:</span>
-                  <span className="font-black text-rose-600">₹{createdInvoice.balanceDue?.toLocaleString('en-IN')}</span>
+                <div className="flex justify-between items-center border-t border-slate-200 pt-1.5">
+                  <span className="text-rose-600 font-medium">Balance Due:</span>
+                  <span className="font-mono font-bold text-rose-600 tabular-nums">{formatCurrency(createdInvoice.balanceDue || 0)}</span>
                 </div>
               )}
             </div>
 
-            {/* Actions matching prompt */}
-            <div className="space-y-3">
+            {/* Actions */}
+            <div className="space-y-2.5">
               <button
                 type="button"
                 onClick={() => setIsWhatsAppOpen(true)}
-                className="w-full inline-flex items-center justify-center gap-2.5 py-3 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition"
               >
-                <MessageCircle className="w-5 h-5" />
+                <MessageCircle className="w-4 h-4" />
                 Share on WhatsApp
               </button>
 
               <div className="grid grid-cols-3 gap-2">
                 <Link
                   href={`/sales/invoices/${createdInvoice.id}`}
-                  className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                  className="inline-flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
-                  <Eye className="w-4 h-4 text-indigo-600" />
+                  <Eye className="w-3.5 h-3.5 text-slate-600" />
                   View
                 </Link>
                 <a
                   href={`/api/invoices/${createdInvoice.id}/pdf`}
                   download
-                  className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                  className="inline-flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
-                  <Download className="w-4 h-4 text-slate-600" />
+                  <Download className="w-3.5 h-3.5 text-slate-600" />
                   PDF
                 </a>
                 <button
                   type="button"
                   onClick={() => setIsImageModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition shadow-xs"
+                  className="inline-flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
-                  <FileImage className="w-4 h-4 text-indigo-600" />
+                  <FileImage className="w-3.5 h-3.5 text-slate-600" />
                   Image
                 </button>
               </div>
@@ -1531,9 +1525,9 @@ export default function NewSalesInvoicePage() {
                   setCreatedInvoice(null);
                   router.push('/sales/invoices');
                 }}
-                className="w-full text-xs text-slate-400 hover:text-slate-600 py-1 transition"
+                className="w-full text-xs text-slate-500 hover:text-slate-800 py-1 transition font-medium"
               >
-                Done / Back to Invoices
+                Done
               </button>
             </div>
           </div>

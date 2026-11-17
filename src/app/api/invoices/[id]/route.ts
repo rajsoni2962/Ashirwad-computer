@@ -28,7 +28,15 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Invoice not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: invoice });
+    let convertedToInvoice: any = null;
+    if (invoice.convertedToInvoiceId) {
+      convertedToInvoice = await db.invoice.findUnique({
+        where: { id: invoice.convertedToInvoiceId },
+        select: { id: true, invoiceNumber: true, date: true, grandTotal: true },
+      });
+    }
+
+    return NextResponse.json({ success: true, data: { ...invoice, convertedToInvoice } });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

@@ -4,6 +4,7 @@ import React, { useState, createContext, useContext } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import GlobalKeyboardShortcuts from '@/components/common/GlobalKeyboardShortcuts';
 
 const AppLayoutContext = createContext<boolean>(false);
 
@@ -32,6 +33,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </main>
         </div>
+        <GlobalKeyboardShortcuts />
       </div>
     </AppLayoutContext.Provider>
   );

@@ -153,116 +153,117 @@ export default function CustomerPaymentsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-              <IndianRupee className="w-6 h-6 text-emerald-600" />
-              Customer Payments Received
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              <IndianRupee className="w-5 h-5 text-slate-700" />
+              Payments Received
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Track incoming settlements from clients via UPI, Cash, Cheque, and Bank Transfer.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Customer payments and settlement history
             </p>
           </div>
           <button
             onClick={handleOpenModal}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 shadow-sm transition"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 shadow-xs transition"
           >
             <Plus className="w-4 h-4" />
-            Record Payment Received
+            Record Payment
           </button>
         </div>
 
         {/* Total Summary Banner */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Recorded Receipts</div>
-            <div className="text-3xl font-black text-emerald-600 mt-1">₹{totalCollected.toLocaleString('en-IN')}</div>
+            <div className="text-xs font-medium text-slate-500">Total Receipts</div>
+            <div className="text-2xl font-bold font-mono text-slate-900 mt-0.5 tabular-nums">₹{totalCollected.toLocaleString('en-IN')}</div>
           </div>
-          <div className="text-xs text-slate-500 text-right">
-            Total Transactions: <span className="font-bold text-slate-800">{payments.length}</span>
+          <div className="text-xs text-slate-500">
+            Total records: <span className="font-mono font-semibold text-slate-800 tabular-nums">{payments.length}</span>
           </div>
         </div>
 
         {/* Search */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+        <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div className="relative w-full max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search by customer, receipt # or reference..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition"
             />
           </div>
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
           {loading ? (
-            <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center gap-3">
-              <RefreshCw className="w-6 h-6 animate-spin text-emerald-600" />
-              <span>Loading payment history...</span>
+            <div className="p-12 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
+              <RefreshCw className="w-5 h-5 animate-spin text-slate-600" />
+              <span className="text-xs">Loading payments...</span>
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-12 text-center text-slate-400">
-              <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <div className="font-semibold text-slate-700">No payment receipts found</div>
+              <CreditCard className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+              <div className="text-sm font-semibold text-slate-700">No records found</div>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-600">
-                <thead className="bg-slate-50 border-b border-slate-200/80 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <table className="w-full text-left text-xs text-slate-600">
+                <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                   <tr>
-                    <th className="py-3.5 px-4">Receipt # & Date</th>
-                    <th className="py-3.5 px-4">Customer</th>
-                    <th className="py-3.5 px-4">Payment Mode</th>
-                    <th className="py-3.5 px-4">Ref / Txn ID</th>
-                    <th className="py-3.5 px-4 text-right">Amount Received</th>
-                    <th className="py-3.5 px-4">Notes</th>
+                    <th className="py-3 px-4">Receipt #</th>
+                    <th className="py-3 px-4">Date</th>
+                    <th className="py-3 px-4">Customer</th>
+                    <th className="py-3 px-4">Method</th>
+                    <th className="py-3 px-4">Reference</th>
+                    <th className="py-3 px-4 text-right">Amount</th>
+                    <th className="py-3 px-4">Notes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {filtered.map((p) => (
                     <tr key={p.id} className="hover:bg-slate-50/70 transition">
-                      <td className="py-3.5 px-4">
-                        <div className="font-mono font-bold text-slate-900">{p.paymentNumber}</div>
-                        <div className="text-xs text-slate-400">
-                          {new Date(p.date).toLocaleDateString('en-IN', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
-                        </div>
+                      <td className="py-3 px-4 font-mono font-semibold text-slate-900 tabular-nums">
+                        {p.paymentNumber}
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3 px-4 font-mono text-slate-600 tabular-nums">
+                        {new Date(p.date).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="py-3 px-4">
                         {p.customer ? (
                           <Link
                             href={`/customers/ledger?customerId=${p.customer.id}`}
-                            className="font-bold text-indigo-600 hover:underline"
+                            className="font-medium text-slate-900 hover:underline"
                           >
                             {p.customer.name}
                           </Link>
                         ) : (
-                          <span className="text-slate-400">Walk-in / Anonymous</span>
+                          <span className="text-slate-400">Walk-in</span>
                         )}
                         {p.invoice && (
-                          <div className="text-xs text-slate-400 mt-0.5">
+                          <div className="text-[11px] text-slate-400 font-mono tabular-nums">
                             Inv: {p.invoice.invoiceNumber}
                           </div>
                         )}
                       </td>
-                      <td className="py-3.5 px-4">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <td className="py-3 px-4">
+                        <span className="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                           {p.paymentMode}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-xs text-slate-600">
-                        {p.referenceNumber || '-'}
+                      <td className="py-3 px-4 font-mono text-slate-500 tabular-nums">
+                        {p.referenceNumber || '—'}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-black text-emerald-600 text-base">
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 tabular-nums">
                         ₹{p.amount.toLocaleString('en-IN')}
                       </td>
-                      <td className="py-3.5 px-4 text-xs text-slate-400 max-w-xs truncate">
-                        {p.notes || '-'}
+                      <td className="py-3 px-4 text-slate-400 max-w-xs truncate">
+                        {p.notes || '—'}
                       </td>
                     </tr>
                   ))}
@@ -274,37 +275,37 @@ export default function CustomerPaymentsPage() {
 
         {/* Modal for Recording Customer Payment */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50">
-                <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-emerald-600" />
-                  Record Customer Payment
+          <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200">
+              <div className="flex items-center justify-between p-4 border-b border-slate-100">
+                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-slate-700" />
+                  Record Payment
                 </h3>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/60"
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-5 space-y-4">
+              <form onSubmit={handleSubmit} className="p-4 space-y-3.5 text-xs">
                 {errorMsg && (
-                  <div className="p-3 text-xs bg-rose-50 border border-rose-200 text-rose-700 rounded-xl">
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg">
                     {errorMsg}
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Select Customer <span className="text-rose-500">*</span>
+                  <label className="block font-medium text-slate-700 mb-1">
+                    Customer <span className="text-rose-500">*</span>
                   </label>
                   <select
                     required
                     value={formData.customerId}
                     onChange={(e) => setFormData({ ...formData, customerId: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   >
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -314,89 +315,88 @@ export default function CustomerPaymentsPage() {
                   </select>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Amount Received (₹) <span className="text-rose-500">*</span>
+                    <label className="block font-medium text-slate-700 mb-1">
+                      Amount (₹) <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="number"
                       required
                       min="1"
-                      placeholder="e.g. 5000"
+                      placeholder="Amount in ₹"
                       value={formData.amount}
                       onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                      className="w-full px-3.5 py-2.5 text-sm font-bold bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Payment Mode
+                    <label className="block font-medium text-slate-700 mb-1">
+                      Payment Method
                     </label>
                     <select
                       value={formData.paymentMode}
                       onChange={(e) => setFormData({ ...formData, paymentMode: e.target.value })}
-                      className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                     >
-                      <option value="UPI">UPI / QR Code</option>
+                      <option value="UPI">UPI</option>
                       <option value="Cash">Cash</option>
-                      <option value="Bank Transfer">Bank Transfer / NEFT / IMPS</option>
-                      <option value="Credit Card">Credit Card</option>
-                      <option value="Debit Card">Debit Card</option>
+                      <option value="Bank Transfer">Bank Transfer / NEFT</option>
+                      <option value="Card">Card</option>
                       <option value="Cheque">Cheque</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Date</label>
+                    <label className="block font-medium text-slate-700 mb-1">Date</label>
                     <input
                       type="date"
                       value={formData.date}
                       onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      UTR / Transaction Ref
+                    <label className="block font-medium text-slate-700 mb-1">
+                      Reference / UTR
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. UPI/1234567890"
+                      placeholder="Transaction reference"
                       value={formData.referenceNumber}
                       onChange={(e) => setFormData({ ...formData, referenceNumber: e.target.value })}
-                      className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Internal Notes</label>
+                  <label className="block font-medium text-slate-700 mb-1">Notes</label>
                   <input
                     type="text"
-                    placeholder="e.g. Advance payment for laptop order"
+                    placeholder="Optional notes"
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+                    className="px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition disabled:opacity-50"
+                    className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-xs transition disabled:opacity-50"
                   >
-                    {submitting ? 'Recording...' : 'Save Payment Receipt'}
+                    {submitting ? 'Saving...' : 'Save Payment'}
                   </button>
                 </div>
               </form>

@@ -433,7 +433,7 @@ Repair | Upgrade | Build | Service`;
                   <button
                     type="button"
                     onClick={() => setIsEditingPhone(true)}
-                    className="text-[11px] font-semibold text-indigo-600 hover:underline"
+                    className="text-[11px] font-semibold text-slate-900 hover:underline"
                   >
                     Change
                   </button>
@@ -502,11 +502,11 @@ Repair | Upgrade | Build | Service`;
                 onClick={() => setShareFormat('png')}
                 className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border text-xs font-bold transition ${
                   shareFormat === 'png'
-                    ? 'border-indigo-500 bg-indigo-50/70 text-indigo-800 shadow-xs ring-1 ring-indigo-500'
+                    ? 'border-slate-900 bg-slate-100 text-slate-900 shadow-xs ring-1 ring-slate-900'
                     : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <FileImage className="w-4 h-4 text-indigo-600 mb-1" />
+                <FileImage className="w-4 h-4 text-slate-700 mb-1" />
                 <span>PNG Image</span>
                 <span className="text-[10px] font-normal text-slate-400 mt-0.5">Lossless 300 DPI</span>
               </button>
@@ -516,11 +516,11 @@ Repair | Upgrade | Build | Service`;
                 onClick={() => setShareFormat('jpeg')}
                 className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border text-xs font-bold transition ${
                   shareFormat === 'jpeg'
-                    ? 'border-purple-500 bg-purple-50/70 text-purple-800 shadow-xs ring-1 ring-purple-500'
+                    ? 'border-slate-900 bg-slate-100 text-slate-900 shadow-xs ring-1 ring-slate-900'
                     : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <FileImage className="w-4 h-4 text-purple-600 mb-1" />
+                <FileImage className="w-4 h-4 text-slate-700 mb-1" />
                 <span>JPG Image</span>
                 <span className="text-[10px] font-normal text-slate-400 mt-0.5">Photo / Fast Load</span>
               </button>
@@ -534,7 +534,7 @@ Repair | Upgrade | Build | Service`;
                 {shareFormat === 'pdf' ? (
                   <FileText className="w-4 h-4 text-rose-500 shrink-0" />
                 ) : (
-                  <FileImage className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <FileImage className="w-4 h-4 text-slate-700 shrink-0" />
                 )}
                 <span className="font-mono text-slate-700 truncate font-semibold">
                   {shareFormat === 'pdf' ? pdfFilename : imageFilename}
@@ -561,7 +561,7 @@ Repair | Upgrade | Build | Service`;
                     disabled={generating}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition"
                   >
-                    <Download className="w-3.5 h-3.5 text-indigo-600" />
+                    <Download className="w-3.5 h-3.5 text-slate-700" />
                     Download {shareFormat.toUpperCase()}
                   </button>
                   <button
@@ -595,7 +595,7 @@ Repair | Upgrade | Build | Service`;
               <button
                 type="button"
                 onClick={handleCopyMessage}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-indigo-600 transition"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-slate-900 transition"
               >
                 {copied ? (
                   <>

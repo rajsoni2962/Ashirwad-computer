@@ -83,16 +83,16 @@ export default function ProductsPage() {
         ...formData,
         ...(isAcc
           ? {
-              cpu: null,
-              generation: null,
-              ram: null,
-              ramType: null,
-              storage: null,
-              storageType: null,
-              gpu: null,
-              displaySize: null,
-              condition: formData.condition || 'Brand New',
-            }
+            cpu: null,
+            generation: null,
+            ram: null,
+            ramType: null,
+            storage: null,
+            storageType: null,
+            gpu: null,
+            displaySize: null,
+            condition: formData.condition || 'Brand New',
+          }
           : {}),
       };
 
@@ -179,14 +179,14 @@ export default function ProductsPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <Package className="w-6 h-6 text-amber-500" />
-            <span>Product Catalog & Hardware Inventory</span>
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Package className="w-5 h-5 text-slate-700" />
+            <span>Product Catalog</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Total {products.length} catalog items • Laptops, SSDs, RAM, components, and serialized refurbished machines.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Manage inventory items, hardware specs, serialized units, and pricing
           </p>
         </div>
 
@@ -218,15 +218,15 @@ export default function ProductsPage() {
             });
             setShowAddModal(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-xs transition self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Add Product</span>
+          <span>Add Product</span>
         </button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+      <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -234,17 +234,17 @@ export default function ProductsPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search Dell, HP, ThinkPad, SSD, i5, i7..."
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+              placeholder="Search by name, brand, model, specs..."
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition"
             />
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs text-slate-400 font-medium">Brand:</span>
+            <span className="text-xs text-slate-500">Brand:</span>
             <select
               value={brandFilter}
               onChange={(e) => setBrandFilter(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-semibold"
+              className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-slate-900"
             >
               <option value="All">All Brands</option>
               <option value="Dell">Dell</option>
@@ -263,11 +263,10 @@ export default function ProductsPage() {
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition whitespace-nowrap ${
-                categoryFilter === cat
-                  ? 'bg-amber-500 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-3 py-1 text-xs font-medium rounded-lg transition whitespace-nowrap ${categoryFilter === cat
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
             >
               {cat}
             </button>
@@ -276,16 +275,16 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Grid / Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
-                <th className="py-3 px-4">Product Details & Specs</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="py-3 px-4">Product Details</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Condition</th>
-                <th className="py-3 px-4 text-center">Stock Units</th>
-                <th className="py-3 px-4 text-right">Purchase Cost</th>
+                <th className="py-3 px-4 text-center">Stock</th>
+                <th className="py-3 px-4 text-right">Cost Price</th>
                 <th className="py-3 px-4 text-right">Selling Price</th>
                 <th className="py-3 px-4 text-center">Serials</th>
                 <th className="py-3 px-4 text-right">Actions</th>
@@ -295,81 +294,80 @@ export default function ProductsPage() {
               {loading ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400">
-                    Loading product inventory...
+                    Loading products...
                   </td>
                 </tr>
               ) : products.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400">
-                    No products found matching filters.
+                    No products found.
                   </td>
                 </tr>
               ) : (
                 products.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/80 transition">
                     <td className="py-3 px-4 max-w-sm">
-                      <div className="font-bold text-slate-900">{p.name}</div>
+                      <div className="font-semibold text-slate-900">{p.name}</div>
                       <div className="text-[11px] text-slate-500 mt-0.5 space-x-1.5">
-                        {p.brand && <span className="font-semibold text-slate-700">{p.brand}</span>}
+                        {p.brand && <span className="font-medium text-slate-700">{p.brand}</span>}
                         {p.cpu && <span>• {p.cpu}</span>}
                         {p.ram && <span>• {p.ram}</span>}
                         {p.storage && <span>• {p.storage}</span>}
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-medium text-slate-700">{p.category}</td>
+                    <td className="py-3 px-4 text-slate-700">{p.category}</td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-200">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                         {p.condition}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-center">
                       {p.productType === 'SERVICE' || p.category?.toLowerCase() === 'service' ? (
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                           Service
                         </span>
                       ) : (
                         <span
-                          className={`text-xs font-black px-2.5 py-1 rounded-full ${
-                            p.currentStock <= 0
-                              ? 'bg-rose-100 text-rose-700'
+                          className={`text-xs font-mono font-semibold px-2 py-0.5 rounded tabular-nums ${p.currentStock <= 0
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
                               : p.currentStock <= p.minStock
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-emerald-100 text-emerald-800'
-                          }`}
+                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            }`}
                         >
                           {p.currentStock} in stock
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right text-slate-600 font-medium">
+                    <td className="py-3 px-4 text-right font-mono text-slate-600 tabular-nums">
                       {formatCurrency(p.purchasePrice)}
                     </td>
-                    <td className="py-3 px-4 text-right font-black text-indigo-700 text-sm">
+                    <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 tabular-nums">
                       {formatCurrency(p.sellingPrice)}
                     </td>
                     <td className="py-3 px-4 text-center">
                       {p.productType === 'SERVICE' || p.category?.toLowerCase() === 'service' ? (
-                        <span className="text-slate-400 font-mono text-xs">-</span>
+                        <span className="text-slate-400 font-mono text-xs">—</span>
                       ) : (
-                        <span className="text-purple-700 font-mono font-bold text-xs bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-100">
+                        <span className="text-slate-700 font-mono font-medium text-xs bg-slate-100 px-2 py-0.5 rounded border border-slate-200 tabular-nums">
                           {p._count?.serialNumbers || 0}
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
+                    <td className="py-3 px-4 text-right whitespace-nowrap space-x-1">
                       <button
                         onClick={() => openEdit(p)}
-                        className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition"
+                        className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
                         title="Edit Product"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(p.id, p.name)}
                         className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                         title="Delete Product"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </td>
                   </tr>
@@ -382,24 +380,24 @@ export default function ProductsPage() {
 
       {/* Add / Edit Product Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 border border-slate-200 my-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl p-5 border border-slate-200 my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h3 className="text-base font-black text-slate-900">
-                {editProduct ? 'Edit Product Details' : 'Add New Hardware / Laptop Product'}
+              <h3 className="text-sm font-bold text-slate-900">
+                {editProduct ? 'Edit Product' : 'Add Product'}
               </h3>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-4 text-xs">
               {/* Item Type Selector */}
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Item Type *</label>
+                <label className="block text-slate-700 font-medium mb-1">Item Type <span className="text-rose-500">*</span></label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -411,14 +409,13 @@ export default function ProductsPage() {
                         hsn: formData.hsn === '9987' ? '8471' : formData.hsn,
                       })
                     }
-                    className={`py-2 px-3 rounded-xl border text-left font-bold transition flex items-center justify-between ${
-                      formData.productType !== 'SERVICE'
-                        ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 ring-2 ring-indigo-600/20'
+                    className={`py-2 px-3 rounded-lg border text-left font-medium transition flex items-center justify-between ${formData.productType !== 'SERVICE'
+                        ? 'border-slate-900 bg-slate-50 text-slate-900 ring-1 ring-slate-900'
                         : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
+                      }`}
                   >
                     <span>Physical Product</span>
-                    <span className="text-[10px] font-semibold text-slate-400">Inventory Tracked</span>
+                    <span className="text-[10px] text-slate-500">Tracked stock</span>
                   </button>
 
                   <button
@@ -433,21 +430,20 @@ export default function ProductsPage() {
                         minStock: 0,
                       })
                     }
-                    className={`py-2 px-3 rounded-xl border text-left font-bold transition flex items-center justify-between ${
-                      formData.productType === 'SERVICE'
-                        ? 'border-blue-600 bg-blue-50/50 text-blue-900 ring-2 ring-blue-600/20'
+                    className={`py-2 px-3 rounded-lg border text-left font-medium transition flex items-center justify-between ${formData.productType === 'SERVICE'
+                        ? 'border-slate-900 bg-slate-50 text-slate-900 ring-1 ring-slate-900'
                         : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
+                      }`}
                   >
                     <span>Service</span>
-                    <span className="text-[10px] font-semibold text-blue-600">No Stock Units</span>
+                    <span className="text-[10px] text-slate-500">No stock tracking</span>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
-                  {formData.productType === 'SERVICE' ? 'Service Title *' : 'Product Title *'}
+                <label className="block text-slate-700 font-medium mb-1">
+                  {formData.productType === 'SERVICE' ? 'Service Name' : 'Product Name'} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -456,16 +452,16 @@ export default function ProductsPage() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder={
                     formData.productType === 'SERVICE'
-                      ? 'e.g. Laptop Deep Cleaning & Thermal Paste Replacement'
-                      : 'e.g. Dell Latitude 5410 | i5 10th Gen | 16GB RAM | 256GB SSD'
+                      ? 'e.g. Laptop Servicing & Cleaning'
+                      : 'e.g. Dell Latitude 5410 | i5 10th Gen | 16GB | 256GB SSD'
                   }
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-semibold"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Category</label>
+                  <label className="block text-slate-600 font-medium mb-1">Category</label>
                   <select
                     value={formData.category}
                     onChange={(e) => {
@@ -477,28 +473,28 @@ export default function ProductsPage() {
                         category: newCat,
                         ...(isAcc || !isComputer
                           ? {
-                              cpu: '',
-                              generation: '',
-                              ram: '',
-                              ramType: '',
-                              storage: '',
-                              storageType: '',
-                              gpu: '',
-                              displaySize: '',
-                            }
+                            cpu: '',
+                            generation: '',
+                            ram: '',
+                            ramType: '',
+                            storage: '',
+                            storageType: '',
+                            gpu: '',
+                            displaySize: '',
+                          }
                           : {}),
                         ...(isAcc && (!prev.condition || prev.condition === 'Refurbished Grade A')
                           ? { condition: 'Brand New' }
                           : {}),
                       }));
                     }}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   >
                     {formData.productType === 'SERVICE' ? (
                       <>
                         <option value="Repair Service">Repair Service</option>
                         <option value="Installation">Installation & Setup</option>
-                        <option value="Maintenance">Cleaning & Maintenance</option>
+                        <option value="Maintenance">Maintenance</option>
                         <option value="Data Recovery">Data Recovery</option>
                         <option value="Other Service">Other Service</option>
                       </>
@@ -519,37 +515,37 @@ export default function ProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
-                    {formData.productType === 'SERVICE' ? 'Service Code / Brand' : 'Brand'}
+                  <label className="block text-slate-600 font-medium mb-1">
+                    Brand
                   </label>
                   <input
                     type="text"
                     value={formData.brand}
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                    placeholder={formData.productType === 'SERVICE' ? 'e.g. In-Store / On-Site' : 'e.g. Dell, HP, Lenovo, Hammok'}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    placeholder="e.g. Dell, HP, Lenovo"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
-                    {formData.productType === 'SERVICE' ? 'Sub-Type / Model' : 'Model'}
+                  <label className="block text-slate-600 font-medium mb-1">
+                    Model
                   </label>
                   <input
                     type="text"
                     value={formData.model}
                     onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                    placeholder={formData.productType === 'SERVICE' ? 'e.g. All Laptops / General' : 'e.g. Wireless Combo / Latitude 5410'}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    placeholder="e.g. Latitude 5410"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Condition</label>
+                  <label className="block text-slate-600 font-medium mb-1">Condition</label>
                   <select
                     value={formData.condition}
                     onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                   >
                     {formData.productType === 'SERVICE' ? (
                       <option value="Service">Service</option>
@@ -566,21 +562,21 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              {/* Hardware Specs - Only for Complete Computer Systems (Laptop, Desktop, Custom PC) - NEVER for Accessories */}
+              {/* Hardware Specs - Only for Computers */}
               {formData.productType !== 'SERVICE' && (formData.category === 'Laptop' || formData.category === 'Desktop' || formData.category === 'Custom PC') && (
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-                  <span className="text-slate-700 font-bold block text-[11px] uppercase tracking-wider">
-                    Detailed {formData.category} Specifications
+                <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200/80 space-y-2.5">
+                  <span className="text-slate-700 font-semibold block text-[11px] uppercase tracking-wider">
+                    {formData.category} Hardware Specifications
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     <div>
-                      <label className="block text-slate-500 mb-0.5">CPU / Processor</label>
+                      <label className="block text-slate-500 mb-0.5">CPU</label>
                       <input
                         type="text"
                         value={formData.cpu}
                         onChange={(e) => setFormData({ ...formData, cpu: e.target.value })}
                         placeholder="i5-10210U"
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
                     <div>
@@ -590,7 +586,7 @@ export default function ProductsPage() {
                         value={formData.generation}
                         onChange={(e) => setFormData({ ...formData, generation: e.target.value })}
                         placeholder="10th Gen"
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
                     <div>
@@ -600,7 +596,7 @@ export default function ProductsPage() {
                         value={formData.ram}
                         onChange={(e) => setFormData({ ...formData, ram: e.target.value })}
                         placeholder="16GB DDR4"
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
                     <div>
@@ -610,7 +606,7 @@ export default function ProductsPage() {
                         value={formData.storage}
                         onChange={(e) => setFormData({ ...formData, storage: e.target.value })}
                         placeholder="256GB NVMe"
-                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg"
+                        className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                       />
                     </div>
                   </div>
@@ -620,20 +616,20 @@ export default function ProductsPage() {
               {/* Pricing & Stock */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
-                    {formData.productType === 'SERVICE' ? 'Internal Cost (₹)' : 'Purchase Price (₹)'}
+                  <label className="block text-slate-600 font-medium mb-1">
+                    {formData.productType === 'SERVICE' ? 'Internal Cost (₹)' : 'Cost Price (₹)'}
                   </label>
                   <input
                     type="number"
                     step="any"
                     value={formData.purchasePrice}
                     onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
+                  <label className="block text-slate-600 font-medium mb-1">
                     {formData.productType === 'SERVICE' ? 'Service Rate (₹) *' : 'Selling Price (₹) *'}
                   </label>
                   <input
@@ -642,40 +638,33 @@ export default function ProductsPage() {
                     required
                     value={formData.sellingPrice}
                     onChange={(e) => setFormData({ ...formData, sellingPrice: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-indigo-700"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono font-semibold text-slate-900 tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
 
                 {formData.productType !== 'SERVICE' && !editProduct && (
                   <div>
-                    <label className="block text-slate-600 font-semibold mb-1">Opening Stock</label>
+                    <label className="block text-slate-600 font-medium mb-1">Opening Stock</label>
                     <input
                       type="number"
                       min="0"
                       value={formData.initialStock}
                       onChange={(e) => setFormData({ ...formData, initialStock: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-slate-900 tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                     />
                   </div>
                 )}
 
                 {formData.productType !== 'SERVICE' && (
                   <div>
-                    <label className="block text-slate-600 font-semibold mb-1">Min Stock Alert</label>
+                    <label className="block text-slate-600 font-medium mb-1">Min Stock Alert</label>
                     <input
                       type="number"
                       min="1"
                       value={formData.minStock}
                       onChange={(e) => setFormData({ ...formData, minStock: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-slate-900 tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                     />
-                  </div>
-                )}
-
-                {formData.productType === 'SERVICE' && (
-                  <div className="col-span-2 p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center gap-2 text-blue-800">
-                    <span className="font-bold">Service Mode:</span>
-                    <span className="text-[11px]">No inventory units tracked. Unlimited service capacity.</span>
                   </div>
                 )}
               </div>
@@ -684,13 +673,13 @@ export default function ProductsPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold"
+                  className="px-3.5 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-xs"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg shadow-xs transition"
                 >
                   {editProduct ? 'Update Product' : 'Create Product'}
                 </button>

@@ -138,36 +138,36 @@ function SerialNumbersContent() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <Hash className="w-6 h-6 text-purple-600" />
-            <span>Serial Number Management</span>
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <Hash className="w-5 h-5 text-slate-700" />
+            <span>Serial Numbers</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Track refurbished laptops individually from purchase to sale, warranty periods, and repair status.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Individual hardware unit tracking, customer mapping, and warranty records
           </p>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-xs transition self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-xs transition self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Add Serial Number</span>
+          <span>Add Serial Number</span>
         </button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+      <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs space-y-3">
         <div className="relative max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search serial number, product, customer..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-purple-600"
+            placeholder="Search by serial number, product, customer..."
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:bg-white transition"
           />
         </div>
 
@@ -177,11 +177,10 @@ function SerialNumbersContent() {
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition whitespace-nowrap ${
-                statusFilter === st
-                  ? 'bg-purple-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-3 py-1 text-xs font-medium rounded-lg transition whitespace-nowrap ${statusFilter === st
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+                }`}
             >
               {st}
             </button>
@@ -190,17 +189,17 @@ function SerialNumbersContent() {
       </div>
 
       {/* Serials Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
                 <th className="py-3 px-4">Serial Number</th>
                 <th className="py-3 px-4">Product Details</th>
                 <th className="py-3 px-4 text-center">Status</th>
                 <th className="py-3 px-4">Customer & Sale Date</th>
-                <th className="py-3 px-4">Sales Invoice</th>
-                <th className="py-3 px-4">Warranty Period</th>
+                <th className="py-3 px-4">Invoice #</th>
+                <th className="py-3 px-4">Warranty</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -220,28 +219,27 @@ function SerialNumbersContent() {
               ) : (
                 serials.map((sn) => (
                   <tr key={sn.id} className="hover:bg-slate-50/80 transition">
-                    <td className="py-3 px-4 font-mono font-bold text-purple-700">
+                    <td className="py-3 px-4 font-mono font-semibold text-slate-900 tabular-nums">
                       {sn.serialNumber}
                     </td>
                     <td className="py-3 px-4 max-w-xs">
-                      <div className="font-semibold text-slate-800 truncate">
+                      <div className="font-medium text-slate-800 truncate">
                         {sn.product?.name}
                       </div>
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-[11px] text-slate-400 font-mono tabular-nums">
                         Cost: {formatCurrency(sn.purchasePrice)} • Selling: {formatCurrency(sn.sellingPrice)}
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span
-                        className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
-                          sn.status === 'In Stock'
-                            ? 'bg-emerald-100 text-emerald-800'
+                        className={`text-[11px] font-medium px-2 py-0.5 rounded ${sn.status === 'In Stock'
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                             : sn.status === 'Sold'
-                            ? 'bg-blue-100 text-blue-800'
-                            : sn.status === 'Under Repair'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-rose-100 text-rose-800'
-                        }`}
+                              ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                              : sn.status === 'Under Repair'
+                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                : 'bg-rose-50 text-rose-800 border border-rose-200'
+                          }`}
                       >
                         {sn.status}
                       </span>
@@ -249,27 +247,27 @@ function SerialNumbersContent() {
                     <td className="py-3 px-4">
                       {sn.customer ? (
                         <div>
-                          <div className="font-semibold text-slate-800">{sn.customer.name}</div>
-                          <div className="text-[11px] text-slate-400">{formatDate(sn.saleDate)}</div>
+                          <div className="font-medium text-slate-800">{sn.customer.name}</div>
+                          <div className="text-[11px] text-slate-400 font-mono tabular-nums">{formatDate(sn.saleDate)}</div>
                         </div>
                       ) : (
-                        <span className="text-slate-400 italic">Not sold yet</span>
+                        <span className="text-slate-400">—</span>
                       )}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 font-mono tabular-nums">
                       {sn.salesInvoice ? (
-                        <span className="font-semibold text-indigo-600">
+                        <span className="font-medium text-slate-900">
                           {sn.salesInvoice.invoiceNumber}
                         </span>
                       ) : (
-                        <span className="text-slate-400">-</span>
+                        <span className="text-slate-400">—</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-[11px] text-slate-600">
+                    <td className="py-3 px-4 text-[11px] text-slate-600 font-mono tabular-nums">
                       {sn.warrantyEnd ? (
                         <span>Valid till {formatDate(sn.warrantyEnd)}</span>
                       ) : (
-                        <span className="text-slate-400">-</span>
+                        <span className="text-slate-400">—</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -279,10 +277,10 @@ function SerialNumbersContent() {
                           setNewStatus(sn.status);
                           setNewNotes(sn.notes || '');
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg font-semibold transition"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition"
                       >
                         <Edit className="w-3.5 h-3.5" />
-                        <span>Status</span>
+                        <span>Update</span>
                       </button>
                     </td>
                   </tr>
@@ -295,20 +293,20 @@ function SerialNumbersContent() {
 
       {/* Edit Status Modal */}
       {selectedSerial && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
-            <h3 className="text-base font-bold text-slate-900 mb-1">
-              Update Status for {selectedSerial.serialNumber}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-5 border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900 mb-1">
+              Update Status for <span className="font-mono tabular-nums">{selectedSerial.serialNumber}</span>
             </h3>
             <p className="text-xs text-slate-500 mb-4">{selectedSerial.product?.name}</p>
 
-            <form onSubmit={handleUpdateStatus} className="space-y-4 text-xs">
+            <form onSubmit={handleUpdateStatus} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Status</label>
+                <label className="block text-slate-700 font-medium mb-1">Status</label>
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 >
                   <option value="In Stock">In Stock</option>
                   <option value="Sold">Sold</option>
@@ -320,27 +318,27 @@ function SerialNumbersContent() {
               </div>
 
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Remarks / Diagnostics</label>
+                <label className="block text-slate-700 font-medium mb-1">Remarks</label>
                 <textarea
                   rows={3}
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
-                  placeholder="e.g. Screen replaced, thermal paste updated..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  placeholder="Notes or repair diagnostics"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setSelectedSerial(null)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold"
+                  className="px-3.5 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg shadow-xs transition"
                 >
                   Save Status
                 </button>
@@ -352,24 +350,24 @@ function SerialNumbersContent() {
 
       {/* Add New Serial Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
-            <h3 className="text-base font-bold text-slate-900 mb-3">Add Serialized Product</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-xl p-5 border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900 mb-3">Add Serial Number</h3>
             <form onSubmit={handleAddNewSerial} className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Serial Number *</label>
+                <label className="block text-slate-700 font-medium mb-1">Serial Number <span className="text-rose-500">*</span></label>
                 <input
                   type="text"
                   required
                   value={addForm.serialNumber}
                   onChange={(e) => setAddForm({ ...addForm, serialNumber: e.target.value })}
                   placeholder="e.g. LAT5410-99210"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono font-bold"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono tabular-nums text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Choose Product *</label>
+                <label className="block text-slate-700 font-medium mb-1">Product <span className="text-rose-500">*</span></label>
                 <select
                   required
                   value={addForm.productId}
@@ -382,9 +380,9 @@ function SerialNumbersContent() {
                       sellingPrice: p?.sellingPrice || 0,
                     });
                   }}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-semibold"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 >
-                  <option value="">-- Choose Product --</option>
+                  <option value="">Select Product</option>
                   {products.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name}
@@ -395,36 +393,36 @@ function SerialNumbersContent() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Cost (₹)</label>
+                  <label className="block text-slate-600 font-medium mb-1">Cost Price (₹)</label>
                   <input
                     type="number"
                     value={addForm.purchasePrice}
                     onChange={(e) => setAddForm({ ...addForm, purchasePrice: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Price (₹)</label>
+                  <label className="block text-slate-600 font-medium mb-1">Selling Price (₹)</label>
                   <input
                     type="number"
                     value={addForm.sellingPrice}
                     onChange={(e) => setAddForm({ ...addForm, sellingPrice: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-900 font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold"
+                  className="px-3.5 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg shadow-xs transition"
                 >
                   Save Serial Number
                 </button>

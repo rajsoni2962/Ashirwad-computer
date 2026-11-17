@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AppLayout from '@/components/layout/AppLayout';
 import Link from 'next/link';
 import {
   User,
@@ -145,47 +144,45 @@ export default function UserProfilePage() {
   };
 
   return (
-    <AppLayout>
-      <div className="max-w-5xl mx-auto space-y-6 pb-12">
-        {/* Banner & Profile Hero Card */}
-        <div className="relative bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-          {/* Top Banner Gradient */}
-          <div className="h-32 sm:h-40 bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-700 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-black/30" />
-            <div className="absolute right-6 top-6 flex items-center gap-2">
-              <span className="px-3 py-1 bg-black/40 backdrop-blur-md text-white text-xs font-semibold rounded-full border border-white/20 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-amber-300" />
-                Root Administrator
-              </span>
-            </div>
+    <div className="max-w-5xl mx-auto space-y-6 pb-12">
+      {/* Banner & Profile Hero Card */}
+      <div className="relative bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+        {/* Top Banner */}
+        <div className="h-28 sm:h-36 bg-slate-900 relative overflow-hidden">
+          <div className="absolute right-6 top-6 flex items-center gap-2">
+            <span className="px-3 py-1 bg-white/10 backdrop-blur-md text-white text-xs font-medium rounded-full border border-white/20 flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-slate-300" />
+              Administrator
+            </span>
           </div>
+        </div>
 
-          {/* Profile Identity Bar */}
-          <div className="px-6 pb-6 pt-0 relative">
-            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 -mt-14 sm:-mt-16 mb-4">
-              <div className="flex items-end gap-4">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-200 text-slate-900 border-4 border-white shadow-md flex items-center justify-center font-black text-3xl sm:text-4xl shrink-0">
-                  {profile.name
-                    ? profile.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()
-                        .slice(0, 2)
-                    : 'RS'}
-                </div>
-                <div>
-                  <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2">
-                    {profile.name}
-                    <span className="inline-block p-1 bg-emerald-100 text-emerald-700 rounded-full" title="Verified Owner">
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
-                    </span>
-                  </h1>
-                  <p className="text-sm text-slate-500 font-medium">
-                    @{profile.username} • {profile.role === 'admin' ? 'Proprietor / Super Admin' : 'Staff'}
-                  </p>
-                </div>
+        {/* Profile Identity Bar */}
+        <div className="px-6 pb-6 pt-0 relative">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 -mt-12 sm:-mt-14 mb-4">
+            <div className="flex items-end gap-4">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-slate-800 text-white border-4 border-white shadow-sm flex items-center justify-center font-bold text-2xl sm:text-3xl shrink-0">
+                {profile.name
+                  ? profile.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2)
+                  : 'RS'}
               </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                  {profile.name}
+                  <span className="inline-block p-1 bg-emerald-50 text-emerald-700 rounded-full" title="Verified Owner">
+                    <Check className="w-3 h-3 stroke-[2.5]" />
+                  </span>
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-500 font-medium">
+                  @{profile.username} • {profile.role === 'admin' ? 'Super Admin' : 'Staff'}
+                </p>
+              </div>
+            </div>
 
               {/* Action Links */}
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -221,7 +218,7 @@ export default function UserProfilePage() {
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900">
+                  <div className="text-lg sm:text-xl font-bold text-slate-900 tabular-nums font-mono">
                     {profile.stats.totalInvoices}
                   </div>
                   <div className="text-[11px] font-medium text-slate-500">Invoices Billed</div>
@@ -229,11 +226,11 @@ export default function UserProfilePage() {
               </div>
 
               <div className="p-3 sm:p-4 bg-slate-50/70 rounded-2xl border border-slate-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900">
+                  <div className="text-lg sm:text-xl font-bold text-slate-900 tabular-nums font-mono">
                     {profile.stats.totalCustomers}
                   </div>
                   <div className="text-[11px] font-medium text-slate-500">Total Customers</div>
@@ -241,11 +238,11 @@ export default function UserProfilePage() {
               </div>
 
               <div className="p-3 sm:p-4 bg-slate-50/70 rounded-2xl border border-slate-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900">
+                  <div className="text-lg sm:text-xl font-bold text-slate-900 tabular-nums font-mono">
                     {profile.stats.totalProducts}
                   </div>
                   <div className="text-[11px] font-medium text-slate-500">Inventory Items</div>
@@ -582,24 +579,24 @@ export default function UserProfilePage() {
             <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-800 text-white flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center">
                     <Cpu className="w-6 h-6" />
                   </div>
-                  <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-bold rounded-full">
-                    Prisma SQLite + WAL
+                  <span className="px-2.5 py-0.5 bg-slate-100 text-slate-800 text-[10px] font-semibold rounded-full">
+                    PostgreSQL (Supabase)
                   </span>
                 </div>
                 <div>
                   <h4 className="text-base font-bold text-slate-900">Database Engine</h4>
                   <p className="text-xs text-slate-500 mt-1">
-                    High concurrency with Write-Ahead Logging & crash durability verified across restarts.
+                    Managed cloud PostgreSQL instance with connection pooling and automated backups.
                   </p>
                 </div>
               </div>
               <div className="mt-6 pt-4 border-t border-slate-100">
                 <Link
                   href="/settings/backup"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-800"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900"
                 >
                   Manage Backups
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -609,6 +606,5 @@ export default function UserProfilePage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }

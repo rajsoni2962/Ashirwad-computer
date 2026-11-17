@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AppLayout from '@/components/layout/AppLayout';
 import {
   Building2,
   Plus,
@@ -209,28 +208,26 @@ export default function BusinessProfilesPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <Building2 className="w-6 h-6 text-indigo-600" />
-              <span>Multi-Business Account Profiles</span>
-            </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              Manage multiple business entities, branches, and retail storefronts with distinct GSTIN, address, bank accounts, and invoice sequences.
-            </p>
-          </div>
-
-          <button
-            onClick={openAddModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition self-start sm:self-auto"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Add Business Profile</span>
-          </button>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>Business Profiles</span>
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Manage business entities, branches, and retail storefronts with distinct addresses, bank accounts, and invoice sequences.
+          </p>
         </div>
+
+        <button
+          onClick={openAddModal}
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs transition self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Profile</span>
+        </button>
+      </div>
 
         {successMsg && (
           <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-2xl flex items-center gap-2 font-medium">
@@ -555,12 +552,12 @@ export default function BusinessProfilesPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition"
+                    className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition"
                   >
                     {saving ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        Saving Profile...
+                        Saving...
                       </>
                     ) : (
                       editingProfile ? 'Update Profile' : 'Create Profile'
@@ -572,6 +569,5 @@ export default function BusinessProfilesPage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }
