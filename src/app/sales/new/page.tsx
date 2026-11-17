@@ -27,6 +27,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { formatCurrency, numberToWords, getInvoiceTypeTitle, getInvoiceTypeLabel, getTaxConfigLabel } from '@/lib/utils';
+import { isValidBusinessGstin } from '@/lib/invoicePdfGenerator';
 import Link from 'next/link';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
@@ -66,14 +67,25 @@ export default function NewSalesInvoicePage() {
   const [notes, setNotes] = useState('Professionally refurbished, fully tested, and ready to use. Clean, reliable, and backed by quality service.');
   const [terms, setTerms] = useState('');
 
-  const isNoTax = invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST' || invoiceType === 'PROFORMA' || invoiceType === 'QUOTATION' || invoiceType === 'CASH_MEMO' || taxConfiguration === 'NONE';
+  const hasRegisteredBusinessGstin = isValidBusinessGstin(settings?.gstin);
+  const isNoTax = !hasRegisteredBusinessGstin || invoiceType === 'BILL_OF_SUPPLY' || invoiceType === 'NON_GST' || invoiceType === 'PROFORMA' || invoiceType === 'QUOTATION' || invoiceType === 'CASH_MEMO' || taxConfiguration === 'NONE';
   const isExempt = taxConfiguration === 'EXEMPT';
   const isIgst = taxConfiguration === 'IGST';
 
   const handleInvoiceTypeChange = (newType: string) => {
+    if (newType === 'TAX_INVOICE' && !hasRegisteredBusinessGstin) {
+      alert(
+        'GST Safeguard: Your Business Profile does not have a registered GSTIN configured. Switching to Bill of Supply / Non-GST Invoice (0% tax). Add your valid 15-digit GSTIN in Settings to issue GST Tax Invoices.'
+      );
+      setInvoiceType('BILL_OF_SUPPLY');
+      setTaxConfiguration('NONE');
+      return;
+    }
     setInvoiceType(newType);
     if (newType === 'BILL_OF_SUPPLY' || newType === 'NON_GST' || newType === 'PROFORMA' || newType === 'QUOTATION' || newType === 'CASH_MEMO') {
       setTaxConfiguration('NONE');
+    } else if (newType === 'TAX_INVOICE' && taxConfiguration === 'NONE') {
+      setTaxConfiguration('CGST_SGST');
     }
     if (newType === 'CASH_MEMO') {
       setPaymentMode('Cash');

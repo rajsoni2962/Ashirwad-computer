@@ -20,6 +20,7 @@ import {
   Receipt,
 } from 'lucide-react';
 import { formatCurrency, formatDate, getInvoiceTypeTitle, getInvoiceTypeLabel } from '@/lib/utils';
+import { requiresGstAccountingReview } from '@/lib/invoicePdfGenerator';
 import WhatsAppShareModal from '@/components/invoice/WhatsAppShareModal';
 import InvoiceImageModal from '@/components/invoice/InvoiceImageModal';
 import ThermalPrintModal from '@/components/invoice/ThermalPrintModal';
@@ -231,18 +232,26 @@ export default function AllInvoicesPage() {
                       >
                         {inv.invoiceNumber}
                       </Link>
-                      {inv.invoiceType && inv.invoiceType !== 'TAX_INVOICE' && (
-                        <div className="flex items-center gap-1 mt-0.5">
+                      <div className="flex flex-wrap items-center gap-1 mt-0.5">
+                        {inv.invoiceType && inv.invoiceType !== 'TAX_INVOICE' && (
                           <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
                             {getInvoiceTypeLabel(inv.invoiceType)}
                           </span>
-                          {inv.invoiceType === 'QUOTATION' && inv.convertedToInvoiceId && (
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              Converted
-                            </span>
-                          )}
-                        </div>
-                      )}
+                        )}
+                        {inv.invoiceType === 'QUOTATION' && inv.convertedToInvoiceId && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Converted
+                          </span>
+                        )}
+                        {requiresGstAccountingReview(inv, settings) && (
+                          <span
+                            className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300"
+                            title="Historical invoice issued with GST while Business GSTIN was unregistered. Preserved without silent recalculation."
+                          >
+                            GST Review
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-2.5 px-3.5 text-slate-500 whitespace-nowrap tabular-nums font-mono">
                       {formatDate(inv.date)}

@@ -46,6 +46,9 @@ import {
   generateInvoicePdfFromElement,
   downloadPdfBlob,
   viewPdfBlob,
+  resolveInvoiceDynamicContent,
+  requiresGstAccountingReview,
+  isValidBusinessGstin,
 } from '@/lib/invoicePdfGenerator';
 import { getInvoiceDesign, InvoiceDesignConfig, DEFAULT_INVOICE_DESIGN } from '@/lib/invoice-design';
 
@@ -127,6 +130,8 @@ export default function InvoicePrintView({
     } catch {}
   }
   const customer = custSnapshot || currentInvoice?.customer || {};
+  const dynamicContent = resolveInvoiceDynamicContent(currentInvoice, business);
+  const needsGstReview = requiresGstAccountingReview(currentInvoice, settings);
 
   // 3. Resolve 100% customizable invoice design
   const design: InvoiceDesignConfig = customDesign || getInvoiceDesign(
@@ -378,6 +383,23 @@ export default function InvoicePrintView({
       )}
 
       {/* Quotation / Estimate Status Banners */}
+      {!isDesignerPreview && needsGstReview && (
+        <div className="print:hidden bg-amber-50 border border-amber-300 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3 text-amber-950">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+            <div>
+              <p className="font-bold text-xs sm:text-sm">Accounting Review Required (Historical GST Record)</p>
+              <p className="text-xs text-amber-800 mt-0.5">
+                This historical invoice was recorded as a GST Tax Invoice / with GST amounts while Business GSTIN was unregistered. Historical figures are preserved without silent recalculation.
+              </p>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-amber-200/80 text-amber-900">
+            Flagged for Review
+          </span>
+        </div>
+      )}
+
       {!isDesignerPreview && currentInvoice.invoiceType === 'QUOTATION' && (
         <>
           {currentInvoice.convertedToInvoiceId ? (
@@ -655,7 +677,7 @@ export default function InvoicePrintView({
           className={`print-container bg-white w-full max-w-[210mm] min-h-[297mm] shadow-lg border border-slate-200 print:border-none print:shadow-none print:rounded-none print:p-0 print:m-0 print:w-full text-slate-900 ${radiusClass} ${paddingClass} ${fontScaleClass}`}
         >
           {/* Top Title Banner */}
-          <div className="w-full py-2 bg-[#EEF0FD] text-[#4257B8] font-bold text-xs tracking-wider uppercase text-center rounded-sm">
+          <div className="w-full py-2 bg-[#EEF2F9] text-[#1E3A8A] font-bold text-xs tracking-wider uppercase text-center rounded-sm">
             {getInvoiceTypeTitle(currentInvoice.invoiceType)}
           </div>
 
@@ -711,7 +733,7 @@ export default function InvoicePrintView({
                 <span>{business.companyName}</span>
               </h1>
               {design.showTagline && business.tagline && (
-                <p className="text-xs font-bold uppercase tracking-wider text-[#4257B8] mt-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-[#1E3A8A] mt-1">
                   {business.tagline}
                 </p>
               )}
@@ -725,7 +747,7 @@ export default function InvoicePrintView({
                   <span>Email: <strong className="font-semibold text-slate-900">{business.email}</strong></span>
                 </div>
               )}
-              {business.gstin && business.gstin.trim() && business.gstin !== 'null' && business.gstin !== '24AANPA0000A1Z5' && (
+              {isValidBusinessGstin(business.gstin) && (
                 <p className="text-xs text-slate-600 mt-0.5">
                   GSTIN: <strong className="font-semibold text-slate-900">{business.gstin}</strong>
                 </p>
@@ -974,24 +996,24 @@ export default function InvoicePrintView({
               </div>
 
               {/* Quality Guarantee Box */}
-              <div className="mt-3 p-2.5 bg-[#F5FAFF] rounded-lg border border-[#BFDBFE] text-xs text-slate-700">
-                <span className="font-bold text-[#2563EB] block mb-0.5">Description & Condition:</span>
-                {invoice.notes || "Professionally refurbished, fully tested, and ready to use. Clean, reliable, and backed by quality service."}
+              <div className="mt-3 p-2.5 bg-[#F8FAFC] rounded-lg border border-[#CBD5E1] text-xs text-slate-700">
+                <span className="font-bold text-[#1E3A8A] block mb-0.5">Description & Condition:</span>
+                {dynamicContent.descriptionNote}
               </div>
 
               {/* Bank & UPI Details (Side Position) */}
               {design.bankDetailsPosition === 'left' && (
-                <div className="mt-3 flex items-start gap-4 p-2.5 bg-[#F8FAFC] rounded-lg border border-[#CAD5E2] text-xs">
+                <div className="mt-3 flex items-start gap-4 p-2.5 bg-[#F8FAFC] rounded-lg border border-[#CBD5E1] text-xs">
                   <div className="flex-1 space-y-0.5">
                     <span
-                      className="font-bold block mb-1 text-[#4257B8]"
+                      className="font-bold block mb-1 text-[#1E3A8A]"
                     >
                       Bank & Payment Details:
                     </span>
                     <div>Bank Name: <span className="font-medium text-slate-800">{business.bankName}</span></div>
                     <div>Account No.: <span className="font-mono font-medium text-slate-800">{business.accountNumber}</span></div>
                     <div>IFSC Code: <span className="font-mono font-medium text-slate-800">{business.ifscCode}</span></div>
-                    <div>UPI ID: <span className="font-mono font-bold text-[#4257B8]">{business.upiId}</span></div>
+                    <div>UPI ID: <span className="font-mono font-bold text-[#1E3A8A]">{business.upiId}</span></div>
                   </div>
                   {design.showUpiQrCode && (
                     <div className="text-center shrink-0">
@@ -1140,11 +1162,11 @@ export default function InvoicePrintView({
             {/* Terms and Conditions */}
             {design.termsPosition !== 'hidden' ? (
               <div className="col-span-8 text-[11px] text-slate-600 leading-relaxed pr-4">
-                <div className="font-bold uppercase tracking-wider mb-1 text-[#4257B8]">
+                <div className="font-bold uppercase tracking-wider mb-1 text-[#1E3A8A]">
                   TERMS AND CONDITIONS:
                 </div>
                 <div className="whitespace-pre-line text-slate-600 space-y-0.5">
-                  {business.terms}
+                  {dynamicContent.termsList.join('\n')}
                 </div>
               </div>
             ) : (

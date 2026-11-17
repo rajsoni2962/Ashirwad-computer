@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
+import { isValidBusinessGstin } from '@/lib/invoicePdfGenerator';
 
 export async function GET(request: Request) {
   try {
@@ -137,6 +138,21 @@ export async function POST(request: Request) {
       authorizedSignatory: settings?.authorizedSignatory || 'Ashirwad Technologies\nRaj Soni\nProprietor',
       footer: settings?.footer || "Thank you for choosing us—we're always here to help if you need support.",
     };
+
+    // GST Safeguard: Do not permit an unregistered business profile to issue a GST Tax Invoice or collect GST
+    const hasRegisteredGstin = isValidBusinessGstin(businessSnapshot.gstin);
+    const totalTaxCollected =
+      (parseFloat(cgst) || 0) + (parseFloat(sgst) || 0) + (parseFloat(igst) || 0);
+    if (!hasRegisteredGstin && (invoiceType === 'TAX_INVOICE' || totalTaxCollected > 0)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'GST Safeguard: Your Business Profile does not have a registered GSTIN. An unregistered business cannot issue a GST Tax Invoice or collect GST. Please select Bill of Supply / Non-GST Invoice (0% tax), or add your valid 15-digit GSTIN in Settings.',
+        },
+        { status: 400 }
+      );
+    }
 
     // Pre-calculate items data for create payload in memory
     const itemsCreateData = items.map((it: any) => {
