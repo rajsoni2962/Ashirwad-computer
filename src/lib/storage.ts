@@ -74,11 +74,15 @@ export async function uploadSupplierBillAttachment(
     }
   }
 
-  // Local private storage fallback
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'bills');
-  await mkdir(uploadsDir, { recursive: true });
-  const filePath = path.join(uploadsDir, uniqueName);
-  await writeFile(filePath, buffer);
+  // Local private storage fallback (safe on read-only serverless filesystems like Vercel)
+  try {
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'bills');
+    await mkdir(uploadsDir, { recursive: true });
+    const filePath = path.join(uploadsDir, uniqueName);
+    await writeFile(filePath, buffer);
+  } catch (fsErr) {
+    console.warn('Read-only filesystem on serverless runtime; skipping local file write:', (fsErr as any)?.code);
+  }
 
   return {
     fileUrl: `/uploads/bills/${uniqueName}`,

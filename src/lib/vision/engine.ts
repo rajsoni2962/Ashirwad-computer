@@ -156,7 +156,7 @@ Return strict, valid JSON ONLY without any markdown decoration outside the JSON:
  * Resolves available AI Vision configuration from database or environment.
  */
 export async function getVisionConfig() {
-  const settings = await db.businessSettings.findUnique({ where: { id: 'default' } });
+  const settings = await db.businessSettings.findUnique({ where: { id: 'default' } }).catch(() => null);
 
   const geminiKey =
     settings?.geminiApiKey ||
@@ -169,7 +169,14 @@ export async function getVisionConfig() {
   const anthropicKey = process.env.ANTHROPIC_API_KEY || '';
 
   const provider = settings?.visionProvider || (geminiKey ? 'gemini' : openaiKey ? 'openai' : anthropicKey ? 'anthropic' : 'gemini');
-  const model = settings?.visionModel || (provider === 'gemini' ? 'gemini-2.5-flash' : provider === 'openai' ? 'gpt-4o' : 'claude-3-5-sonnet-20241022');
+  let model =
+    settings?.visionModel ||
+    (provider === 'gemini' ? 'gemini-3-flash-preview' : provider === 'openai' ? 'gpt-4o' : 'claude-3-5-sonnet-20241022');
+
+  // Auto-upgrade retired Gemini 1.5 / 2.5 models to active Gemini 3 Flash model
+  if (provider === 'gemini' && (model.startsWith('gemini-2.5') || model.startsWith('gemini-1.5') || model.startsWith('gemini-2.0'))) {
+    model = 'gemini-3-flash-preview';
+  }
 
   return {
     provider,
@@ -436,8 +443,18 @@ async function callGeminiVision(
   apiKey: string,
   modelName: string
 ): Promise<RawVisionExtraction> {
-  const effectiveModel = modelName || 'gemini-2.5-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${effectiveModel}:generateContent?key=${apiKey}`;
+  const cleanKey = apiKey.trim();
+
+  let effectiveModel = modelName || 'gemini-3-flash-preview';
+  if (
+    effectiveModel.startsWith('gemini-2.5') ||
+    effectiveModel.startsWith('gemini-1.5') ||
+    effectiveModel.startsWith('gemini-2.0')
+  ) {
+    effectiveModel = 'gemini-3-flash-preview';
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${effectiveModel}:generateContent`;
 
   // Multi-image / Multi-page PDF support: convert each file into Gemini inlineData part
   const parts: any[] = [];
@@ -472,6 +489,7 @@ async function callGeminiVision(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-goog-api-key': cleanKey,
     },
     body: JSON.stringify({
       contents: [

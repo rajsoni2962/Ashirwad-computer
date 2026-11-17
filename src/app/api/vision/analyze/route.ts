@@ -32,9 +32,13 @@ export async function POST(request: Request) {
     const customProvider = (formData.get('provider') as string) || undefined;
     const customModel = (formData.get('model') as string) || undefined;
 
-    // 1. Save all uploaded files to public/uploads/bills/ preserving original documents (Section 15)
+    // 1. Save all uploaded files to public/uploads/bills/ when writable (safe on Vercel read-only fs)
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'bills');
-    await mkdir(uploadsDir, { recursive: true });
+    try {
+      await mkdir(uploadsDir, { recursive: true });
+    } catch {
+      // Read-only serverless environment (e.g. Vercel)
+    }
 
     const filePayloads: FilePayload[] = [];
 
@@ -49,7 +53,11 @@ export async function POST(request: Request) {
       const uniqueFilename = `bill_${Date.now()}_${cleanBaseName}_p${i + 1}${ext}`;
       const filePath = path.join(uploadsDir, uniqueFilename);
 
-      await writeFile(filePath, buffer);
+      try {
+        await writeFile(filePath, buffer);
+      } catch {
+        // Ignore EROFS on Vercel serverless
+      }
 
       filePayloads.push({
         buffer,
